@@ -878,6 +878,7 @@
     background: rgba(255,255,255,0.05);
     color: var(--text-muted);
     border: 1px solid var(--border);
+    display: none;
   }
 
   .garantie-badge.active {
@@ -1038,7 +1039,7 @@
         <h3>📣 Actions Marketing</h3>
 
         <div class="marketing-email-group">
-          <label>Souhaitez-vous recevoir nos actions marketing ?</label>
+          <label>Recevoir vos actions marketing, comme leviers de croissance</label>
           <div class="marketing-email-row">
             <input type="email" class="marketing-email-input" id="marketingEmail" placeholder="votre@email.com">
             <button class="marketing-email-btn" onclick="subscribeMarketing()">Recevoir</button>
@@ -1476,8 +1477,10 @@ function toggleGarantie() {
   var checkbox = document.getElementById('marketingCheck');
   var badge = document.getElementById('garantieBadge');
   if (checkbox.checked) {
+    badge.style.display = 'inline-block';
     badge.classList.add('active');
   } else {
+    badge.style.display = 'none';
     badge.classList.remove('active');
   }
 }
