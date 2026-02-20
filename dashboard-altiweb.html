@@ -577,10 +577,6 @@
   .cards-grid .action-card:nth-child(8) { animation-delay: 0.4s; }
 
   /* ─── RESPONSIVE ─── */
-  @media (max-width: 1950px) {
-    .sidebar-stickers { display: none; }
-  }
-
   @media (max-width: 1024px) {
     .hero-grid { grid-template-columns: 1fr; }
     .footer-grid { grid-template-columns: 1fr; gap: 24px; }
@@ -709,8 +705,8 @@
   .sidebar-sticker {
     display: flex;
     align-items: center;
-    gap: 8px;
-    padding: 10px 14px;
+    gap: 0;
+    padding: 10px 12px;
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-left: none;
@@ -720,9 +716,17 @@
     font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     transform: translateX(-100%);
     animation: slideIn 0.5s ease-out forwards;
+    overflow: hidden;
+  }
+
+  .sticker-text {
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-width 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.2s;
   }
 
   .sidebar-sticker:nth-child(1) { animation-delay: 0.8s; }
@@ -738,7 +742,13 @@
     background: var(--bg-card-hover);
     border-color: var(--border-hover);
     color: var(--text-primary);
-    padding-left: 18px;
+    gap: 8px;
+    padding: 10px 14px;
+  }
+
+  .sidebar-sticker:hover .sticker-text {
+    max-width: 250px;
+    opacity: 1;
   }
 
   .sidebar-sticker .sticker-icon {
@@ -905,30 +915,6 @@
     }
   }
 
-  @media (max-width: 768px) {
-    .sidebar-stickers {
-      position: fixed;
-      top: auto;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      transform: none;
-      flex-direction: row;
-      justify-content: center;
-      background: rgba(11,15,26,0.95);
-      backdrop-filter: blur(20px);
-      padding: 8px;
-      border-top: 1px solid var(--border);
-    }
-    .sidebar-sticker {
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border);
-      font-size: 11px;
-      padding: 8px 10px;
-      transform: translateY(0);
-      animation: none;
-    }
-  }
 </style>
 </head>
 <body>
@@ -936,16 +922,16 @@
 <!-- ═══ SIDEBAR FIXED STICKERS ═══ -->
 <nav class="sidebar-stickers">
   <a href="https://form.asana.com/?k=bmSEo4Kx87pWCf6xGaiMhw&d=930162981590606" class="sidebar-sticker" target="_blank">
-    <span class="sticker-icon">🔑</span> Ajouter des mots clés
+    <span class="sticker-icon">🔑</span><span class="sticker-text">Ajouter des mots clés</span>
   </a>
   <a href="https://billing.stripe.com/p/login/4gw6pC4ww59I7NSbII" class="sidebar-sticker" target="_blank">
-    <span class="sticker-icon">🧾</span> Gérer / recevoir vos factures
+    <span class="sticker-icon">🧾</span><span class="sticker-text">Gérer / recevoir vos factures</span>
   </a>
   <a href="https://alti-web.fr/indexation.html" class="sidebar-sticker" target="_blank">
-    <span class="sticker-icon">🚀</span> Pousser des pages sur Google
+    <span class="sticker-icon">🚀</span><span class="sticker-text">Pousser des pages sur Google</span>
   </a>
   <a href="https://alti-web.fr/seo/generateur-leads.html" class="sidebar-sticker" target="_blank">
-    <span class="sticker-icon">💰</span> Recevez votre machine à LEADS / VENTES
+    <span class="sticker-icon">💰</span><span class="sticker-text">Recevez votre machine à LEADS / VENTES</span>
   </a>
 </nav>
 
