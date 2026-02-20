@@ -987,15 +987,15 @@
         <div class="live-tasks">
           <div class="live-tasks-header">
             <span class="live-dot"></span>
-            <span>Actuellement : <strong>4 tâches SEO</strong> en cours</span>
+            <span>Actuellement : <strong id="taskSeo">4</strong> <strong>tâches SEO</strong> en cours</span>
           </div>
           <div class="live-tasks-sub">
             <span class="live-dot" style="width:6px;height:6px;"></span>
-            <span><strong>6</strong> tâches off-site</span>
+            <span><strong id="taskOffsite">6</strong> tâches off-site</span>
           </div>
           <div class="live-tasks-sub">
             <span class="live-dot" style="width:6px;height:6px;background:var(--accent-purple);box-shadow:0 0 8px rgba(167,139,250,0.5);"></span>
-            <span><strong>3</strong> backlinks en cours</span>
+            <span><strong id="taskBacklinks">3</strong> backlinks en cours</span>
           </div>
           <div class="live-progress">
             <div class="live-progress-label">
@@ -1471,6 +1471,25 @@
   }
 
   setTimeout(animateStep, 1500);
+})();
+
+// Nombres aléatoires (4-8) qui changent tous les 6 jours
+(function() {
+  var daysSinceEpoch = Math.floor(Date.now() / 86400000);
+  var period = Math.floor(daysSinceEpoch / 6);
+
+  function seededRandom(seed) {
+    var x = Math.sin(seed) * 10000;
+    return x - Math.floor(x);
+  }
+
+  function randomBetween(min, max, seed) {
+    return min + Math.floor(seededRandom(seed) * (max - min + 1));
+  }
+
+  document.getElementById('taskSeo').textContent = randomBetween(4, 8, period * 3 + 1);
+  document.getElementById('taskOffsite').textContent = randomBetween(4, 8, period * 3 + 2);
+  document.getElementById('taskBacklinks').textContent = randomBetween(4, 8, period * 3 + 3);
 })();
 
 function toggleGarantie() {
