@@ -737,7 +737,9 @@
   }
 
   @media (max-width: 768px) {
-    .topbar { padding: 12px 20px; }
+    .topbar { padding: 12px 20px; flex-wrap: wrap; gap: 8px; }
+    .topbar-actions { flex-wrap: wrap; gap: 8px; width: 100%; justify-content: center; }
+    .topbar-btn { font-size: 12px; padding: 6px 12px; }
     .hero { padding: 40px 20px 30px; }
     .hero h1 { font-size: 30px; }
     .hero-stats { flex-wrap: wrap; gap: 20px; }
@@ -1100,7 +1102,8 @@
     </div>
     <div class="topbar-actions">
       <a href="https://wa.me/message/F4D2NDYBFVCTK1" class="topbar-btn">💬 WhatsApp</a>
-      <a href="https://alti-web.fr/contact-agence-seo/" class="topbar-btn primary">Contacter Benoit & Anne-Charlotte Hubsch</a>
+      <a href="javascript:void(0)" onclick="openContactPopup()" class="topbar-btn primary">Contacter Benoit & Anne-Charlotte Hubsch</a>
+      <a href="javascript:void(0)" onclick="openRappelPopup()" class="topbar-btn" style="border-color:var(--accent-orange);color:var(--accent-orange);">📞 Je souhaite être rappelé</a>
     </div>
   </header>
 
@@ -1782,6 +1785,126 @@ function sendHandiUrl() {
     btn.textContent = 'Envoyer';
   });
 }
+</script>
+
+<!-- ═══ POPUP CONTACT EMAILJS ═══ -->
+<div id="contactPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;backdrop-filter:blur(4px)">
+  <div style="background:var(--bg-secondary, #1e1e2e);border-radius:16px;padding:32px;max-width:460px;width:90%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.08)">
+    <button onclick="closeContactPopup()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:var(--text-secondary,#999);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1">&times;</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:48px;margin-bottom:12px">✉️</div>
+      <h3 style="color:var(--text-primary,#fff);font-size:1.1rem;margin:0">Contacter Benoit & Anne-Charlotte Hubsch</h3>
+    </div>
+    <p style="color:var(--text-secondary,#aaa);font-size:0.9rem;text-align:center;margin-bottom:20px">Envoyez-nous votre message, nous vous répondons sous 2h !</p>
+    <input id="contactName" type="text" placeholder="Votre nom" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px">
+    <input id="contactEmail" type="email" placeholder="Votre email" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px">
+    <textarea id="contactMessage" placeholder="Votre message..." rows="4" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:16px;resize:vertical;font-family:inherit"></textarea>
+    <button id="contactSubmitBtn" onclick="sendContactMessage()" style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent,#4F8CFF),#3a6fd8);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;transition:opacity 0.2s">Envoyer</button>
+    <p id="contactMsg" style="text-align:center;margin-top:12px;font-size:0.85rem;display:none"></p>
+  </div>
+</div>
+
+<!-- ═══ POPUP JE SOUHAITE ÊTRE RAPPELÉ ═══ -->
+<div id="rappelPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;backdrop-filter:blur(4px)">
+  <div style="background:linear-gradient(135deg, #1a2a4a 0%, #1e2d4f 50%, #172040 100%);border-radius:16px;padding:36px;max-width:520px;width:90%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(251,146,60,0.2)">
+    <button onclick="closeRappelPopup()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:var(--text-secondary,#999);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1">&times;</button>
+    <div style="text-align:center;margin-bottom:24px">
+      <div style="font-size:48px;margin-bottom:12px">📞</div>
+      <h3 style="color:var(--text-primary,#fff);font-size:1.2rem;margin:0;font-family:'Playfair Display',serif">Contact et support</h3>
+    </div>
+    <div style="color:var(--text-secondary,#aaa);font-size:0.9rem;line-height:1.8">
+      <p style="margin-bottom:16px">Comme convenu au début de notre collaboration et validé lors de la création de votre projet, mon handicap ne me permet malheureusement pas d'assurer de suivi ou d'assistance par téléphone.</p>
+      <p style="margin-bottom:16px">Cependant, je reste à votre entière disposition pour vous accompagner ! Vous pouvez m'envoyer toutes vos questions directement par écrit :</p>
+      <ul style="list-style:none;padding:0;margin:0 0 20px 0;display:flex;flex-direction:column;gap:10px">
+        <li style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(79,140,255,0.08);border-radius:10px;color:var(--text-primary,#fff);font-size:0.9rem">✉️ Via la messagerie (réponse sous 2h)</li>
+        <li style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(52,211,153,0.08);border-radius:10px;color:var(--text-primary,#fff);font-size:0.9rem">📧 Par le support WhatsApp</li>
+        <li style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(167,139,250,0.08);border-radius:10px;color:var(--text-primary,#fff);font-size:0.9rem">📋 Envoi de mes actions toutes les semaines ou sous 5-10 jours ouvrés max</li>
+        <li style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:rgba(251,146,60,0.08);border-radius:10px;color:var(--text-primary,#fff);font-size:0.9rem">📊 Demandez un point stratégie plus bas, un point résultats, ce qui est prévu sur les 2 prochaines semaines...</li>
+      </ul>
+      <div style="background:rgba(52,211,153,0.08);border-left:3px solid var(--accent-green,#34d399);border-radius:0 10px 10px 0;padding:14px 18px;color:var(--accent-green,#34d399);font-size:0.9rem;font-weight:500;line-height:1.6">
+        Je vous réponds avec plaisir hyper rapidement ! 😊
+      </div>
+    </div>
+    <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+      <a href="https://wa.me/message/F4D2NDYBFVCTK1" target="_blank" style="flex:1;min-width:140px;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#25D366,#128C7E);color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer;text-align:center;text-decoration:none">💬 WhatsApp</a>
+      <button onclick="closeRappelPopup();openContactPopup();" style="flex:1;min-width:140px;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent,#4F8CFF),#3a6fd8);color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer">✉️ Envoyer un message</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── POPUP CONTACT ───
+function openContactPopup() {
+  document.getElementById('contactName').value = '';
+  document.getElementById('contactEmail').value = '';
+  document.getElementById('contactMessage').value = '';
+  document.getElementById('contactMsg').style.display = 'none';
+  document.getElementById('contactSubmitBtn').disabled = false;
+  document.getElementById('contactSubmitBtn').textContent = 'Envoyer';
+  document.getElementById('contactPopup').style.display = 'flex';
+}
+
+function closeContactPopup() {
+  document.getElementById('contactPopup').style.display = 'none';
+}
+
+document.getElementById('contactPopup').addEventListener('click', function(e) {
+  if (e.target === this) closeContactPopup();
+});
+
+function sendContactMessage() {
+  var name = document.getElementById('contactName').value.trim();
+  var email = document.getElementById('contactEmail').value.trim();
+  var message = document.getElementById('contactMessage').value.trim();
+  var msg = document.getElementById('contactMsg');
+  var btn = document.getElementById('contactSubmitBtn');
+
+  if (!name || !email || !message) {
+    msg.style.display = 'block';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Veuillez remplir tous les champs.';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    msg.style.display = 'block';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Veuillez entrer une adresse email valide.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+  msg.style.display = 'none';
+
+  emailjs.send('service_12wtkng', 'template_tib1gk7', {
+    name: name + ' (' + email + ') — Message : ' + message
+  }).then(function() {
+    msg.style.display = 'block';
+    msg.style.color = '#34d399';
+    msg.textContent = 'Message envoyé avec succès !';
+    btn.textContent = 'Envoyé !';
+    setTimeout(closeContactPopup, 2000);
+  }, function(err) {
+    msg.style.display = 'block';
+    msg.style.color = '#f87171';
+    msg.textContent = "Erreur lors de l'envoi. Réessayez.";
+    btn.disabled = false;
+    btn.textContent = 'Envoyer';
+  });
+}
+
+// ─── POPUP RAPPEL ───
+function openRappelPopup() {
+  document.getElementById('rappelPopup').style.display = 'flex';
+}
+
+function closeRappelPopup() {
+  document.getElementById('rappelPopup').style.display = 'none';
+}
+
+document.getElementById('rappelPopup').addEventListener('click', function(e) {
+  if (e.target === this) closeRappelPopup();
+});
 </script>
 </body>
 </html>
