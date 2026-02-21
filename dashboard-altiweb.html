@@ -913,6 +913,47 @@
     flex-shrink: 0;
   }
 
+  /* ─── STICKER RDV ROND ─── */
+  .rdv-sticker {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 200;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent-orange), #e67e22);
+    border: 2px solid rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(251,146,60,0.4);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    line-height: 1.2;
+    text-decoration: none;
+    animation: rdvBounce 3s ease-in-out infinite;
+  }
+
+  .rdv-sticker:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 28px rgba(251,146,60,0.6);
+  }
+
+  @keyframes rdvBounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+
+  .rdv-sticker:hover {
+    animation: none;
+    transform: scale(1.1);
+  }
+
   /* ─── MARKETING BLOCK ─── */
   .marketing-card {
     background: var(--bg-card);
@@ -1092,6 +1133,11 @@
   </a>
 </nav>
 
+<!-- ═══ STICKER RDV ROND ═══ -->
+<div class="rdv-sticker" onclick="openRdvPopup()">
+  RDV dans<br>vos locaux
+</div>
+
 <div class="page-wrapper">
 
   <!-- ═══ TOP BAR ═══ -->
@@ -1141,9 +1187,23 @@
             <span class="live-dot" style="width:6px;height:6px;"></span>
             <span><strong id="taskOffsite">6</strong> tâches off-site</span>
           </div>
-          <div class="live-tasks-sub">
-            <span class="live-dot" style="width:6px;height:6px;background:var(--accent-purple);box-shadow:0 0 8px rgba(167,139,250,0.5);"></span>
-            <span><strong id="taskBacklinks">3</strong> backlinks en cours</span>
+          <div class="live-tasks-sub" style="flex-direction:column;align-items:stretch;gap:6px;padding-left:18px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="live-dot" style="width:6px;height:6px;background:var(--accent-purple);box-shadow:0 0 8px rgba(167,139,250,0.5);"></span>
+              <span><strong id="taskBacklinks">3</strong> backlinks en cours</span>
+            </div>
+            <div class="live-progress-bar" style="height:4px;">
+              <div class="live-progress-fill" id="backlinksProgressFill" style="width:0%;background:linear-gradient(90deg,var(--accent-purple),var(--accent));"></div>
+            </div>
+          </div>
+          <div class="live-tasks-sub" style="flex-direction:column;align-items:stretch;gap:6px;padding-left:18px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="live-dot" style="width:6px;height:6px;background:var(--accent-red);box-shadow:0 0 8px rgba(248,113,113,0.5);"></span>
+              <span><strong id="taskDesaveux">3</strong> liens négatifs en cours de désaveux</span>
+            </div>
+            <div class="live-progress-bar" style="height:4px;">
+              <div class="live-progress-fill" id="desaveuxProgressFill" style="width:0%;background:linear-gradient(90deg,var(--accent-red),var(--accent-orange));"></div>
+            </div>
           </div>
           <div class="live-progress">
             <div class="live-progress-label">
@@ -1680,10 +1740,10 @@
   setTimeout(animateStep, 1500);
 })();
 
-// Nombres aléatoires (4-8) qui changent tous les 6 jours
+// Nombres aléatoires qui changent tous les 7 jours
 (function() {
   var daysSinceEpoch = Math.floor(Date.now() / 86400000);
-  var period = Math.floor(daysSinceEpoch / 6);
+  var period = Math.floor(daysSinceEpoch / 7);
 
   function seededRandom(seed) {
     var x = Math.sin(seed) * 10000;
@@ -1694,9 +1754,23 @@
     return min + Math.floor(seededRandom(seed) * (max - min + 1));
   }
 
-  document.getElementById('taskSeo').textContent = randomBetween(4, 8, period * 3 + 1);
-  document.getElementById('taskOffsite').textContent = randomBetween(4, 8, period * 3 + 2);
-  document.getElementById('taskBacklinks').textContent = randomBetween(4, 8, period * 3 + 3);
+  document.getElementById('taskSeo').textContent = randomBetween(4, 8, period * 5 + 1);
+  document.getElementById('taskOffsite').textContent = randomBetween(4, 8, period * 5 + 2);
+
+  // Backlinks et désaveux : 2 à 10, tous les 7 jours
+  var backlinksCount = randomBetween(2, 10, period * 5 + 3);
+  var desaveuxCount = randomBetween(2, 10, period * 5 + 4);
+  document.getElementById('taskBacklinks').textContent = backlinksCount;
+  document.getElementById('taskDesaveux').textContent = desaveuxCount;
+
+  // Barres de progression aléatoires pour backlinks et désaveux
+  var backlinksPct = randomBetween(15, 85, period * 5 + 5);
+  var desaveuxPct = randomBetween(15, 85, period * 5 + 6);
+
+  setTimeout(function() {
+    document.getElementById('backlinksProgressFill').style.width = backlinksPct + '%';
+    document.getElementById('desaveuxProgressFill').style.width = desaveuxPct + '%';
+  }, 800);
 })();
 
 function toggleGarantie() {
@@ -1859,6 +1933,17 @@ function sendHandiUrl() {
 }
 </script>
 
+<!-- ═══ POPUP RDV LOCAUX ═══ -->
+<div id="rdvPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;backdrop-filter:blur(4px)">
+  <div style="background:linear-gradient(135deg, #1a2a4a 0%, #1e2d4f 50%, #172040 100%);border-radius:16px;padding:36px;max-width:420px;width:90%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(251,146,60,0.2);text-align:center">
+    <button onclick="closeRdvPopup()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:var(--text-secondary,#999);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1">&times;</button>
+    <div style="font-size:48px;margin-bottom:16px">📍</div>
+    <h3 style="color:var(--text-primary,#fff);font-size:1.15rem;margin:0 0 16px;font-family:'Playfair Display',serif">RDV dans vos locaux</h3>
+    <p style="color:var(--text-secondary,#aaa);font-size:0.95rem;line-height:1.7;margin-bottom:24px">Possible avec le <strong style="color:var(--accent-orange,#FB923C)">forfait 3</strong>.</p>
+    <button onclick="closeRdvPopup()" style="width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent-orange,#FB923C),#e67e22);color:#fff;font-size:1rem;font-weight:600;cursor:pointer">Fermer</button>
+  </div>
+</div>
+
 <!-- ═══ POPUP LIMITE SERVICES ═══ -->
 <div id="serviceLimitPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;backdrop-filter:blur(4px)">
   <div style="background:linear-gradient(135deg, #1a2a4a 0%, #1e2d4f 50%, #172040 100%);border-radius:16px;padding:36px;max-width:480px;width:90%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(52,211,153,0.2)">
@@ -1992,6 +2077,19 @@ function closeRappelPopup() {
 
 document.getElementById('rappelPopup').addEventListener('click', function(e) {
   if (e.target === this) closeRappelPopup();
+});
+
+// ─── POPUP RDV LOCAUX ───
+function openRdvPopup() {
+  document.getElementById('rdvPopup').style.display = 'flex';
+}
+
+function closeRdvPopup() {
+  document.getElementById('rdvPopup').style.display = 'none';
+}
+
+document.getElementById('rdvPopup').addEventListener('click', function(e) {
+  if (e.target === this) closeRdvPopup();
 });
 </script>
 </body>
