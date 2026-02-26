@@ -1,3 +1,5 @@
 .claude/
 .env
 sites_traites.json
+prospection_*.txt
+rapport_*.txt

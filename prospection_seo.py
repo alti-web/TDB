@@ -17,6 +17,17 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # =============================================
+# LOG FICHIER TXT (au fur et à mesure)
+# =============================================
+LOG_FILE = f"prospection_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
+
+def log(message):
+    """Affiche dans la console ET écrit dans le fichier .txt"""
+    print(message)
+    with open(LOG_FILE, "a", encoding="utf-8") as f:
+        f.write(f"[{datetime.now().strftime('%H:%M:%S')}] {message}\n")
+
+# =============================================
 # CONFIG
 # =============================================
 MEMORY_FILE = "sites_traites.json"
@@ -148,16 +159,16 @@ def est_plateforme(driver, url):
     """Détection complète : domaine + URL + contenu de la page"""
     # Check 1 : domaine connu
     if est_plateforme_par_domaine(url):
-        print(f"  🚫 PLATEFORME DÉTECTÉE (domaine connu) : {get_domaine(url)} — SKIP")
+        log(f"  🚫 PLATEFORME DÉTECTÉE (domaine connu) : {get_domaine(url)} — SKIP")
         return True
     # Check 2 : pattern dans l'URL
     if est_plateforme_par_url(url):
-        print(f"  🚫 PLATEFORME DÉTECTÉE (pattern URL) : {url} — SKIP")
+        log(f"  🚫 PLATEFORME DÉTECTÉE (pattern URL) : {url} — SKIP")
         return True
     # Check 3 : analyse du contenu de la page
     est_plat, raison = detecter_plateforme_par_contenu(driver)
     if est_plat:
-        print(f"  🚫 PLATEFORME DÉTECTÉE (contenu) : {raison} — SKIP")
+        log(f"  🚫 PLATEFORME DÉTECTÉE (contenu) : {raison} — SKIP")
         return True
     return False
 # =============================================
@@ -180,7 +191,7 @@ def deja_traite(url, memoire):
 def marquer_traite(url, memoire):
     memoire.append(url)
     sauvegarder_memoire(memoire)
-    print(f"  💾 Site enregistré en mémoire : {get_domaine(url)}")
+    log(f"  💾 Site enregistré en mémoire : {get_domaine(url)}")
 # =============================================
 # RECHERCHE D'EMAIL SUR LE SITE
 # =============================================
@@ -200,10 +211,10 @@ def extraire_emails_page(driver):
         pass
     return list(emails_trouves)
 def chercher_email_site(driver, url_base):
-    print("  🔍 Recherche d'une adresse email sur le site...")
+    log("  🔍 Recherche d'une adresse email sur le site...")
     emails = extraire_emails_page(driver)
     if emails:
-        print(f"  📧 Email trouvé sur la page courante : {emails[0]}")
+        log(f"  📧 Email trouvé sur la page courante : {emails[0]}")
         return emails[0]
     pages_a_tester = []
     try:
@@ -222,19 +233,19 @@ def chercher_email_site(driver, url_base):
         pass
     for page_url in pages_a_tester[:5]:
         try:
-            print(f"  🔍 Scan de : {page_url}")
+            log(f"  🔍 Scan de : {page_url}")
             driver.get(page_url)
             time.sleep(2)
             emails = extraire_emails_page(driver)
             if emails:
-                print(f"  📧 Email trouvé : {emails[0]}")
+                log(f"  📧 Email trouvé : {emails[0]}")
                 return emails[0]
         except:
             continue
-    print("  ❌ Aucun email trouvé sur le site.")
+    log("  ❌ Aucun email trouvé sur le site.")
     return None
 def envoyer_message_email(destinataire, url_site):
-    print(f"  📤 Envoi du message par email à {destinataire}...")
+    log(f"  📤 Envoi du message par email à {destinataire}...")
     msg = MIMEMultipart()
     msg["From"] = f"Anne Charlotte <{SMTP_FROM}>"
     msg["Reply-To"] = SMTP_FROM
@@ -246,16 +257,16 @@ def envoyer_message_email(destinataire, url_site):
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
-        print(f"  ✅ Email envoyé à {destinataire}")
+        log(f"  ✅ Email envoyé à {destinataire}")
         return True
     except Exception as e:
-        print(f"  ❌ Erreur envoi email : {e}")
+        log(f"  ❌ Erreur envoi email : {e}")
         return False
 # =============================================
 # ÉTAPE 1 : Demander à Claude une idée de recherche
 # =============================================
 def demander_recherche_claude():
-    print("🤖 Demande à Claude une idée de recherche...")
+    log("🤖 Demande à Claude une idée de recherche...")
     response = requests.post(
         "https://api.anthropic.com/v1/messages",
         headers={
@@ -279,10 +290,10 @@ Ne mets pas de guillemets, juste les mots."""
     )
     data = response.json()
     if "content" not in data:
-        print(f"❌ Erreur API Claude : {json.dumps(data, indent=2)}")
+        log(f"❌ Erreur API Claude : {json.dumps(data, indent=2)}")
         sys.exit(1)
     recherche = data["content"][0]["text"].strip().strip('"')
-    print(f"🔍 Recherche suggérée par Claude : {recherche}")
+    log(f"🔍 Recherche suggérée par Claude : {recherche}")
     return recherche
 # =============================================
 # ÉTAPE 2 : Remplir le formulaire
@@ -314,44 +325,48 @@ def remplir_formulaire(driver):
             if tag == "textarea":
                 champ.clear()
                 champ.send_keys(MESSAGE)
-                print(f"  ✅ Message rempli (textarea: {name})")
+                log(f"  ✅ Message rempli (textarea: {name})")
                 champs_remplis += 1
             elif any(m in identifiant for m in ["prénom", "prenom", "first"]):
                 champ.clear()
                 champ.send_keys(PRENOM)
-                print(f"  ✅ Prénom rempli ({name})")
+                log(f"  ✅ Prénom rempli ({name})")
                 champs_remplis += 1
             elif any(m in identifiant for m in ["nom", "last", "surname"]) and "prenom" not in identifiant and "prénom" not in identifiant:
                 champ.clear()
                 champ.send_keys(NOM)
-                print(f"  ✅ Nom rempli ({name})")
+                log(f"  ✅ Nom rempli ({name})")
                 champs_remplis += 1
             elif any(m in identifiant for m in ["email", "mail", "courriel"]):
                 champ.clear()
                 champ.send_keys(EMAIL)
-                print(f"  ✅ Email rempli ({name})")
+                log(f"  ✅ Email rempli ({name})")
                 champs_remplis += 1
             elif any(m in identifiant for m in ["tel", "phone", "téléphone", "telephone", "mobile"]):
                 champ.clear()
                 champ.send_keys(TELEPHONE)
-                print(f"  ✅ Téléphone rempli ({name})")
+                log(f"  ✅ Téléphone rempli ({name})")
                 champs_remplis += 1
             elif any(m in identifiant for m in ["message", "commentaire", "demande", "description"]):
                 champ.clear()
                 champ.send_keys(MESSAGE)
-                print(f"  ✅ Message rempli ({name})")
+                log(f"  ✅ Message rempli ({name})")
                 champs_remplis += 1
             else:
                 if typ in ("text", "") and not champ.get_attribute("value"):
-                    print(f"  ⚠️ Champ non reconnu ignoré : name={name}, placeholder={placeholder}")
+                    log(f"  ⚠️ Champ non reconnu ignoré : name={name}, placeholder={placeholder}")
         except Exception as e:
-            print(f"  ❌ Erreur sur {name}: {e}")
+            log(f"  ❌ Erreur sur {name}: {e}")
     return champs_remplis > 0
 # =============================================
 # MAIN
 # =============================================
+log(f"{'='*60}")
+log(f"  PROSPECTION SEO — {datetime.now().strftime('%d/%m/%Y %H:%M')}")
+log(f"  Fichier log : {LOG_FILE}")
+log(f"{'='*60}\n")
 memoire = charger_memoire()
-print(f"Sites déjà traités : {len(memoire)}\n")
+log(f"Sites déjà traités : {len(memoire)}\n")
 recherche = demander_recherche_claude()
 options = Options()
 options.add_argument("--headless=new")
@@ -375,7 +390,7 @@ try:
     max_recherches = 5
     while len(liens_bruts) < NB_SITES_CIBLE * 2 and nb_recherches < max_recherches:
         if nb_recherches > 0:
-            print(f"\n🔄 Recherche supplémentaire ({nb_recherches + 1}/{max_recherches})...")
+            log(f"\n🔄 Recherche supplémentaire ({nb_recherches + 1}/{max_recherches})...")
             recherche = demander_recherche_claude()
             query = quote_plus(recherche)
             driver.get(f"https://www.google.fr/search?q={query}&num=20")
@@ -392,31 +407,31 @@ try:
                 if href not in liens_bruts and not deja_traite(href, memoire):
                     # Pré-filtrage rapide par domaine (sans charger la page)
                     if est_plateforme_par_domaine(href):
-                        print(f"  🚫 PLATEFORME (domaine) : {get_domaine(href)} — SKIP")
+                        log(f"  🚫 PLATEFORME (domaine) : {get_domaine(href)} — SKIP")
                         continue
                     if est_plateforme_par_url(href):
-                        print(f"  🚫 PLATEFORME (URL pattern) : {href} — SKIP")
+                        log(f"  🚫 PLATEFORME (URL pattern) : {href} — SKIP")
                         continue
                     liens_bruts.append(href)
         nb_recherches += 1
-    print(f"\nLiens candidats après pré-filtrage : {len(liens_bruts)}")
+    log(f"\nLiens candidats après pré-filtrage : {len(liens_bruts)}")
     # Rapport de suivi
     rapport = []
     sites_traites_count = 0
     sites_plateforme_count = 0
     for i, url in enumerate(liens_bruts, 1):
         if sites_traites_count >= NB_SITES_CIBLE:
-            print(f"\n✅ Objectif atteint : {NB_SITES_CIBLE} vrais sites traités !")
+            log(f"\n✅ Objectif atteint : {NB_SITES_CIBLE} vrais sites traités !")
             break
-        print(f"\n{'='*60}")
-        print(f"[{sites_traites_count + 1}/{NB_SITES_CIBLE}] (lien {i}/{len(liens_bruts)}) Visite de : {url}")
-        print(f"{'='*60}")
+        log(f"\n{'='*60}")
+        log(f"[{sites_traites_count + 1}/{NB_SITES_CIBLE}] (lien {i}/{len(liens_bruts)}) Visite de : {url}")
+        log(f"{'='*60}")
         driver.get(url)
         time.sleep(3)
         # Détection plateforme par contenu (après chargement de la page)
         est_plat, raison = detecter_plateforme_par_contenu(driver)
         if est_plat:
-            print(f"  🚫 PLATEFORME DÉTECTÉE (contenu) : {raison} — SKIP")
+            log(f"  🚫 PLATEFORME DÉTECTÉE (contenu) : {raison} — SKIP")
             sites_plateforme_count += 1
             rapport.append({"url": url, "statut": f"🚫 Plateforme ignorée ({raison})"})
             continue
@@ -431,12 +446,12 @@ try:
                 contact_url = a.get_attribute("href")
                 break
         if contact_url:
-            print(f"  Page contact : {contact_url}")
+            log(f"  Page contact : {contact_url}")
             driver.get(contact_url)
             time.sleep(3)
             forms = driver.find_elements(By.CSS_SELECTOR, "form")
             if forms:
-                print("  Formulaire détecté — remplissage en cours...")
+                log("  Formulaire détecté — remplissage en cours...")
                 success = remplir_formulaire(driver)
                 if success:
                     formulaire_soumis = False
@@ -459,17 +474,17 @@ try:
                                 pass
                         if submit:
                             submit.click()
-                            print("  🚀 Formulaire soumis !")
+                            log("  🚀 Formulaire soumis !")
                             time.sleep(3)
                             formulaire_soumis = True
                             marquer_traite(url, memoire)
                             rapport.append({"url": url, "statut": "✅ Formulaire soumis"})
                         else:
-                            print("  ❌ Bouton submit non trouvé")
+                            log("  ❌ Bouton submit non trouvé")
                     except Exception as e:
-                        print(f"  ❌ Erreur soumission : {e}")
+                        log(f"  ❌ Erreur soumission : {e}")
                     if not formulaire_soumis:
-                        print("  🔄 Fallback : recherche d'un email sur le site...")
+                        log("  🔄 Fallback : recherche d'un email sur le site...")
                         driver.get(url)
                         time.sleep(3)
                         email_trouve = chercher_email_site(driver, url)
@@ -482,7 +497,7 @@ try:
                         else:
                             rapport.append({"url": url, "statut": "❌ Formulaire non soumis et aucun email trouvé"})
                 else:
-                    print("  🔄 Remplissage échoué, recherche d'un email sur le site...")
+                    log("  🔄 Remplissage échoué, recherche d'un email sur le site...")
                     driver.get(url)
                     time.sleep(3)
                     email_trouve = chercher_email_site(driver, url)
@@ -495,7 +510,7 @@ try:
                     else:
                         rapport.append({"url": url, "statut": "❌ Remplissage formulaire échoué et aucun email trouvé"})
             else:
-                print("  Aucun formulaire détecté — recherche d'un email...")
+                log("  Aucun formulaire détecté — recherche d'un email...")
                 email_trouve = chercher_email_site(driver, url)
                 if email_trouve:
                     if envoyer_message_email(email_trouve, url):
@@ -506,7 +521,7 @@ try:
                 else:
                     rapport.append({"url": url, "statut": "❌ Pas de formulaire ni d'email trouvé"})
         else:
-            print("  Aucune page contact trouvée — recherche d'un email...")
+            log("  Aucune page contact trouvée — recherche d'un email...")
             email_trouve = chercher_email_site(driver, url)
             if email_trouve:
                 if envoyer_message_email(email_trouve, url):
@@ -555,17 +570,18 @@ RÉSUMÉ :
             server.starttls()
             server.login(SMTP_USER, SMTP_PASSWORD)
             server.send_message(msg)
-        print(f"\n📧 Rapport envoyé à {RAPPORT_EMAIL}")
+        log(f"\n📧 Rapport envoyé à {RAPPORT_EMAIL}")
     except Exception as e:
-        print(f"\n❌ Erreur envoi email : {e}")
+        log(f"\n❌ Erreur envoi email : {e}")
         rapport_file = f"rapport_{datetime.now().strftime('%Y%m%d_%H%M%S')}.txt"
         with open(rapport_file, "w", encoding="utf-8") as f:
             f.write(body)
-        print(f"📄 Rapport sauvegardé localement : {rapport_file}")
-        print("\n📋 Rapport affiché ci-dessous :\n")
-        print(body)
+        log(f"📄 Rapport sauvegardé localement : {rapport_file}")
+        log("\n📋 Rapport affiché ci-dessous :\n")
+        log(body)
 envoyer_rapport(rapport, recherche)
-print(f"\n{'='*60}")
-print(f"Terminé ! {sites_traites_count} vrais sites traités, {sites_plateforme_count} plateformes ignorées")
-print(f"Total sites en mémoire : {len(memoire)}")
-print(f"{'='*60}")
+log(f"\n{'='*60}")
+log(f"Terminé ! {sites_traites_count} vrais sites traités, {sites_plateforme_count} plateformes ignorées")
+log(f"Total sites en mémoire : {len(memoire)}")
+log(f"📄 Log complet sauvegardé dans : {LOG_FILE}")
+log(f"{'='*60}")
