@@ -2161,6 +2161,18 @@ function deleteVocalRecording() {
   document.getElementById('vocalIdle').style.display = 'block';
 }
 
+function downloadVocal() {
+  if (!vocalBlob) return;
+  var url = URL.createObjectURL(vocalBlob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'message-vocal.webm';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+}
+
 // ─── POPUP CONTACT ───
 function openContactPopup() {
   document.getElementById('contactName').value = '';
@@ -2212,19 +2224,34 @@ function sendContactMessage() {
   btn.textContent = 'Envoi en cours...';
   msg.style.display = 'none';
 
-  function doSendEmail(vocalUrl) {
-    var fullMessage = name + ' (' + email + ') — Message : ' + message;
-    if (vocalUrl) {
-      fullMessage += '\n\n🎙️ Message vocal joint — Écoutez ici : ' + vocalUrl;
+  var fullMessage = name + ' (' + email + ') — Message : ' + (message || '(message vocal uniquement)');
+  var hasVocal = !!vocalBlob;
+  if (hasVocal) {
+    fullMessage += '\n\n🎙️ Un message vocal a été enregistré par le client. Il sera envoyé via WhatsApp.';
+  }
+
+  emailjs.send('service_12wtkng', 'template_tib1gk7', {
+    name: fullMessage
+  }).then(function() {
+    if (hasVocal) {
+      // Email sent — now show vocal send options
+      msg.style.display = 'block';
+      msg.style.color = '#34d399';
+      btn.style.display = 'none';
+      msg.innerHTML = '<div style="text-align:center">' +
+        '<div style="font-size:1.1rem;margin-bottom:12px">✅ Message texte envoyé !</div>' +
+        '<div style="color:#fb923c;font-size:0.9rem;margin-bottom:14px">Envoyez maintenant votre vocal :</div>' +
+        '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">' +
+          '<a href="https://wa.me/message/F4D2NDYBFVCTK1" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;background:#25D366;color:#fff;font-weight:600;font-size:0.9rem;text-decoration:none">💬 Envoyer via WhatsApp</a>' +
+          '<button onclick="downloadVocal()" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;border-radius:10px;border:1px solid rgba(79,140,255,0.3);background:rgba(79,140,255,0.1);color:var(--accent,#4F8CFF);font-weight:600;font-size:0.9rem;cursor:pointer">⬇️ Télécharger le vocal</button>' +
+        '</div></div>';
+    } else {
+      msg.style.display = 'block';
+      msg.style.color = '#34d399';
+      msg.textContent = 'Message envoyé avec succès !';
+      btn.textContent = 'Envoyé !';
+      setTimeout(closeContactPopup, 2000);
     }
-    emailjs.send('service_12wtkng', 'template_tib1gk7', {
-      name: fullMessage
-    }).then(function() {
-    msg.style.display = 'block';
-    msg.style.color = '#34d399';
-    msg.textContent = 'Message envoyé avec succès !';
-    btn.textContent = 'Envoyé !';
-    setTimeout(closeContactPopup, 2000);
   }, function(err) {
     msg.style.display = 'block';
     msg.style.color = '#f87171';
@@ -2232,67 +2259,6 @@ function sendContactMessage() {
     btn.disabled = false;
     btn.textContent = 'Envoyer';
   });
-  } // end doSendEmail
-
-  // If vocal recorded, upload then send email with link
-  if (vocalBlob) {
-    btn.textContent = 'Upload du vocal...';
-
-    function tryUploadServices(blob) {
-      // Service 1: tmpfiles.org
-      var fd1 = new FormData();
-      fd1.append('file', blob, 'vocal-message.webm');
-      return fetch('https://tmpfiles.org/api/v1/upload', { method: 'POST', body: fd1 })
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data.status === 'success' && data.data && data.data.url) {
-            // Convert page URL to direct download URL
-            return data.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
-          }
-          throw new Error('tmpfiles failed');
-        })
-        .catch(function() {
-          // Service 2: file.io
-          var fd2 = new FormData();
-          fd2.append('file', blob, 'vocal-message.webm');
-          return fetch('https://file.io', { method: 'POST', body: fd2 })
-            .then(function(r) { return r.json(); })
-            .then(function(data) {
-              if (data.success && data.link) return data.link;
-              throw new Error('file.io failed');
-            });
-        })
-        .catch(function() {
-          // Service 3: catbox.moe
-          var fd3 = new FormData();
-          fd3.append('reqtype', 'fileupload');
-          fd3.append('fileToUpload', blob, 'vocal-message.webm');
-          return fetch('https://catbox.moe/user/api.php', { method: 'POST', body: fd3 })
-            .then(function(r) { return r.text(); })
-            .then(function(url) {
-              if (url && url.startsWith('https://')) return url;
-              throw new Error('catbox failed');
-            });
-        });
-    }
-
-    tryUploadServices(vocalBlob)
-      .then(function(url) {
-        doSendEmail(url);
-      })
-      .catch(function() {
-        // All uploads failed — send text, then show WhatsApp vocal option
-        doSendEmail(null);
-        setTimeout(function() {
-          msg.style.display = 'block';
-          msg.style.color = '#fb923c';
-          msg.innerHTML = 'Message texte envoyé ! Le vocal n\'a pas pu être joint.<br><a href="https://wa.me/message/F4D2NDYBFVCTK1" target="_blank" style="color:#25D366;font-weight:600;text-decoration:underline">Envoyer le vocal via WhatsApp →</a>';
-          btn.textContent = 'Envoyé (sans vocal)';
-        }, 100);
-      });
-  } else {
-    doSendEmail(null);
-  }
 }
 
 // ─── POPUP RAPPEL ───
