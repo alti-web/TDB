@@ -2025,7 +2025,33 @@ function sendHandiUrl() {
     <p style="color:var(--text-secondary,#aaa);font-size:0.9rem;text-align:center;margin-bottom:20px">Envoyez-nous votre message, nous vous répondons sous 2h !</p>
     <input id="contactName" type="text" placeholder="Votre nom" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px">
     <input id="contactEmail" type="email" placeholder="Votre email" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px">
-    <textarea id="contactMessage" placeholder="Votre message..." rows="4" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:16px;resize:vertical;font-family:inherit"></textarea>
+    <textarea id="contactMessage" placeholder="Votre message..." rows="4" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px;resize:vertical;font-family:inherit"></textarea>
+    <!-- VOCAL RECORDER -->
+    <div id="vocalSection" style="margin-bottom:16px">
+      <div id="vocalIdle">
+        <button id="vocalStartBtn" onclick="startVocalRecording()" style="width:100%;padding:12px;border-radius:10px;border:1px dashed rgba(255,255,255,0.15);background:rgba(79,140,255,0.06);color:var(--text-secondary,#aaa);font-size:0.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.2s">
+          <span style="font-size:1.2rem">🎙️</span> Enregistrer un message vocal (optionnel)
+        </button>
+      </div>
+      <div id="vocalRecording" style="display:none;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:14px;text-align:center">
+        <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px">
+          <span id="vocalDot" style="width:12px;height:12px;background:#ef4444;border-radius:50%;display:inline-block;animation:vocalPulse 1s infinite"></span>
+          <span style="color:#ef4444;font-weight:600;font-size:0.95rem">Enregistrement en cours</span>
+          <span id="vocalTimer" style="color:#ef4444;font-size:0.9rem;font-variant-numeric:tabular-nums">0:00</span>
+        </div>
+        <button onclick="stopVocalRecording()" style="padding:8px 24px;border-radius:8px;border:none;background:#ef4444;color:#fff;font-size:0.9rem;font-weight:600;cursor:pointer">Arrêter</button>
+      </div>
+      <div id="vocalPreview" style="display:none;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:10px;padding:14px">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+          <span style="font-size:1.1rem">🎧</span>
+          <span style="color:var(--accent-green,#34d399);font-weight:500;font-size:0.9rem">Vocal enregistré</span>
+          <span id="vocalDuration" style="color:var(--text-secondary,#aaa);font-size:0.85rem"></span>
+        </div>
+        <audio id="vocalAudio" controls style="width:100%;height:36px;margin-bottom:8px;border-radius:6px"></audio>
+        <button onclick="deleteVocalRecording()" style="padding:6px 16px;border-radius:8px;border:1px solid rgba(239,68,68,0.3);background:transparent;color:#f87171;font-size:0.85rem;cursor:pointer">Supprimer le vocal</button>
+      </div>
+    </div>
+    <style>@keyframes vocalPulse{0%,100%{opacity:1}50%{opacity:0.3}}</style>
     <button id="contactSubmitBtn" onclick="sendContactMessage()" style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent,#4F8CFF),#3a6fd8);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;transition:opacity 0.2s">Envoyer</button>
     <p id="contactMsg" style="text-align:center;margin-top:12px;font-size:0.85rem;display:none"></p>
   </div>
@@ -2060,6 +2086,81 @@ function sendHandiUrl() {
 </div>
 
 <script>
+// ─── VOCAL RECORDING ───
+var vocalMediaRecorder = null;
+var vocalChunks = [];
+var vocalBlob = null;
+var vocalBase64 = null;
+var vocalTimerInterval = null;
+var vocalStartTime = 0;
+
+function startVocalRecording() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    alert("Votre navigateur ne supporte pas l'enregistrement vocal.");
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({ audio: true }).then(function(stream) {
+    vocalChunks = [];
+    vocalBlob = null;
+    vocalBase64 = null;
+    var options = {};
+    if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+      options.mimeType = 'audio/webm;codecs=opus';
+    } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+      options.mimeType = 'audio/webm';
+    }
+    vocalMediaRecorder = new MediaRecorder(stream, options);
+    vocalMediaRecorder.ondataavailable = function(e) {
+      if (e.data.size > 0) vocalChunks.push(e.data);
+    };
+    vocalMediaRecorder.onstop = function() {
+      stream.getTracks().forEach(function(t) { t.stop(); });
+      vocalBlob = new Blob(vocalChunks, { type: vocalMediaRecorder.mimeType || 'audio/webm' });
+      var url = URL.createObjectURL(vocalBlob);
+      document.getElementById('vocalAudio').src = url;
+      var dur = Math.round((Date.now() - vocalStartTime) / 1000);
+      document.getElementById('vocalDuration').textContent = '(' + Math.floor(dur/60) + ':' + String(dur%60).padStart(2,'0') + ')';
+      // Convert to base64
+      var reader = new FileReader();
+      reader.onloadend = function() {
+        vocalBase64 = reader.result;
+      };
+      reader.readAsDataURL(vocalBlob);
+      document.getElementById('vocalRecording').style.display = 'none';
+      document.getElementById('vocalPreview').style.display = 'block';
+    };
+    vocalMediaRecorder.start(250);
+    vocalStartTime = Date.now();
+    document.getElementById('vocalIdle').style.display = 'none';
+    document.getElementById('vocalRecording').style.display = 'block';
+    document.getElementById('vocalPreview').style.display = 'none';
+    // Timer
+    clearInterval(vocalTimerInterval);
+    vocalTimerInterval = setInterval(function() {
+      var sec = Math.round((Date.now() - vocalStartTime) / 1000);
+      document.getElementById('vocalTimer').textContent = Math.floor(sec/60) + ':' + String(sec%60).padStart(2,'0');
+      if (sec >= 120) stopVocalRecording(); // max 2 min
+    }, 500);
+  }).catch(function(err) {
+    alert("Impossible d'accéder au micro. Vérifiez les permissions de votre navigateur.");
+  });
+}
+
+function stopVocalRecording() {
+  clearInterval(vocalTimerInterval);
+  if (vocalMediaRecorder && vocalMediaRecorder.state !== 'inactive') {
+    vocalMediaRecorder.stop();
+  }
+}
+
+function deleteVocalRecording() {
+  vocalBlob = null;
+  vocalBase64 = null;
+  document.getElementById('vocalAudio').src = '';
+  document.getElementById('vocalPreview').style.display = 'none';
+  document.getElementById('vocalIdle').style.display = 'block';
+}
+
 // ─── POPUP CONTACT ───
 function openContactPopup() {
   document.getElementById('contactName').value = '';
@@ -2068,6 +2169,14 @@ function openContactPopup() {
   document.getElementById('contactMsg').style.display = 'none';
   document.getElementById('contactSubmitBtn').disabled = false;
   document.getElementById('contactSubmitBtn').textContent = 'Envoyer';
+  // Reset vocal
+  deleteVocalRecording();
+  clearInterval(vocalTimerInterval);
+  document.getElementById('vocalRecording').style.display = 'none';
+  document.getElementById('vocalIdle').style.display = 'block';
+  if (vocalMediaRecorder && vocalMediaRecorder.state !== 'inactive') {
+    vocalMediaRecorder.stop();
+  }
   document.getElementById('contactPopup').style.display = 'flex';
 }
 
@@ -2086,10 +2195,10 @@ function sendContactMessage() {
   var msg = document.getElementById('contactMsg');
   var btn = document.getElementById('contactSubmitBtn');
 
-  if (!name || !email || !message) {
+  if (!name || !email || (!message && !vocalBlob)) {
     msg.style.display = 'block';
     msg.style.color = '#f87171';
-    msg.textContent = 'Veuillez remplir tous les champs.';
+    msg.textContent = !message && !vocalBlob ? 'Veuillez écrire un message ou enregistrer un vocal.' : 'Veuillez remplir tous les champs.';
     return;
   }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -2103,9 +2212,14 @@ function sendContactMessage() {
   btn.textContent = 'Envoi en cours...';
   msg.style.display = 'none';
 
-  emailjs.send('service_12wtkng', 'template_tib1gk7', {
-    name: name + ' (' + email + ') — Message : ' + message
-  }).then(function() {
+  function doSendEmail(vocalUrl) {
+    var fullMessage = name + ' (' + email + ') — Message : ' + message;
+    if (vocalUrl) {
+      fullMessage += '\n\n🎙️ Message vocal joint — Écoutez ici : ' + vocalUrl;
+    }
+    emailjs.send('service_12wtkng', 'template_tib1gk7', {
+      name: fullMessage
+    }).then(function() {
     msg.style.display = 'block';
     msg.style.color = '#34d399';
     msg.textContent = 'Message envoyé avec succès !';
@@ -2118,6 +2232,30 @@ function sendContactMessage() {
     btn.disabled = false;
     btn.textContent = 'Envoyer';
   });
+  } // end doSendEmail
+
+  // If vocal recorded, upload it first then send email with link
+  if (vocalBlob) {
+    btn.textContent = 'Upload du vocal...';
+    var formData = new FormData();
+    formData.append('file', vocalBlob, 'vocal-message.webm');
+    fetch('https://file.io', { method: 'POST', body: formData })
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.success && data.link) {
+          doSendEmail(data.link);
+        } else {
+          // Upload failed, send without vocal link
+          doSendEmail(null);
+        }
+      })
+      .catch(function() {
+        // Upload failed, send text only
+        doSendEmail(null);
+      });
+  } else {
+    doSendEmail(null);
+  }
 }
 
 // ─── POPUP RAPPEL ───
