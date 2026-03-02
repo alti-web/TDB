@@ -2234,24 +2234,61 @@ function sendContactMessage() {
   });
   } // end doSendEmail
 
-  // If vocal recorded, upload it first then send email with link
+  // If vocal recorded, upload then send email with link
   if (vocalBlob) {
     btn.textContent = 'Upload du vocal...';
-    var formData = new FormData();
-    formData.append('file', vocalBlob, 'vocal-message.webm');
-    fetch('https://file.io', { method: 'POST', body: formData })
-      .then(function(r) { return r.json(); })
-      .then(function(data) {
-        if (data.success && data.link) {
-          doSendEmail(data.link);
-        } else {
-          // Upload failed, send without vocal link
-          doSendEmail(null);
-        }
+
+    function tryUploadServices(blob) {
+      // Service 1: tmpfiles.org
+      var fd1 = new FormData();
+      fd1.append('file', blob, 'vocal-message.webm');
+      return fetch('https://tmpfiles.org/api/v1/upload', { method: 'POST', body: fd1 })
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data.status === 'success' && data.data && data.data.url) {
+            // Convert page URL to direct download URL
+            return data.data.url.replace('tmpfiles.org/', 'tmpfiles.org/dl/');
+          }
+          throw new Error('tmpfiles failed');
+        })
+        .catch(function() {
+          // Service 2: file.io
+          var fd2 = new FormData();
+          fd2.append('file', blob, 'vocal-message.webm');
+          return fetch('https://file.io', { method: 'POST', body: fd2 })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data.success && data.link) return data.link;
+              throw new Error('file.io failed');
+            });
+        })
+        .catch(function() {
+          // Service 3: catbox.moe
+          var fd3 = new FormData();
+          fd3.append('reqtype', 'fileupload');
+          fd3.append('fileToUpload', blob, 'vocal-message.webm');
+          return fetch('https://catbox.moe/user/api.php', { method: 'POST', body: fd3 })
+            .then(function(r) { return r.text(); })
+            .then(function(url) {
+              if (url && url.startsWith('https://')) return url;
+              throw new Error('catbox failed');
+            });
+        });
+    }
+
+    tryUploadServices(vocalBlob)
+      .then(function(url) {
+        doSendEmail(url);
       })
       .catch(function() {
-        // Upload failed, send text only
+        // All uploads failed — send text, then show WhatsApp vocal option
         doSendEmail(null);
+        setTimeout(function() {
+          msg.style.display = 'block';
+          msg.style.color = '#fb923c';
+          msg.innerHTML = 'Message texte envoyé ! Le vocal n\'a pas pu être joint.<br><a href="https://wa.me/message/F4D2NDYBFVCTK1" target="_blank" style="color:#25D366;font-weight:600;text-decoration:underline">Envoyer le vocal via WhatsApp →</a>';
+          btn.textContent = 'Envoyé (sans vocal)';
+        }, 100);
       });
   } else {
     doSendEmail(null);
