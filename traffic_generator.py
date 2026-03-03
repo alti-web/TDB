@@ -39,7 +39,7 @@ MAX_DELAY = 45   # secondes max entre chaque page
 PAUSE_BETWEEN_VISITS_MIN = 30
 PAUSE_BETWEEN_VISITS_MAX = 90
 PAGES_PER_VISIT_MIN = 2
-PAGES_PER_VISIT_MAX = 4
+PAGES_PER_VISIT_MAX = 3
 
 # Résolutions d'écran courantes
 SCREEN_RESOLUTIONS = [
@@ -203,6 +203,9 @@ def run_visit(visit_num, total_visits, target_url, sbr_endpoint, min_delay=MIN_D
                 if i < nb_pages:
                     human_delay(min_delay, max_delay)
             except Exception as e:
+                if "navigate_limit" in str(e):
+                    log("  Limite de navigation BrightData atteinte, fin de la visite", "WARN")
+                    break
                 log(f"  Erreur navigation: {e}", "WARN")
                 continue
 
