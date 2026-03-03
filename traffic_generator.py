@@ -4,6 +4,7 @@ Générateur de trafic web - Simule des visites humaines via BrightData Browser 
 """
 
 import argparse
+import os
 import random
 import time
 import sys
@@ -15,6 +16,22 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from fake_useragent import UserAgent
 
+
+def load_env():
+    """Charge les variables depuis .env si le fichier existe."""
+    env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if not os.path.exists(env_path):
+        return
+    with open(env_path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line or line.startswith("#") or "=" not in line:
+                continue
+            key, value = line.split("=", 1)
+            os.environ.setdefault(key.strip(), value.strip())
+
+
+load_env()
 
 # --- Configuration par défaut ---
 MIN_DELAY = 15   # secondes min entre chaque page
@@ -207,13 +224,15 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Exemples:
-  python traffic_generator.py --url https://example.com --sbr https://brd-customer-ID-zone-ZONE:PASS@brd.superproxy.io:9515
-  python traffic_generator.py --url https://example.com --sbr https://... --visits 10
-  python traffic_generator.py --url https://example.com --sbr https://... --min-delay 20 --max-delay 60
+  python traffic_generator.py --url https://example.com
+  python traffic_generator.py --url https://example.com --visits 10
+  python traffic_generator.py --url https://example.com --min-delay 20 --max-delay 60
+
+L'endpoint BrightData est lu depuis .env (SBR_ENDPOINT) ou via --sbr.
         """
     )
     parser.add_argument("--url", required=True, help="URL cible à visiter")
-    parser.add_argument("--sbr", required=True, help="Endpoint BrightData Browser API (ex: https://brd-customer-ID-zone-ZONE:PASS@brd.superproxy.io:9515)")
+    parser.add_argument("--sbr", default=os.environ.get("SBR_ENDPOINT", ""), help="Endpoint BrightData Browser API (ou variable SBR_ENDPOINT dans .env)")
     parser.add_argument("--visits", type=int, default=5, help="Nombre de visites (défaut: 5)")
     parser.add_argument("--min-delay", type=int, default=MIN_DELAY, help=f"Délai min entre pages en secondes (défaut: {MIN_DELAY})")
     parser.add_argument("--max-delay", type=int, default=MAX_DELAY, help=f"Délai max entre pages en secondes (défaut: {MAX_DELAY})")
@@ -224,6 +243,10 @@ Exemples:
     parsed = urlparse(args.url)
     if not parsed.scheme or not parsed.netloc:
         print("Erreur: URL invalide. Utilisez le format https://example.com")
+        sys.exit(1)
+
+    if not args.sbr:
+        print("Erreur: endpoint BrightData requis. Utilisez --sbr ou définissez SBR_ENDPOINT dans .env")
         sys.exit(1)
 
     min_delay = args.min_delay
