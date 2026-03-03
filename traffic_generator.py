@@ -168,10 +168,23 @@ def run_visit(visit_num, total_visits, target_url, sbr_endpoint, min_delay=MIN_D
     try:
         driver = create_driver(sbr_endpoint)
 
-        # 1. Visite de la page cible
-        log(f"  -> {target_url}")
+        # 0. Vérifier l'IP via JS (sans consommer de navigation)
         driver.get(target_url)
-        time.sleep(random.uniform(2, 4))  # attente chargement
+        time.sleep(random.uniform(2, 4))
+        try:
+            ip_data = driver.execute_script(
+                "const r = await fetch('https://lumtest.com/myip.json');"
+                "return await r.json();"
+            )
+            ip = ip_data.get("ip", "?")
+            country = ip_data.get("country", "?")
+            city = ip_data.get("geo", {}).get("city", "?") if isinstance(ip_data.get("geo"), dict) else "?"
+            log(f"  IP: {ip} | Pays: {country} | Ville: {city}")
+        except Exception:
+            log("  Vérification IP non disponible", "WARN")
+
+        # 1. Page cible chargée
+        log(f"  -> {target_url}")
 
         # Comportement humain sur la page
         smooth_scroll(driver)
