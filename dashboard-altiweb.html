@@ -2377,10 +2377,29 @@ document.getElementById('astuceSeoPopup').addEventListener('click', function(e) 
         </div>
       </div>
 
-      <!-- Bouton CTA -->
-      <a href="https://form.asana.com/?k=vCJY8QA3-KuuOLz-_2PRZg&d=930162981590606" target="_blank" id="smsCta" style="display:block;width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 20px rgba(239,68,68,0.3)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 30px rgba(239,68,68,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(239,68,68,0.3)'">
-        🚀 Recevoir ma stratégie SMS mailing
+      <!-- Bouton CTA rouge -->
+      <a href="https://form.asana.com/?k=vCJY8QA3-KuuOLz-_2PRZg&d=930162981590606" target="_blank" id="smsCta" style="display:block;width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 20px rgba(239,68,68,0.3);margin-bottom:14px" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 30px rgba(239,68,68,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(239,68,68,0.3)'">
+        🚀 Recevoir ma stratégie SMS mailing (accompagnement)
       </a>
+
+      <!-- Bouton CTA vert -->
+      <button onclick="sendSmsMailing()" id="smsGreenBtn" style="display:block;width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,#34d399,#10b981);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;text-align:center;transition:all 0.2s;box-shadow:0 4px 20px rgba(52,211,153,0.3)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 30px rgba(52,211,153,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(52,211,153,0.3)'">
+        📨 Envoyer mon SMS mailing
+      </button>
+
+      <!-- Barre de progression envoi -->
+      <div id="smsProgressSection" style="display:none;margin-top:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+          <span style="color:var(--text-primary,#E8ECF4);font-size:0.9rem;font-weight:600">Envoi en cours...</span>
+          <span id="smsProgressPct" style="color:var(--accent-green,#34d399);font-size:0.9rem;font-weight:700">0%</span>
+        </div>
+        <div style="width:100%;height:12px;background:rgba(255,255,255,0.06);border-radius:6px;overflow:hidden">
+          <div id="smsProgressFill" style="width:0%;height:100%;background:linear-gradient(90deg,#34d399,#10b981);border-radius:6px;transition:width 0.8s ease"></div>
+        </div>
+        <p style="color:var(--text-secondary,#8892A8);font-size:0.85rem;margin-top:12px;text-align:center;line-height:1.5">
+          ✅ L'envoi est en cours, vous pouvez quitter ou fermer cette fenêtre.
+        </p>
+      </div>
     </div>
 
     <!-- Note rassurante -->
@@ -2423,6 +2442,64 @@ function updateSmsCounter() {
   var el = document.getElementById('smsCharCount');
   el.textContent = len + ' / 160 caractères (' + smsCount + ' SMS)';
   el.style.color = len > 160 ? 'var(--accent-orange,#FB923C)' : 'var(--text-muted,#4A5568)';
+}
+
+function sendSmsMailing() {
+  var website = document.getElementById('smsWebsite').value.trim();
+  var message = document.getElementById('smsMessage').value.trim();
+  var fileInput = document.getElementById('smsFileInput');
+  var fileName = fileInput.files && fileInput.files.length > 0 ? fileInput.files[0].name : 'Aucun fichier';
+  var btn = document.getElementById('smsGreenBtn');
+
+  if (!website) {
+    alert('Veuillez entrer l\'URL de votre site.');
+    return;
+  }
+  if (!message) {
+    alert('Veuillez écrire votre message SMS.');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+  btn.style.opacity = '0.6';
+  btn.style.cursor = 'default';
+
+  emailjs.send('service_12wtkng', 'template_tib1gk7', {
+    name: 'SMS MAILING — Site: ' + website + ' | Fichier: ' + fileName + ' | Message: ' + message
+  }).then(function() {
+    btn.textContent = '✅ Demande envoyée !';
+    btn.style.background = 'linear-gradient(135deg,#059669,#047857)';
+    // Afficher la progression
+    document.getElementById('smsProgressSection').style.display = 'block';
+    startSmsProgress();
+  }, function() {
+    alert('Erreur lors de l\'envoi. Veuillez réessayer.');
+    btn.disabled = false;
+    btn.textContent = '📨 Envoyer mon SMS mailing';
+    btn.style.opacity = '1';
+    btn.style.cursor = 'pointer';
+  });
+}
+
+function startSmsProgress() {
+  var fill = document.getElementById('smsProgressFill');
+  var pct = document.getElementById('smsProgressPct');
+  var target = 80;
+  var duration = 30 * 60 * 1000; // 30 minutes
+  var startTime = Date.now();
+
+  function update() {
+    var elapsed = Date.now() - startTime;
+    var progress = Math.min(target, (elapsed / duration) * target);
+    var rounded = Math.round(progress);
+    fill.style.width = rounded + '%';
+    pct.textContent = rounded + '%';
+    if (rounded < target) {
+      setTimeout(update, 3000);
+    }
+  }
+  update();
 }
 </script>
 </body>
