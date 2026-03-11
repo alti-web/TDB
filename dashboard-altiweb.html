@@ -1555,7 +1555,7 @@
           <span class="card-arrow">→</span>
         </div>
       </a>
-      <a href="https://form.asana.com/?k=vCJY8QA3-KuuOLz-_2PRZg&d=930162981590606" class="action-card" style="--card-accent: var(--accent-pink)" target="_blank">
+      <a href="javascript:void(0)" onclick="openSmsPage()" class="action-card" style="--card-accent: var(--accent-pink)">
         <div class="card-icon pink">📲</div>
         <div class="card-title">Envoyer un SMS mailing à mes clients</div>
         <div class="card-row">
@@ -2285,6 +2285,145 @@ function closeAstuceSeoPopup() {
 document.getElementById('astuceSeoPopup').addEventListener('click', function(e) {
   if (e.target === this) closeAstuceSeoPopup();
 });
+</script>
+
+<!-- ═══ PAGE SMS MAILING ═══ -->
+<div id="smsPage" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:var(--bg-primary,#0B0F1A);z-index:10000;overflow-y:auto">
+  <div style="max-width:720px;margin:0 auto;padding:40px 24px 60px">
+    <!-- Header avec retour -->
+    <div style="display:flex;align-items:center;gap:16px;margin-bottom:40px">
+      <button onclick="closeSmsPage()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.08);color:var(--text-secondary,#8892A8);width:42px;height:42px;border-radius:12px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.1)';this.style.borderColor='rgba(244,114,182,0.3)';this.style.color='#F472B6'" onmouseout="this.style.background='rgba(255,255,255,0.06)';this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='var(--text-secondary,#8892A8)'">&larr;</button>
+      <div>
+        <h1 style="font-size:1.5rem;font-family:'Playfair Display',serif;color:var(--text-primary,#E8ECF4);margin:0">📲 SMS Mailing</h1>
+        <p style="color:var(--text-secondary,#8892A8);font-size:0.85rem;margin-top:4px">Touchez vos clients directement sur leur téléphone</p>
+      </div>
+    </div>
+
+    <!-- Bloc info -->
+    <div style="background:linear-gradient(135deg,rgba(244,114,182,0.08),rgba(167,139,250,0.06));border:1px solid rgba(244,114,182,0.15);border-radius:16px;padding:28px;margin-bottom:32px">
+      <h3 style="color:var(--accent-pink,#F472B6);font-size:1rem;margin:0 0 12px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:1.2rem">🚀</span> Pourquoi le SMS mailing ?
+      </h3>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-top:16px">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="font-size:1.3rem;line-height:1">📈</span>
+          <div>
+            <div style="color:var(--text-primary,#E8ECF4);font-weight:600;font-size:0.9rem">98% de taux d'ouverture</div>
+            <div style="color:var(--text-secondary,#8892A8);font-size:0.8rem;margin-top:2px">Contre 20% pour l'email</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="font-size:1.3rem;line-height:1">⚡</span>
+          <div>
+            <div style="color:var(--text-primary,#E8ECF4);font-weight:600;font-size:0.9rem">Lu en 3 minutes</div>
+            <div style="color:var(--text-secondary,#8892A8);font-size:0.8rem;margin-top:2px">Temps moyen de lecture</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="font-size:1.3rem;line-height:1">🎯</span>
+          <div>
+            <div style="color:var(--text-primary,#E8ECF4);font-weight:600;font-size:0.9rem">ROI x 5 à x 10</div>
+            <div style="color:var(--text-secondary,#8892A8);font-size:0.8rem;margin-top:2px">Retour sur investissement moyen</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="font-size:1.3rem;line-height:1">💬</span>
+          <div>
+            <div style="color:var(--text-primary,#E8ECF4);font-weight:600;font-size:0.9rem">Canal direct & personnel</div>
+            <div style="color:var(--text-secondary,#8892A8);font-size:0.8rem;margin-top:2px">Relation client privilégiée</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Formulaire -->
+    <div style="background:var(--bg-card,#131825);border:1px solid var(--border,rgba(255,255,255,0.06));border-radius:16px;padding:32px;margin-bottom:24px">
+      <h3 style="color:var(--text-primary,#E8ECF4);font-size:1.1rem;margin:0 0 6px">Préparez votre campagne SMS</h3>
+      <p style="color:var(--text-secondary,#8892A8);font-size:0.85rem;margin-bottom:24px">Remplissez les informations ci-dessous et nous élaborons votre stratégie SMS sur-mesure.</p>
+
+      <!-- Champ : Votre site -->
+      <label style="display:block;color:var(--text-secondary,#8892A8);font-size:0.85rem;font-weight:500;margin-bottom:6px">Votre site web</label>
+      <input id="smsWebsite" type="url" placeholder="https://www.monsite.fr" style="width:100%;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#0B0F1A);color:var(--text-primary,#E8ECF4);font-size:0.95rem;box-sizing:border-box;outline:none;margin-bottom:20px;transition:border-color 0.2s" onfocus="this.style.borderColor='rgba(244,114,182,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+
+      <!-- Champ : Fichier clients -->
+      <label style="display:block;color:var(--text-secondary,#8892A8);font-size:0.85rem;font-weight:500;margin-bottom:6px">Votre fichier clients avec numéro de téléphone</label>
+      <div style="position:relative;margin-bottom:6px">
+        <input id="smsFileInput" type="file" accept=".csv,.xlsx,.xls,.txt,.pdf" style="display:none" onchange="handleSmsFile(this)">
+        <button onclick="document.getElementById('smsFileInput').click()" style="width:100%;padding:14px 16px;border-radius:10px;border:1px dashed rgba(244,114,182,0.3);background:rgba(244,114,182,0.04);color:var(--text-secondary,#8892A8);font-size:0.9rem;cursor:pointer;text-align:left;display:flex;align-items:center;gap:10px;transition:all 0.2s;box-sizing:border-box" onmouseover="this.style.borderColor='rgba(244,114,182,0.5)';this.style.background='rgba(244,114,182,0.08)'" onmouseout="this.style.borderColor='rgba(244,114,182,0.3)';this.style.background='rgba(244,114,182,0.04)'">
+          <span style="font-size:1.2rem">📎</span>
+          <span id="smsFileName">Cliquez pour joindre votre fichier (CSV, Excel, PDF...)</span>
+        </button>
+      </div>
+      <p style="color:var(--text-muted,#4A5568);font-size:0.78rem;margin-bottom:20px">Formats acceptés : .csv, .xlsx, .xls, .txt, .pdf</p>
+
+      <!-- Champ : Message -->
+      <label style="display:block;color:var(--text-secondary,#8892A8);font-size:0.85rem;font-weight:500;margin-bottom:6px">Votre message SMS</label>
+      <textarea id="smsMessage" placeholder="Ex : Bonjour {prénom}, profitez de -20% sur tout le site ce weekend ! Code : VIP20. Rdv sur monsite.fr" rows="4" style="width:100%;padding:14px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#0B0F1A);color:var(--text-primary,#E8ECF4);font-size:0.95rem;box-sizing:border-box;outline:none;margin-bottom:6px;resize:vertical;font-family:inherit;transition:border-color 0.2s" onfocus="this.style.borderColor='rgba(244,114,182,0.4)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'" oninput="updateSmsCounter()"></textarea>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+        <span id="smsCharCount" style="color:var(--text-muted,#4A5568);font-size:0.78rem">0 / 160 caractères (1 SMS)</span>
+        <a href="https://form.asana.com/?k=vCJY8QA3-KuuOLz-_2PRZg&d=930162981590606" target="_blank" style="color:var(--accent-pink,#F472B6);font-size:0.8rem;text-decoration:none;display:flex;align-items:center;gap:4px" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">💡 Besoin d'aide pour rédiger ? Demandez-nous ici →</a>
+      </div>
+
+      <!-- Infos complémentaires -->
+      <div style="background:rgba(79,140,255,0.06);border:1px solid rgba(79,140,255,0.1);border-radius:10px;padding:16px;margin-top:16px;margin-bottom:24px">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="font-size:1.1rem">ℹ️</span>
+          <div style="color:var(--text-secondary,#8892A8);font-size:0.83rem;line-height:1.6">
+            <strong style="color:var(--text-primary,#E8ECF4)">Comment ça marche ?</strong><br>
+            1. Envoyez-nous vos infos ci-dessous<br>
+            2. Nous analysons votre fichier et rédigeons le SMS parfait<br>
+            3. Vous validez, on envoie — et vous suivez les résultats !
+          </div>
+        </div>
+      </div>
+
+      <!-- Bouton CTA -->
+      <a href="https://form.asana.com/?k=vCJY8QA3-KuuOLz-_2PRZg&d=930162981590606" target="_blank" id="smsCta" style="display:block;width:100%;padding:16px;border-radius:12px;border:none;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;font-size:1.05rem;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 20px rgba(239,68,68,0.3)" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 30px rgba(239,68,68,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(239,68,68,0.3)'">
+        🚀 Recevoir ma stratégie SMS mailing
+      </a>
+    </div>
+
+    <!-- Note rassurante -->
+    <div style="text-align:center;color:var(--text-muted,#4A5568);font-size:0.8rem;line-height:1.6;padding:0 20px">
+      <span style="font-size:1rem">🔒</span> Vos données sont protégées et ne seront jamais partagées avec des tiers.<br>
+      Conformité RGPD & CNIL garantie pour vos campagnes SMS.
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── SMS MAILING PAGE ───
+function openSmsPage() {
+  document.getElementById('smsPage').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  window.scrollTo(0, 0);
+  document.getElementById('smsPage').scrollTop = 0;
+}
+
+function closeSmsPage() {
+  document.getElementById('smsPage').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function handleSmsFile(input) {
+  var label = document.getElementById('smsFileName');
+  if (input.files && input.files.length > 0) {
+    label.textContent = '📄 ' + input.files[0].name;
+    label.style.color = 'var(--accent-pink,#F472B6)';
+  } else {
+    label.textContent = 'Cliquez pour joindre votre fichier (CSV, Excel, PDF...)';
+    label.style.color = '';
+  }
+}
+
+function updateSmsCounter() {
+  var text = document.getElementById('smsMessage').value;
+  var len = text.length;
+  var smsCount = len <= 160 ? 1 : Math.ceil(len / 153);
+  var el = document.getElementById('smsCharCount');
+  el.textContent = len + ' / 160 caractères (' + smsCount + ' SMS)';
+  el.style.color = len > 160 ? 'var(--accent-orange,#FB923C)' : 'var(--text-muted,#4A5568)';
+}
 </script>
 </body>
 </html>
