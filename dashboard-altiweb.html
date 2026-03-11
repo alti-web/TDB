@@ -948,6 +948,50 @@
     transform: scale(1.1);
   }
 
+  .sms-sticker {
+    position: fixed;
+    bottom: 28px;
+    left: 28px;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border-radius: 50px;
+    background: linear-gradient(135deg, #F472B6, #ec4899);
+    border: 2px solid rgba(255,255,255,0.15);
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(244,114,182,0.4);
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    text-decoration: none;
+    animation: smsPulse 3s ease-in-out infinite;
+    white-space: nowrap;
+  }
+
+  .sms-sticker:hover {
+    animation: none;
+    transform: scale(1.05);
+    box-shadow: 0 6px 28px rgba(244,114,182,0.6);
+  }
+
+  @keyframes smsPulse {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+
+  @media (max-width: 768px) {
+    .sms-sticker {
+      bottom: 16px;
+      left: 16px;
+      font-size: 11px;
+      padding: 10px 14px;
+      gap: 6px;
+    }
+  }
+
   /* ─── MARKETING BLOCK ─── */
   .marketing-card {
     background: var(--bg-card);
@@ -1126,6 +1170,11 @@
     <span class="sticker-icon">💰</span><span class="sticker-text">Recevez votre machine à LEADS / VENTES</span>
   </a>
 </nav>
+
+<!-- ═══ STICKER SMS MAILING ═══ -->
+<a href="javascript:void(0)" onclick="openSmsPage()" class="sms-sticker">
+  <span style="font-size:1.3rem">📲</span> Envoyez maintenant votre SMS mailing ici
+</a>
 
 <!-- ═══ STICKER RDV ROND ═══ -->
 <div class="rdv-sticker" onclick="openRdvPopup()">
