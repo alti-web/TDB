@@ -38,6 +38,281 @@
     overflow-x: hidden;
   }
 
+  /* ─── LOGIN PAGE ─── */
+  .login-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-primary);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .login-overlay.hiding {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+  }
+  .login-overlay.hidden {
+    display: none;
+  }
+
+  /* Background animation */
+  .login-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+  }
+  .login-bg .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0;
+    animation: orbFloat 8s ease-in-out infinite, orbFadeIn 1.5s ease forwards;
+  }
+  .login-bg .orb:nth-child(1) {
+    width: 400px; height: 400px;
+    background: rgba(79, 140, 255, 0.15);
+    top: -100px; left: -100px;
+    animation-delay: 0s;
+  }
+  .login-bg .orb:nth-child(2) {
+    width: 350px; height: 350px;
+    background: rgba(167, 139, 250, 0.12);
+    bottom: -80px; right: -80px;
+    animation-delay: 0.3s;
+  }
+  .login-bg .orb:nth-child(3) {
+    width: 250px; height: 250px;
+    background: rgba(52, 211, 153, 0.08);
+    top: 50%; left: 60%;
+    animation-delay: 0.6s;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0) scale(1); }
+    33% { transform: translate(30px, -20px) scale(1.05); }
+    66% { transform: translate(-20px, 15px) scale(0.95); }
+  }
+  @keyframes orbFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  /* Particles */
+  .login-particles {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+  }
+  .login-particles .particle {
+    position: absolute;
+    width: 3px; height: 3px;
+    background: rgba(79, 140, 255, 0.4);
+    border-radius: 50%;
+    animation: particleRise linear infinite;
+  }
+  @keyframes particleRise {
+    0% { transform: translateY(100vh) scale(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 1; }
+    100% { transform: translateY(-20px) scale(1); opacity: 0; }
+  }
+
+  /* Login content */
+  .login-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 440px;
+    width: 90%;
+  }
+
+  /* Logo animation */
+  .login-logo-container {
+    margin-bottom: 40px;
+    opacity: 0;
+    animation: logoReveal 1.2s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards;
+  }
+  @keyframes logoReveal {
+    0% { opacity: 0; transform: translateY(30px) scale(0.8); }
+    60% { transform: translateY(-5px) scale(1.02); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .login-logo {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+    border-radius: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 28px;
+    color: white;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 40px rgba(79, 140, 255, 0.3), 0 0 80px rgba(79, 140, 255, 0.1);
+    position: relative;
+    overflow: hidden;
+  }
+  .login-logo::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.15) 50%, transparent 70%);
+    animation: logoShine 3s ease-in-out infinite;
+  }
+  @keyframes logoShine {
+    0%, 100% { transform: translateX(-100%) rotate(45deg); }
+    50% { transform: translateX(100%) rotate(45deg); }
+  }
+
+  /* Logo pulse ring */
+  .login-logo-ring {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 80px; height: 80px;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    border: 2px solid rgba(79, 140, 255, 0.3);
+    animation: logoPulseRing 2.5s ease-out infinite;
+  }
+  @keyframes logoPulseRing {
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+    100% { transform: translate(-50%, -50%) scale(1.6); opacity: 0; }
+  }
+
+  .login-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, var(--text-primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .login-subtitle {
+    color: var(--text-secondary);
+    font-size: 15px;
+    margin-bottom: 0;
+  }
+
+  /* Form animation */
+  .login-form-container {
+    opacity: 0;
+    animation: formSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.8s forwards;
+  }
+  @keyframes formSlideUp {
+    0% { opacity: 0; transform: translateY(25px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .login-input-group {
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .login-input-group .input-icon {
+    position: absolute;
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-size: 18px;
+    transition: color 0.3s ease;
+    pointer-events: none;
+  }
+  .login-input {
+    width: 100%;
+    padding: 16px 20px 16px 50px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-primary);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
+  }
+  .login-input::placeholder {
+    color: var(--text-muted);
+  }
+  .login-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.15), 0 4px 20px rgba(79, 140, 255, 0.1);
+    background: var(--bg-card-hover);
+  }
+  .login-input:focus + .input-icon {
+    color: var(--accent);
+  }
+
+  .login-btn {
+    width: 100%;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+    border: none;
+    border-radius: var(--radius-sm);
+    color: white;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(79, 140, 255, 0.35);
+  }
+  .login-btn:active {
+    transform: translateY(0);
+  }
+  .login-btn::after {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%;
+    width: 200%; height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+    transform: translateX(-100%) rotate(45deg);
+    transition: transform 0.6s ease;
+  }
+  .login-btn:hover::after {
+    transform: translateX(100%) rotate(45deg);
+  }
+
+  .login-error {
+    color: var(--accent-red);
+    font-size: 13px;
+    margin-top: 12px;
+    opacity: 0;
+    transform: translateY(-5px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .login-error.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .login-footer {
+    margin-top: 40px;
+    opacity: 0;
+    animation: formSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) 1.2s forwards;
+  }
+  .login-footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.3s ease;
+  }
+  .login-footer a:hover {
+    color: var(--accent);
+  }
+
   /* Subtle background pattern */
   body::before {
     content: '';
@@ -1179,6 +1454,39 @@
 <!-- ═══ STICKER RDV ROND ═══ -->
 <div class="rdv-sticker" onclick="openRdvPopup()">
   RDV dans<br>vos locaux
+</div>
+
+<!-- ═══ LOGIN PAGE ═══ -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-bg">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+  </div>
+  <div class="login-particles" id="loginParticles"></div>
+  <div class="login-content">
+    <div class="login-logo-container">
+      <div style="position:relative;display:inline-block;">
+        <div class="login-logo">AW</div>
+        <div class="login-logo-ring"></div>
+      </div>
+      <h1 class="login-title">Alti-Web</h1>
+      <p class="login-subtitle">Espace client · Tableau de bord</p>
+    </div>
+    <div class="login-form-container">
+      <form id="loginForm" onsubmit="return handleLogin(event)">
+        <div class="login-input-group">
+          <input type="email" class="login-input" id="loginEmail" placeholder="Votre email" required autocomplete="email">
+          <span class="input-icon">✉</span>
+        </div>
+        <button type="submit" class="login-btn">Accéder à mon espace</button>
+        <div class="login-error" id="loginError">Cet email n'est pas autorisé. Veuillez utiliser l'email associé à votre compte.</div>
+      </form>
+    </div>
+    <div class="login-footer">
+      <a href="https://alti-web.fr/contact-agence-seo/">Pas encore client ? Contactez-nous</a>
+    </div>
+  </div>
 </div>
 
 <div class="page-wrapper">
@@ -2644,6 +2952,149 @@ function startSmsProgress() {
     }
   }
   update();
+}
+
+/* ─── LOGIN SYSTEM ─── */
+(function() {
+  // Generate particles
+  var particlesContainer = document.getElementById('loginParticles');
+  if (particlesContainer) {
+    for (var i = 0; i < 30; i++) {
+      var p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (4 + Math.random() * 6) + 's';
+      p.style.animationDelay = (Math.random() * 5) + 's';
+      p.style.width = (2 + Math.random() * 3) + 'px';
+      p.style.height = p.style.width;
+      particlesContainer.appendChild(p);
+    }
+  }
+
+  // Check if already logged in
+  var savedEmail = localStorage.getItem('altiweb_login_email');
+  if (savedEmail && isEmailAuthorized(savedEmail)) {
+    var overlay = document.getElementById('loginOverlay');
+    if (overlay) overlay.classList.add('hidden');
+  }
+})();
+
+var authorizedEmails = [
+  'domainedelagare70@gmail.com',
+  'intesiadesign@gmail.com',
+  'cabinet@penet-avocat.fr',
+  'contact@puressence-aroma.fr',
+  'sophie.mastrantuono@orange.fr',
+  'contact@epiciane.fr',
+  'contact@amusette.fr',
+  'graciecreation@gmail.com',
+  'stephane.gravit@free.fr',
+  'cotevent@free.fr',
+  'bijoumaey@gmail.com',
+  'rasta478@msn.com',
+  'fl.compagny@outlook.fr',
+  'miyoungcosmetics@gmail.com',
+  'luc.jacque@sfr.fr',
+  'e2mwdconsulting@gmail.com',
+  'contact@shop-tcg.fr',
+  'farailba@gmail.com',
+  'contact@lejoyeuxbiscuit.com',
+  'gamblingnewscontact@gmail.com',
+  'missdopaminedeauville@gmail.com',
+  'nicolas.brenier@hotmail.fr',
+  'contact@univers-poppers.fr',
+  'penez.christian@orange.fr',
+  'lescreationsdestephane@free.fr',
+  'stephane.gaudin77@free.fr',
+  'montreshistoires@gmail.com',
+  'cdrsqd@hotmail.fr',
+  'brice.bourdon@hotmail.fr',
+  'contact@aerofactory.fr',
+  'hello@infranat.fr',
+  'info@letsbemagnifiques.ch',
+  'contact@olistik.ch',
+  'lotfi.barka@gmail.com',
+  'contact@juliepouillot.com',
+  'herve@social-media-booster.com',
+  'contact@lolaluna.com',
+  'info@chakmarluxe.be',
+  'info@great-technology.be',
+  'contact@abeille-apibabz.fr',
+  'bacheron@gmail.com',
+  'anae.chemin.vers.soi@gmail.com',
+  'pascalchetta25@gmail.com',
+  'contact@dilma.cc',
+  'dio.alexandre@hotmail.fr',
+  'contact@ad-coaching.fr',
+  'auchaudronvert@gmail.com',
+  'contact@konceptandevent.com',
+  'admin@acheter-fute.be',
+  'contact@sacstudio.be',
+  'contact@lestabliersgourmands.com',
+  'senaze1985344@gmail.com',
+  'carmen.palermo@gmail.com',
+  'info@bluesup.org',
+  'pierresibille@me.com',
+  'mp2wheels@gmail.com',
+  'contact@garalabosse.com',
+  'hmillasseau@gmail.com',
+  'seydou.sarre@gmail.com',
+  'massage-detente@outlook.be',
+  'sebastien.vie@lesmeilleursfonds.com',
+  'obusiness83@gmail.com',
+  'contact@mypureshower.fr',
+  'coplacleaning@gmail.com',
+  'info@terredecristal.ch',
+  'contact@terre-precieuse.ch',
+  'adrien33290@hotmail.fr',
+  'lecoqnoirclichy@gmail.com',
+  'soselectromenager6@gmail.com',
+  'yonifitoussi3@gmail.com',
+  'latelierdelaurie05@gmail.com',
+  'contact@adcovering.fr',
+  'contact@peauethique.com',
+  'c.a.lylie.a@gmail.com',
+  'contact@onglesexpertformation.com',
+  'tresorier@latruffeduquercy.fr',
+  'auf.cesson@gmail.com',
+  'info@cumulus-parapente.com',
+  'thierrychedoz@orange.fr',
+  'menuiseriestrub@gmail.com',
+  'sev.goetz@gmail.com',
+  'mdemontaigu@gmail.com',
+  'info@connexionsporturbain.fr',
+  'contact@webmarketing.immo',
+  'docteurclement.chirortho@gmail.com'
+];
+
+function isEmailAuthorized(email) {
+  return authorizedEmails.indexOf(email.toLowerCase().trim()) !== -1;
+}
+
+function handleLogin(e) {
+  e.preventDefault();
+  var email = document.getElementById('loginEmail').value.toLowerCase().trim();
+  var errorEl = document.getElementById('loginError');
+
+  if (isEmailAuthorized(email)) {
+    localStorage.setItem('altiweb_login_email', email);
+    errorEl.classList.remove('visible');
+    var overlay = document.getElementById('loginOverlay');
+    overlay.classList.add('hiding');
+    setTimeout(function() {
+      overlay.classList.add('hidden');
+    }, 700);
+  } else {
+    errorEl.classList.add('visible');
+    var input = document.getElementById('loginEmail');
+    input.style.borderColor = 'var(--accent-red)';
+    input.style.boxShadow = '0 0 0 3px rgba(248, 113, 113, 0.15)';
+    setTimeout(function() {
+      input.style.borderColor = '';
+      input.style.boxShadow = '';
+    }, 2000);
+  }
+  return false;
 }
 </script>
 </body>
