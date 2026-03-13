@@ -2675,6 +2675,8 @@ document.getElementById('rdvPopup').addEventListener('click', function(e) {
   if (localStorage.getItem('astuceSeoPopupShown')) return;
   setTimeout(function() {
     if (localStorage.getItem('astuceSeoPopupShown')) return;
+    var loginOverlay = document.getElementById('loginOverlay');
+    if (loginOverlay && !loginOverlay.classList.contains('hidden')) return;
     document.getElementById('astuceSeoPopup').style.display = 'flex';
     localStorage.setItem('astuceSeoPopupShown', '1');
   }, 20000);
