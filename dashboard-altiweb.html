@@ -2955,30 +2955,6 @@ function startSmsProgress() {
 }
 
 /* ─── LOGIN SYSTEM ─── */
-(function() {
-  // Generate particles
-  var particlesContainer = document.getElementById('loginParticles');
-  if (particlesContainer) {
-    for (var i = 0; i < 30; i++) {
-      var p = document.createElement('div');
-      p.className = 'particle';
-      p.style.left = Math.random() * 100 + '%';
-      p.style.animationDuration = (4 + Math.random() * 6) + 's';
-      p.style.animationDelay = (Math.random() * 5) + 's';
-      p.style.width = (2 + Math.random() * 3) + 'px';
-      p.style.height = p.style.width;
-      particlesContainer.appendChild(p);
-    }
-  }
-
-  // Check if already logged in
-  var savedEmail = localStorage.getItem('altiweb_login_email');
-  if (savedEmail && isEmailAuthorized(savedEmail)) {
-    var overlay = document.getElementById('loginOverlay');
-    if (overlay) overlay.classList.add('hidden');
-  }
-})();
-
 var authorizedEmails = [
   'domainedelagare70@gmail.com',
   'intesiadesign@gmail.com',
@@ -3070,6 +3046,30 @@ var authorizedEmails = [
 function isEmailAuthorized(email) {
   return authorizedEmails.indexOf(email.toLowerCase().trim()) !== -1;
 }
+
+(function() {
+  // Generate particles
+  var particlesContainer = document.getElementById('loginParticles');
+  if (particlesContainer) {
+    for (var i = 0; i < 30; i++) {
+      var p = document.createElement('div');
+      p.className = 'particle';
+      p.style.left = Math.random() * 100 + '%';
+      p.style.animationDuration = (4 + Math.random() * 6) + 's';
+      p.style.animationDelay = (Math.random() * 5) + 's';
+      p.style.width = (2 + Math.random() * 3) + 'px';
+      p.style.height = p.style.width;
+      particlesContainer.appendChild(p);
+    }
+  }
+
+  // Check if already logged in
+  var savedEmail = localStorage.getItem('altiweb_login_email');
+  if (savedEmail && isEmailAuthorized(savedEmail)) {
+    var overlay = document.getElementById('loginOverlay');
+    if (overlay) overlay.classList.add('hidden');
+  }
+})();
 
 function handleLogin(e) {
   e.preventDefault();
