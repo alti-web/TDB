@@ -1501,6 +1501,7 @@
       <a href="https://wa.me/message/F4D2NDYBFVCTK1" class="topbar-btn">💬 WhatsApp</a>
       <a href="javascript:void(0)" onclick="openContactPopup()" class="topbar-btn primary">Contacter Benoit & Anne-Charlotte Hubsch</a>
       <a href="javascript:void(0)" onclick="openRappelPopup()" class="topbar-btn" style="border-color:var(--accent-orange);color:var(--accent-orange);">📞 Je souhaite être rappelé</a>
+      <a href="javascript:void(0)" onclick="handleLogout()" class="topbar-btn" style="border-color:var(--accent-red);color:var(--accent-red);font-size:13px;">🔓 Me déconnecter</a>
     </div>
   </header>
 
@@ -3095,6 +3096,14 @@ function handleLogin(e) {
     }, 2000);
   }
   return false;
+}
+
+function handleLogout() {
+  localStorage.removeItem('altiweb_login_email');
+  var overlay = document.getElementById('loginOverlay');
+  overlay.classList.remove('hidden', 'hiding');
+  document.getElementById('loginEmail').value = '';
+  document.getElementById('loginError').classList.remove('visible');
 }
 </script>
 </body>
