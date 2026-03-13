@@ -2202,8 +2202,10 @@ function subscribeMarketing() {
 
 // ─── POPUP MISE À JOUR GOOGLE MARS 2026 ───
 (function() {
-  // Afficher à chaque visite après un court délai
+  // Afficher après un court délai, seulement si connecté
   setTimeout(function() {
+    var loginOverlay = document.getElementById('loginOverlay');
+    if (loginOverlay && !loginOverlay.classList.contains('hidden')) return;
     var popup = document.getElementById('popupGoogleUpdate');
     if (popup) {
       popup.style.display = 'flex';
@@ -3098,6 +3100,9 @@ function handleLogin(e) {
     overlay.classList.add('hiding');
     setTimeout(function() {
       overlay.classList.add('hidden');
+      // Afficher la popup Google Update après connexion
+      var googlePopup = document.getElementById('popupGoogleUpdate');
+      if (googlePopup) googlePopup.style.display = 'flex';
     }, 700);
   } else {
     errorEl.classList.add('visible');
