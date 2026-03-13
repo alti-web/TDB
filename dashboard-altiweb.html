@@ -3064,11 +3064,16 @@ function isEmailAuthorized(email) {
     }
   }
 
-  // Check if already logged in
+  // Check if already logged in (session expires after 20 min)
   var savedEmail = localStorage.getItem('altiweb_login_email');
-  if (savedEmail && isEmailAuthorized(savedEmail)) {
+  var loginTime = parseInt(localStorage.getItem('altiweb_login_time') || '0', 10);
+  var sessionDuration = 20 * 60 * 1000; // 20 minutes
+  if (savedEmail && isEmailAuthorized(savedEmail) && (Date.now() - loginTime) < sessionDuration) {
     var overlay = document.getElementById('loginOverlay');
     if (overlay) overlay.classList.add('hidden');
+  } else {
+    localStorage.removeItem('altiweb_login_email');
+    localStorage.removeItem('altiweb_login_time');
   }
 })();
 
@@ -3079,6 +3084,7 @@ function handleLogin(e) {
 
   if (isEmailAuthorized(email)) {
     localStorage.setItem('altiweb_login_email', email);
+    localStorage.setItem('altiweb_login_time', Date.now().toString());
     errorEl.classList.remove('visible');
     var overlay = document.getElementById('loginOverlay');
     overlay.classList.add('hiding');
@@ -3100,6 +3106,7 @@ function handleLogin(e) {
 
 function handleLogout() {
   localStorage.removeItem('altiweb_login_email');
+  localStorage.removeItem('altiweb_login_time');
   var overlay = document.getElementById('loginOverlay');
   overlay.classList.remove('hidden', 'hiding');
   document.getElementById('loginEmail').value = '';
