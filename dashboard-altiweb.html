@@ -3090,11 +3090,34 @@ var authorizedEmails = [
   'docteurclement.chirortho@gmail.com',
   'elo.art13@gmail.com',
   'contact.fondamentalmassage@gmail.com',
-  'gwendoline.iacobacci@gmail.com'
+  'gwendoline.iacobacci@gmail.com',
+  'auxptitsbonheursdecri@gmail.com',
+  'veroniquedenis965@gmail.com',
+  'contact@veronique-lambis-tarologue.com'
 ];
+
+// Date d'ajout des nouveaux emails (format YYYY-MM-DD) — les tâches en cours ne s'affichent qu'après 3 jours
+var newEmailDates = {
+  'auxptitsbonheursdecri@gmail.com': '2026-03-18',
+  'veroniquedenis965@gmail.com': '2026-03-18',
+  'contact@veronique-lambis-tarologue.com': '2026-03-18'
+};
 
 function isEmailAuthorized(email) {
   return authorizedEmails.indexOf(email.toLowerCase().trim()) !== -1;
+}
+
+function hideTasksIfNewEmail(email) {
+  var e = email.toLowerCase().trim();
+  if (newEmailDates[e]) {
+    var addedDate = new Date(newEmailDates[e]);
+    var now = new Date();
+    var diffDays = (now - addedDate) / 86400000;
+    if (diffDays < 3) {
+      var tasksEl = document.querySelector('.live-tasks');
+      if (tasksEl) tasksEl.style.display = 'none';
+    }
+  }
 }
 
 (function() {
@@ -3120,6 +3143,7 @@ function isEmailAuthorized(email) {
   if (savedEmail && isEmailAuthorized(savedEmail) && (Date.now() - loginTime) < sessionDuration) {
     var overlay = document.getElementById('loginOverlay');
     if (overlay) overlay.classList.add('hidden');
+    hideTasksIfNewEmail(savedEmail);
   } else {
     localStorage.removeItem('altiweb_login_email');
     localStorage.removeItem('altiweb_login_time');
@@ -3135,6 +3159,7 @@ function handleLogin(e) {
     localStorage.setItem('altiweb_login_email', email);
     localStorage.setItem('altiweb_login_time', Date.now().toString());
     errorEl.classList.remove('visible');
+    hideTasksIfNewEmail(email);
     var overlay = document.getElementById('loginOverlay');
     overlay.classList.add('hiding');
     setTimeout(function() {
