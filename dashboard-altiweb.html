@@ -2054,7 +2054,7 @@ if (window.location.hostname === 'alti-web.github.io') {
         <span class="icon" style="background:rgba(248,113,113,0.1)">👤</span>
         Mon compte
       </div>
-      <span class="section-count">2 actions</span>
+      <span class="section-count">3 actions</span>
     </div>
     <div class="cards-grid">
       <a href="https://form.asana.com/?k=WFuEiGCrj9rwmEir7NkqbA&d=930162981590606" class="action-card" style="--card-accent: var(--accent)" target="_blank">
@@ -2065,6 +2065,14 @@ if (window.location.hostname === 'alti-web.github.io') {
           <span class="card-arrow">→</span>
         </div>
       </a>
+      <div class="action-card" style="--card-accent: var(--accent-green); cursor:pointer" onclick="openComptaPopup()">
+        <div class="card-icon green">💰</div>
+        <div class="card-title">Question à la comptabilité</div>
+        <div class="card-row">
+          <span class="card-tag tech">Compte</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
       <a href="https://u7ynr1lou1a.typeform.com/to/Eh6GGxvn" class="action-card" style="--card-accent: var(--accent-red)" target="_blank">
         <div class="card-icon red">🚪</div>
         <div class="card-title">Résiliation (+ suppression de votre CB)</div>
@@ -2475,6 +2483,31 @@ function sendHandiUrl() {
   </div>
 </div>
 
+<!-- ═══ POPUP QUESTION COMPTABILITÉ ═══ -->
+<div id="comptaPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;backdrop-filter:blur(4px)">
+  <div style="background:var(--bg-secondary, #1e1e2e);border-radius:16px;padding:32px;max-width:460px;width:90%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(52,211,153,0.15)">
+    <button onclick="closeComptaPopup()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:var(--text-secondary,#999);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1">&times;</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:48px;margin-bottom:12px">💰</div>
+      <h3 style="color:var(--text-primary,#fff);font-size:1.1rem;margin:0">Question à la comptabilité</h3>
+    </div>
+    <p style="color:var(--text-secondary,#aaa);font-size:0.9rem;text-align:center;margin-bottom:20px">Factures, paiements, échéances... posez votre question, nous vous répondons rapidement !</p>
+    <input id="comptaName" type="text" placeholder="Votre nom" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px">
+    <input id="comptaEmail" type="email" placeholder="Votre email" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px">
+    <select id="comptaSubject" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px;cursor:pointer">
+      <option value="" disabled selected style="color:#666">Sujet de votre demande</option>
+      <option value="Demande de facture">Demande de facture</option>
+      <option value="Question sur un paiement">Question sur un paiement</option>
+      <option value="Échéancier / délai de paiement">Échéancier / délai de paiement</option>
+      <option value="Modification coordonnées de facturation">Modification coordonnées de facturation</option>
+      <option value="Autre question comptable">Autre question comptable</option>
+    </select>
+    <textarea id="comptaMessage" placeholder="Détaillez votre question..." rows="4" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:16px;resize:vertical;font-family:inherit"></textarea>
+    <button id="comptaSubmitBtn" onclick="sendComptaMessage()" style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent-green,#34d399),#22b07d);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;transition:opacity 0.2s">Envoyer ma question</button>
+    <p id="comptaMsg" style="text-align:center;margin-top:12px;font-size:0.85rem;display:none"></p>
+  </div>
+</div>
+
 <!-- ═══ POPUP JE SOUHAITE ÊTRE RAPPELÉ ═══ -->
 <div id="rappelPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;backdrop-filter:blur(4px)">
   <div style="background:linear-gradient(135deg, #1a2a4a 0%, #1e2d4f 50%, #172040 100%);border-radius:16px;padding:36px;max-width:520px;width:90%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(251,146,60,0.2)">
@@ -2676,6 +2709,66 @@ function sendContactMessage() {
     msg.textContent = "Erreur lors de l'envoi. Réessayez.";
     btn.disabled = false;
     btn.textContent = 'Envoyer';
+  });
+}
+
+// ─── POPUP COMPTABILITÉ ───
+function openComptaPopup() {
+  var popup = document.getElementById('comptaPopup');
+  popup.style.display = 'flex';
+  // Pré-remplir l'email si connecté
+  var savedEmail = localStorage.getItem('altiweb_login_email');
+  if (savedEmail) document.getElementById('comptaEmail').value = savedEmail;
+}
+
+function closeComptaPopup() {
+  document.getElementById('comptaPopup').style.display = 'none';
+  document.getElementById('comptaMsg').style.display = 'none';
+  var btn = document.getElementById('comptaSubmitBtn');
+  btn.disabled = false;
+  btn.textContent = 'Envoyer ma question';
+}
+
+function sendComptaMessage() {
+  var name = document.getElementById('comptaName').value.trim();
+  var email = document.getElementById('comptaEmail').value.trim();
+  var subject = document.getElementById('comptaSubject').value;
+  var message = document.getElementById('comptaMessage').value.trim();
+  var msg = document.getElementById('comptaMsg');
+  var btn = document.getElementById('comptaSubmitBtn');
+
+  if (!name || !email || !subject || !message) {
+    msg.style.display = 'block';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Veuillez remplir tous les champs.';
+    return;
+  }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    msg.style.display = 'block';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Veuillez entrer une adresse email valide.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+
+  var fullMessage = '💰 QUESTION COMPTABILITÉ\n\nDe : ' + name + ' (' + email + ')\nSujet : ' + subject + '\n\nMessage : ' + message;
+
+  emailjs.send('service_12wtkng', 'template_tib1gk7', {
+    name: fullMessage
+  }).then(function() {
+    msg.style.display = 'block';
+    msg.style.color = '#34d399';
+    msg.textContent = 'Question envoyée avec succès !';
+    btn.textContent = 'Envoyé !';
+    setTimeout(closeComptaPopup, 2000);
+  }, function(err) {
+    msg.style.display = 'block';
+    msg.style.color = '#f87171';
+    msg.textContent = "Erreur lors de l'envoi. Réessayez.";
+    btn.disabled = false;
+    btn.textContent = 'Envoyer ma question';
   });
 }
 
