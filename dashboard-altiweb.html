@@ -3212,6 +3212,49 @@ function isFinishedClient(email) {
   return finishedEmails.indexOf(email.toLowerCase().trim()) !== -1;
 }
 
+// Sauvegarde du HTML original pour pouvoir restaurer entre connexions
+var _originalTasksHTML = null;
+var _originalBadgeHTML = null;
+
+function saveOriginalState() {
+  if (_originalTasksHTML === null) {
+    var tasksEl = document.querySelector('.live-tasks');
+    if (tasksEl) _originalTasksHTML = tasksEl.innerHTML;
+  }
+  if (_originalBadgeHTML === null) {
+    var badge = document.querySelector('.status-badge.active');
+    if (badge) _originalBadgeHTML = { text: badge.textContent, className: badge.className, style: badge.getAttribute('style') || '' };
+    var dot = document.querySelector('.status-card .status-item:first-child .status-dot.green');
+    if (dot) _originalBadgeHTML = _originalBadgeHTML || {};
+    if (dot) { _originalBadgeHTML.dotBg = dot.style.background; _originalBadgeHTML.dotShadow = dot.style.boxShadow; }
+  }
+}
+
+function resetDashboardState() {
+  // Restaurer les tâches en cours
+  var tasksEl = document.querySelector('.live-tasks');
+  if (tasksEl && _originalTasksHTML !== null) {
+    tasksEl.innerHTML = _originalTasksHTML;
+    tasksEl.style.display = '';
+  }
+  // Restaurer le badge "Actif"
+  var badges = document.querySelectorAll('.status-badge');
+  for (var i = 0; i < badges.length; i++) {
+    if (badges[i].textContent === 'Terminé') {
+      badges[i].textContent = 'Actif';
+      badges[i].className = 'status-badge active';
+      badges[i].removeAttribute('style');
+    }
+  }
+  // Restaurer le dot vert
+  var dot = document.querySelector('.status-card .status-item:first-child .status-dot');
+  if (dot) {
+    dot.className = 'status-dot green';
+    dot.style.background = '';
+    dot.style.boxShadow = '';
+  }
+}
+
 function applyFinishedStatus(email) {
   if (!isFinishedClient(email)) return;
   // Changer le badge "Actif" en "Terminé"
@@ -3271,6 +3314,9 @@ function hideTasksIfNewEmail(email) {
     }
   }
 
+  // Sauvegarder l'état original du DOM au chargement
+  saveOriginalState();
+
   // Check if already logged in (session expires after 20 min)
   var savedEmail = localStorage.getItem('altiweb_login_email');
   var loginTime = parseInt(localStorage.getItem('altiweb_login_time') || '0', 10);
@@ -3278,6 +3324,7 @@ function hideTasksIfNewEmail(email) {
   if (savedEmail && isEmailAuthorized(savedEmail) && (Date.now() - loginTime) < sessionDuration) {
     var overlay = document.getElementById('loginOverlay');
     if (overlay) overlay.classList.add('hidden');
+    resetDashboardState();
     hideTasksIfNewEmail(savedEmail);
     applyFinishedStatus(savedEmail);
   } else {
@@ -3295,6 +3342,7 @@ function handleLogin(e) {
     localStorage.setItem('altiweb_login_email', email);
     localStorage.setItem('altiweb_login_time', Date.now().toString());
     errorEl.classList.remove('visible');
+    resetDashboardState();
     hideTasksIfNewEmail(email);
     applyFinishedStatus(email);
     var overlay = document.getElementById('loginOverlay');
@@ -3321,6 +3369,7 @@ function handleLogin(e) {
 function handleLogout() {
   localStorage.removeItem('altiweb_login_email');
   localStorage.removeItem('altiweb_login_time');
+  resetDashboardState();
   var overlay = document.getElementById('loginOverlay');
   overlay.classList.remove('hidden', 'hiding');
   document.getElementById('loginEmail').value = '';
