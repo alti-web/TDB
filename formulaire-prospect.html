@@ -1,0 +1,1360 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alti-Web — Votre stratégie SEO commence ici</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #0B0F1A;
+            --bg-card: #131825;
+            --bg-hover: #1A2035;
+            --accent: #4F8CFF;
+            --green: #34D399;
+            --orange: #FB923C;
+            --red: #F87171;
+            --purple: #A78BFA;
+            --text-primary: #E8ECF4;
+            --text-secondary: #8892A8;
+            --radius-card: 16px;
+            --radius-btn: 10px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ---- Progress Bar ---- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: var(--bg-card);
+            padding: 0;
+            height: 4px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--purple));
+            transition: width 0.5s ease;
+            border-radius: 0 2px 2px 0;
+            width: 0%;
+        }
+
+        /* ---- Logo ---- */
+        .logo {
+            position: fixed; top: 16px; left: 24px; z-index: 101;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ---- Step counter ---- */
+        .step-counter {
+            position: fixed; top: 18px; right: 24px; z-index: 101;
+            font-size: 0.85rem; color: var(--text-secondary);
+        }
+
+        /* ---- Wizard container ---- */
+        .wizard {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 60px 20px 120px;
+            position: relative;
+        }
+
+        .step {
+            display: none;
+            animation: fadeSlideIn 0.45s ease forwards;
+        }
+        .step.active { display: block; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlideOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-30px); }
+        }
+        .step.exiting {
+            display: block;
+            animation: fadeSlideOut 0.3s ease forwards;
+        }
+
+        /* ---- Welcome ---- */
+        .welcome-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 80vh; text-align: center;
+        }
+        .welcome-screen h1 {
+            font-size: 2.2rem; margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .welcome-screen .subtitle {
+            font-size: 1.1rem; color: var(--text-secondary); max-width: 520px;
+            margin-bottom: 32px; line-height: 1.6;
+        }
+        .trust-badges {
+            display: flex; flex-wrap: wrap; gap: 16px; justify-content: center;
+            margin-bottom: 40px;
+        }
+        .trust-badge {
+            background: var(--bg-card); border: 1px solid rgba(79,140,255,0.12);
+            padding: 10px 18px; border-radius: var(--radius-btn);
+            font-size: 0.88rem; color: var(--text-secondary);
+        }
+
+        /* ---- Step title ---- */
+        .step-title {
+            font-size: 1.6rem; text-align: center; margin-bottom: 8px;
+        }
+        .step-subtitle {
+            text-align: center; color: var(--text-secondary); margin-bottom: 32px;
+            font-size: 0.95rem; line-height: 1.5;
+        }
+
+        /* ---- Cards grid ---- */
+        .cards-grid {
+            display: grid; gap: 14px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        }
+        .cards-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+        .cards-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+        .cards-grid.cols-4 { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+
+        .card-option {
+            background: var(--bg-card);
+            border: 2px solid rgba(79,140,255,0.08);
+            border-radius: var(--radius-card);
+            padding: 24px 18px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+        .card-option:hover {
+            background: var(--bg-hover);
+            border-color: rgba(79,140,255,0.25);
+            transform: translateY(-2px);
+        }
+        .card-option.selected {
+            border-color: var(--accent);
+            background: rgba(79,140,255,0.08);
+            box-shadow: 0 0 20px rgba(79,140,255,0.12);
+        }
+        .card-option .card-icon {
+            font-size: 2rem; margin-bottom: 10px; display: block;
+        }
+        .card-option .card-label {
+            font-weight: 600; font-size: 0.95rem; margin-bottom: 4px;
+        }
+        .card-option .card-desc {
+            font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;
+        }
+        .card-option .check-mark {
+            position: absolute; top: 10px; right: 10px;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: var(--accent); color: #fff;
+            display: none; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700;
+        }
+        .card-option.selected .check-mark { display: flex; }
+
+        /* ---- Inputs ---- */
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block; font-size: 0.88rem; color: var(--text-secondary);
+            margin-bottom: 8px; font-weight: 500;
+        }
+        .text-input {
+            width: 100%; padding: 14px 18px;
+            background: var(--bg-card); border: 2px solid rgba(79,140,255,0.12);
+            border-radius: var(--radius-btn); color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif; font-size: 1rem;
+            transition: border-color 0.25s;
+            outline: none;
+        }
+        .text-input:focus { border-color: var(--accent); }
+        .text-input::placeholder { color: var(--text-secondary); opacity: 0.6; }
+
+        textarea.text-input { resize: vertical; min-height: 120px; }
+
+        /* ---- Tags Input ---- */
+        .tags-container {
+            background: var(--bg-card); border: 2px solid rgba(79,140,255,0.12);
+            border-radius: var(--radius-btn); padding: 10px 14px;
+            display: flex; flex-wrap: wrap; gap: 8px;
+            min-height: 52px; cursor: text;
+            transition: border-color 0.25s;
+        }
+        .tags-container:focus-within { border-color: var(--accent); }
+        .tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(79,140,255,0.15); color: var(--accent);
+            padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; font-weight: 500;
+        }
+        .tag .tag-remove {
+            cursor: pointer; opacity: 0.7; font-size: 1rem; line-height: 1;
+        }
+        .tag .tag-remove:hover { opacity: 1; }
+        .tags-input {
+            border: none; background: transparent; color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif; font-size: 0.95rem;
+            outline: none; flex: 1; min-width: 120px; padding: 4px 0;
+        }
+        .tags-input::placeholder { color: var(--text-secondary); opacity: 0.6; }
+
+        /* ---- Site Preview ---- */
+        .site-preview {
+            margin-top: 20px; text-align: center;
+            animation: fadeSlideIn 0.5s ease;
+        }
+        .site-preview img {
+            max-width: 100%; border-radius: var(--radius-card);
+            border: 2px solid rgba(79,140,255,0.15);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        }
+        .site-preview .preview-label {
+            margin-top: 12px; color: var(--green); font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* ---- Buttons ---- */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 32px; border: none; border-radius: var(--radius-btn);
+            font-family: 'DM Sans', sans-serif; font-size: 1rem;
+            font-weight: 600; cursor: pointer; transition: all 0.25s;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), #6C63FF);
+            color: #fff; box-shadow: 0 4px 16px rgba(79,140,255,0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 24px rgba(79,140,255,0.4);
+        }
+        .btn-secondary {
+            background: var(--bg-card); color: var(--text-secondary);
+            border: 1px solid rgba(79,140,255,0.15);
+        }
+        .btn-secondary:hover { background: var(--bg-hover); color: var(--text-primary); }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+
+        .nav-buttons {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 40px; gap: 12px;
+        }
+        .nav-buttons .spacer { flex: 1; }
+
+        /* ---- Pricing Columns ---- */
+        .pricing-grid {
+            display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+            margin-top: 24px;
+        }
+        .pricing-card {
+            background: var(--bg-card); border: 2px solid rgba(79,140,255,0.08);
+            border-radius: var(--radius-card); padding: 28px 20px;
+            text-align: center; cursor: pointer; transition: all 0.25s; position: relative;
+        }
+        .pricing-card:hover { background: var(--bg-hover); border-color: rgba(79,140,255,0.25); transform: translateY(-2px); }
+        .pricing-card.selected { border-color: var(--accent); background: rgba(79,140,255,0.08); }
+        .pricing-card .pricing-badge {
+            position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+            background: var(--green); color: #0B0F1A; padding: 4px 14px;
+            border-radius: 20px; font-size: 0.72rem; font-weight: 700;
+            white-space: nowrap; display: none;
+        }
+        .pricing-card .pricing-badge.show { display: block; }
+        .pricing-card .pricing-icon { font-size: 1.6rem; margin-bottom: 8px; }
+        .pricing-card .pricing-name { font-family: 'Playfair Display', serif; font-size: 1.15rem; font-weight: 700; margin-bottom: 4px; }
+        .pricing-card .pricing-price { font-size: 1.8rem; font-weight: 700; color: var(--accent); margin-bottom: 16px; }
+        .pricing-card .pricing-price span { font-size: 0.85rem; color: var(--text-secondary); font-weight: 400; }
+        .pricing-card ul { list-style: none; text-align: left; }
+        .pricing-card ul li {
+            padding: 6px 0; font-size: 0.82rem; color: var(--text-secondary);
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+        }
+        .pricing-card ul li::before { content: '✓ '; color: var(--green); font-weight: 700; }
+
+        /* ---- Toggle ---- */
+        .toggle-container {
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+            padding: 40px;
+        }
+        .toggle-switch {
+            width: 80px; height: 42px; background: #2A2F3F;
+            border-radius: 21px; position: relative; cursor: pointer;
+            transition: background 0.3s;
+        }
+        .toggle-switch.on { background: var(--green); }
+        .toggle-switch .toggle-knob {
+            width: 34px; height: 34px; background: #fff;
+            border-radius: 50%; position: absolute;
+            top: 4px; left: 4px; transition: transform 0.3s;
+        }
+        .toggle-switch.on .toggle-knob { transform: translateX(38px); }
+        .toggle-label { font-size: 1.1rem; font-weight: 600; }
+        .toggle-desc {
+            max-width: 500px; text-align: center; color: var(--text-secondary);
+            font-size: 0.9rem; line-height: 1.6;
+        }
+
+        /* ---- Infobox ---- */
+        .infobox {
+            background: rgba(79,140,255,0.06); border: 1px solid rgba(79,140,255,0.15);
+            border-radius: var(--radius-card); padding: 24px;
+            margin-bottom: 28px; line-height: 1.7; color: var(--text-secondary);
+            font-size: 0.92rem;
+        }
+        .infobox strong { color: var(--text-primary); }
+
+        /* ---- Audio recorder ---- */
+        .recorder {
+            display: flex; flex-direction: column; align-items: center; gap: 14px;
+            margin-top: 20px;
+        }
+        .record-btn {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: var(--red); border: 3px solid rgba(248,113,113,0.3);
+            cursor: pointer; transition: all 0.25s; position: relative;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .record-btn::after {
+            content: ''; width: 20px; height: 20px; background: #fff;
+            border-radius: 50%; transition: all 0.25s;
+        }
+        .record-btn.recording { animation: pulse 1.2s infinite; }
+        .record-btn.recording::after { border-radius: 4px; width: 18px; height: 18px; }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(248,113,113,0.4); }
+            50% { box-shadow: 0 0 0 14px rgba(248,113,113,0); }
+        }
+        .record-timer { font-size: 0.9rem; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+        .audio-preview { margin-top: 10px; display: flex; align-items: center; gap: 12px; }
+        .audio-preview audio { height: 36px; }
+        .audio-delete {
+            background: none; border: none; color: var(--red); cursor: pointer;
+            font-size: 0.85rem; font-weight: 600;
+        }
+
+        /* ---- Recap ---- */
+        .recap-card {
+            background: var(--bg-card); border-radius: var(--radius-card);
+            padding: 24px; margin-bottom: 16px;
+            border: 1px solid rgba(79,140,255,0.08);
+        }
+        .recap-card .recap-label {
+            font-size: 0.78rem; color: var(--text-secondary);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px;
+        }
+        .recap-card .recap-value {
+            font-size: 1rem; font-weight: 500;
+        }
+
+        .final-counter {
+            text-align: center; margin: 32px 0;
+            font-size: 1.1rem; color: var(--green); font-weight: 600;
+        }
+        .testimonial {
+            background: var(--bg-card); border-radius: var(--radius-card);
+            padding: 28px; margin: 24px 0; text-align: center;
+            border-left: 3px solid var(--accent); font-style: italic;
+            color: var(--text-secondary); line-height: 1.6;
+        }
+        .testimonial .author { margin-top: 12px; color: var(--text-primary); font-style: normal; font-weight: 600; font-size: 0.9rem; }
+
+        .social-links {
+            display: flex; justify-content: center; gap: 16px; margin-top: 24px;
+        }
+        .social-links a {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 24px; border-radius: var(--radius-btn);
+            background: var(--bg-card); color: var(--text-primary);
+            text-decoration: none; font-weight: 600; font-size: 0.9rem;
+            border: 1px solid rgba(79,140,255,0.12); transition: all 0.25s;
+        }
+        .social-links a:hover { background: var(--bg-hover); border-color: rgba(79,140,255,0.3); transform: translateY(-2px); }
+
+        /* ---- Other input ---- */
+        .other-input-wrap {
+            margin-top: 12px; display: none;
+        }
+        .other-input-wrap.visible { display: block; }
+
+        /* ---- Priority select sub-step ---- */
+        .priority-section {
+            margin-top: 32px; padding-top: 24px;
+            border-top: 1px solid rgba(79,140,255,0.1);
+            display: none;
+        }
+        .priority-section.visible { display: block; animation: fadeSlideIn 0.4s ease; }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 640px) {
+            .wizard { padding: 50px 14px 110px; }
+            .welcome-screen h1 { font-size: 1.6rem; }
+            .cards-grid { grid-template-columns: 1fr 1fr; }
+            .cards-grid.cols-3 { grid-template-columns: 1fr; }
+            .pricing-grid { grid-template-columns: 1fr; }
+            .trust-badges { flex-direction: column; align-items: center; }
+            .step-title { font-size: 1.3rem; }
+            .nav-buttons { flex-wrap: wrap; }
+        }
+        @media (max-width: 400px) {
+            .cards-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="logo">AW</div>
+<div class="step-counter" id="stepCounter"></div>
+<div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="wizard" id="wizard">
+
+    <!-- ====== STEP 0 — Welcome ====== -->
+    <div class="step active" data-step="0">
+        <div class="welcome-screen">
+            <h1 id="welcomeTitle">Préparez votre appel stratégique</h1>
+            <p class="subtitle">Savez-vous combien vous coûte l'inaction&nbsp;? Gagnez du temps, boostez votre business.</p>
+            <div class="trust-badges">
+                <div class="trust-badge">✅ A partir de 79€ tout compris</div>
+                <div class="trust-badge">✅ Aucun engagement</div>
+                <div class="trust-badge">✅ 1 article de blog + Réseaux sociaux par semaine</div>
+            </div>
+            <button class="btn btn-primary" onclick="goTo(1)">C'est parti →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 1 — Profil ====== -->
+    <div class="step" data-step="1">
+        <h2 class="step-title">Je suis...</h2>
+        <p class="step-subtitle">Sélectionnez ce qui vous correspond le mieux</p>
+        <div class="cards-grid cols-3" data-field="profil" data-single>
+            <div class="card-option" data-value="Professionnel">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🏢</span>
+                <div class="card-label">Professionnel</div>
+                <div class="card-desc">Entreprise, commerce, indépendant</div>
+            </div>
+            <div class="card-option" data-value="Agence">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🏗️</span>
+                <div class="card-label">Agence</div>
+                <div class="card-desc">Agence web, marketing, communication</div>
+            </div>
+            <div class="card-option" data-value="Particulier">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">👤</span>
+                <div class="card-label">Particulier</div>
+                <div class="card-desc">Projet personnel, blog, association</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(0)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(2)" id="nav1next" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 2 — Niveau SEO ====== -->
+    <div class="step" data-step="2">
+        <h2 class="step-title">Votre niveau en SEO</h2>
+        <p class="step-subtitle">Pas de jugement, on part de là où vous êtes !</p>
+        <div class="cards-grid cols-4" data-field="niveauSEO" data-single>
+            <div class="card-option" data-value="Débutant">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🌱</span>
+                <div class="card-label">Débutant</div>
+                <div class="card-desc">Je découvre le SEO</div>
+            </div>
+            <div class="card-option" data-value="Notions">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">📘</span>
+                <div class="card-label">Notions</div>
+                <div class="card-desc">J'ai quelques bases</div>
+            </div>
+            <div class="card-option" data-value="Bon socle">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">💪</span>
+                <div class="card-label">Bon socle</div>
+                <div class="card-desc">Je gère les fondamentaux</div>
+            </div>
+            <div class="card-option" data-value="Expert">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🧠</span>
+                <div class="card-label">Expert</div>
+                <div class="card-desc">Je maîtrise le sujet</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(1)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(3)" id="nav2next" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 3 — URL du site ====== -->
+    <div class="step" data-step="3">
+        <h2 class="step-title">L'URL de votre site</h2>
+        <p class="step-subtitle">On va jeter un oeil ensemble</p>
+        <div class="input-group">
+            <label for="siteUrl">Adresse de votre site web</label>
+            <input type="url" class="text-input" id="siteUrl" placeholder="https://www.monsite.fr">
+        </div>
+        <button class="btn btn-secondary" onclick="previewSite()" style="margin-bottom:16px">🔍 Aperçu du site</button>
+        <div class="site-preview" id="sitePreview" style="display:none">
+            <img id="sitePreviewImg" src="" alt="Aperçu du site">
+            <div class="preview-label">✨ Parfait, on y voit déjà plus clair !</div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(2)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="saveSiteUrl(); goTo(4)">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 4 — CMS ====== -->
+    <div class="step" data-step="4">
+        <h2 class="step-title">Votre CMS</h2>
+        <p class="step-subtitle">Avec quoi est construit votre site ?</p>
+        <div class="cards-grid cols-4" data-field="cms" data-single>
+            <div class="card-option" data-value="WordPress">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">📝</span>
+                <div class="card-label">WordPress</div>
+            </div>
+            <div class="card-option" data-value="Shopify">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🛍️</span>
+                <div class="card-label">Shopify</div>
+            </div>
+            <div class="card-option" data-value="PrestaShop">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🛒</span>
+                <div class="card-label">PrestaShop</div>
+            </div>
+            <div class="card-option" data-value="Wix">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🎨</span>
+                <div class="card-label">Wix</div>
+            </div>
+            <div class="card-option" data-value="Squarespace">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">◻️</span>
+                <div class="card-label">Squarespace</div>
+            </div>
+            <div class="card-option" data-value="Joomla">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🔷</span>
+                <div class="card-label">Joomla</div>
+            </div>
+            <div class="card-option" data-value="WooCommerce">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🏪</span>
+                <div class="card-label">WooCommerce</div>
+            </div>
+            <div class="card-option" data-value="Autre">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">❓</span>
+                <div class="card-label">Autre</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(3)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(5)" id="nav4next" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 5 — Activité ====== -->
+    <div class="step" data-step="5">
+        <h2 class="step-title">Votre activité</h2>
+        <p class="step-subtitle">Dans quel secteur exercez-vous ?</p>
+        <div class="cards-grid" data-field="secteur" data-single>
+            <div class="card-option" data-value="E-commerce"><span class="check-mark">✓</span><span class="card-icon">🛒</span><div class="card-label">E-commerce</div></div>
+            <div class="card-option" data-value="Thérapeute/Bien-être"><span class="check-mark">✓</span><span class="card-icon">🧘</span><div class="card-label">Thérapeute / Bien-être</div></div>
+            <div class="card-option" data-value="Restaurant"><span class="check-mark">✓</span><span class="card-icon">🍽️</span><div class="card-label">Restaurant</div></div>
+            <div class="card-option" data-value="Artisan"><span class="check-mark">✓</span><span class="card-icon">🔧</span><div class="card-label">Artisan</div></div>
+            <div class="card-option" data-value="Coach/Consultant"><span class="check-mark">✓</span><span class="card-icon">🎯</span><div class="card-label">Coach / Consultant</div></div>
+            <div class="card-option" data-value="BTP"><span class="check-mark">✓</span><span class="card-icon">🏗️</span><div class="card-label">BTP</div></div>
+            <div class="card-option" data-value="Services B2B"><span class="check-mark">✓</span><span class="card-icon">💼</span><div class="card-label">Services B2B</div></div>
+            <div class="card-option" data-value="Beauté/Esthétique"><span class="check-mark">✓</span><span class="card-icon">💅</span><div class="card-label">Beauté / Esthétique</div></div>
+            <div class="card-option" data-value="Santé"><span class="check-mark">✓</span><span class="card-icon">🏥</span><div class="card-label">Santé</div></div>
+            <div class="card-option" data-value="Formation"><span class="check-mark">✓</span><span class="card-icon">📚</span><div class="card-label">Formation</div></div>
+            <div class="card-option" data-value="Autre"><span class="check-mark">✓</span><span class="card-icon">✏️</span><div class="card-label">Autre</div></div>
+        </div>
+        <div class="other-input-wrap" id="secteurAutreWrap">
+            <input type="text" class="text-input" id="secteurAutre" placeholder="Précisez votre secteur...">
+        </div>
+
+        <h3 style="margin-top:36px; margin-bottom:16px; font-size:1.1rem; text-align:center">Votre activité existe depuis...</h3>
+        <div class="cards-grid cols-2" data-field="anciennete" data-single>
+            <div class="card-option" data-value="Moins de 2 ans"><span class="check-mark">✓</span><span class="card-icon">🌱</span><div class="card-label">Moins de 2 ans</div></div>
+            <div class="card-option" data-value="Plus de 2 ans"><span class="check-mark">✓</span><span class="card-icon">🌳</span><div class="card-label">Plus de 2 ans</div></div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(4)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(6)" id="nav5next" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 6 — Objectifs ====== -->
+    <div class="step" data-step="6">
+        <h2 class="step-title">Vos objectifs</h2>
+        <p class="step-subtitle">Sélectionnez tout ce qui vous parle (plusieurs choix possibles)</p>
+        <div class="cards-grid" data-field="objectifs" data-multi>
+            <div class="card-option" data-value="Augmenter mon chiffre d'affaires"><span class="check-mark">✓</span><span class="card-icon">💰</span><div class="card-label">Augmenter mon chiffre d'affaires</div></div>
+            <div class="card-option" data-value="Gagner en visibilité"><span class="check-mark">✓</span><span class="card-icon">👀</span><div class="card-label">Gagner en visibilité</div></div>
+            <div class="card-option" data-value="Développer mes réseaux sociaux"><span class="check-mark">✓</span><span class="card-icon">📱</span><div class="card-label">Développer mes réseaux sociaux</div></div>
+            <div class="card-option" data-value="Être en top positions Google"><span class="check-mark">✓</span><span class="card-icon">🏆</span><div class="card-label">Être en top positions Google</div></div>
+            <div class="card-option" data-value="Recevoir plus de demandes de contact"><span class="check-mark">✓</span><span class="card-icon">📩</span><div class="card-label">Recevoir plus de demandes de contact</div></div>
+            <div class="card-option" data-value="Devenir autonome en SEO"><span class="check-mark">✓</span><span class="card-icon">🎓</span><div class="card-label">Devenir autonome en SEO</div></div>
+        </div>
+        <div class="priority-section" id="prioritySection">
+            <h3 style="text-align:center; font-size:1.05rem; margin-bottom:16px">🎯 Lequel est le plus important ?</h3>
+            <div class="cards-grid" id="priorityCards" data-field="objectifPrioritaire" data-single></div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(5)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(7)" id="nav6next" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 7 — Mots-clés ====== -->
+    <div class="step" data-step="7">
+        <h2 class="step-title">Vos mots-clés cibles</h2>
+        <p class="step-subtitle">Tapez un mot-clé puis appuyez sur Entrée pour l'ajouter</p>
+        <div class="tags-container" id="keywordsContainer" onclick="document.getElementById('keywordsInput').focus()">
+            <input type="text" class="tags-input" id="keywordsInput" placeholder="Ex: plombier Marseille, coiffeur Lyon...">
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(6)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(8)">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 8 — Villes cibles ====== -->
+    <div class="step" data-step="8">
+        <h2 class="step-title">Vos villes cibles</h2>
+        <p class="step-subtitle">Dans quelles villes souhaitez-vous être visible ?</p>
+        <div class="tags-container" id="citiesContainer" onclick="document.getElementById('citiesInput').focus()">
+            <input type="text" class="tags-input" id="citiesInput" placeholder="Ex: Paris, Lyon, Marseille...">
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(7)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(9)">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 9 — Concurrents ====== -->
+    <div class="step" data-step="9">
+        <h2 class="step-title">Vos concurrents</h2>
+        <p class="step-subtitle">Facultatif — Ajoutez jusqu'à 3 sites concurrents</p>
+        <div class="input-group">
+            <label>Concurrent 1</label>
+            <input type="url" class="text-input competitor-url" placeholder="https://www.concurrent1.fr">
+        </div>
+        <div class="input-group">
+            <label>Concurrent 2</label>
+            <input type="url" class="text-input competitor-url" placeholder="https://www.concurrent2.fr">
+        </div>
+        <div class="input-group">
+            <label>Concurrent 3</label>
+            <input type="url" class="text-input competitor-url" placeholder="https://www.concurrent3.fr">
+        </div>
+        <button class="btn btn-secondary" onclick="previewCompetitors()" style="margin-bottom:16px">🔍 Aperçu des concurrents</button>
+        <div id="competitorPreviews"></div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(8)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="saveCompetitors(); goTo(10)">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 10 — Services & Formule ====== -->
+    <div class="step" data-step="10">
+        <h2 class="step-title">Services & Formule</h2>
+        <p class="step-subtitle">Quels services vous intéressent ?</p>
+        <div class="cards-grid" data-field="services" data-multi>
+            <div class="card-option" data-value="SEO tout compris"><span class="check-mark">✓</span><span class="card-icon">🔍</span><div class="card-label">SEO tout compris</div></div>
+            <div class="card-option" data-value="Coaching SEO"><span class="check-mark">✓</span><span class="card-icon">🎓</span><div class="card-label">Coaching SEO</div></div>
+            <div class="card-option" data-value="Google ADS"><span class="check-mark">✓</span><span class="card-icon">📢</span><div class="card-label">Google ADS</div></div>
+            <div class="card-option" data-value="Rédaction web"><span class="check-mark">✓</span><span class="card-icon">✍️</span><div class="card-label">Rédaction web</div></div>
+            <div class="card-option" data-value="Réseaux sociaux"><span class="check-mark">✓</span><span class="card-icon">📱</span><div class="card-label">Réseaux sociaux</div></div>
+            <div class="card-option" data-value="Audit SEO"><span class="check-mark">✓</span><span class="card-icon">📊</span><div class="card-label">Audit SEO</div></div>
+        </div>
+
+        <h3 style="margin-top:36px; margin-bottom:8px; font-size:1.15rem; text-align:center">Choisissez votre formule</h3>
+        <p class="step-subtitle">La formule idéale dépend de votre situation</p>
+        <div class="pricing-grid" id="pricingGrid">
+            <div class="pricing-card" data-value="Solidaire" onclick="selectPricing(this)">
+                <div class="pricing-badge" id="badgeSolidaire">Recommandé pour vous</div>
+                <div class="pricing-icon">💚</div>
+                <div class="pricing-name">Solidaire</div>
+                <div class="pricing-price">79€ <span>/mois</span></div>
+                <ul>
+                    <li>SEO on-site optimisé</li>
+                    <li>1 article de blog / semaine</li>
+                    <li>Réseaux sociaux inclus</li>
+                    <li>Suivi mensuel</li>
+                    <li>Aucun engagement</li>
+                </ul>
+            </div>
+            <div class="pricing-card" data-value="Boost" onclick="selectPricing(this)">
+                <div class="pricing-badge">Le plus populaire</div>
+                <div class="pricing-icon">🚀</div>
+                <div class="pricing-name">Boost</div>
+                <div class="pricing-price">179€ <span>/mois</span></div>
+                <ul>
+                    <li>Tout Solidaire +</li>
+                    <li>Stratégie backlinks</li>
+                    <li>2 articles / semaine</li>
+                    <li>Audit technique complet</li>
+                    <li>Rapport hebdomadaire</li>
+                    <li>Aucun engagement</li>
+                </ul>
+            </div>
+            <div class="pricing-card" data-value="Sur place" onclick="selectPricing(this)">
+                <div class="pricing-badge">Premium</div>
+                <div class="pricing-icon">🏢</div>
+                <div class="pricing-name">Sur place</div>
+                <div class="pricing-price">779€ <span>/mois</span></div>
+                <ul>
+                    <li>Tout Boost +</li>
+                    <li>Intervention sur site</li>
+                    <li>Formation équipe</li>
+                    <li>Stratégie complète</li>
+                    <li>Support prioritaire</li>
+                    <li>Aucun engagement</li>
+                </ul>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(9)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(11)">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 11 — Garantie ====== -->
+    <div class="step" data-step="11">
+        <h2 class="step-title">Garantie remboursement</h2>
+        <p class="step-subtitle">Parce que votre confiance est notre priorité</p>
+        <div class="toggle-container">
+            <div class="toggle-switch" id="garantieToggle" onclick="toggleGarantie()">
+                <div class="toggle-knob"></div>
+            </div>
+            <div class="toggle-label" id="garantieLabel">Garantie désactivée</div>
+            <div class="toggle-desc">
+                Activez la <strong>garantie remboursement intégral</strong>. Si après 3 mois de collaboration, vous n'observez aucune amélioration mesurable de votre positionnement, nous vous remboursons l'intégralité des sommes versées. Aucune condition cachée, aucune question posée.
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(10)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(12)">Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 12 — GMB ====== -->
+    <div class="step" data-step="12">
+        <h2 class="step-title">Google My Business</h2>
+        <p class="step-subtitle">L'optimisation de votre fiche Google est un levier puissant</p>
+        <div class="cards-grid cols-2" data-field="gmb" data-single>
+            <div class="card-option" data-value="Oui">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">✅</span>
+                <div class="card-label">Oui, je souhaite l'optimisation GMB</div>
+            </div>
+            <div class="card-option" data-value="Non">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">❌</span>
+                <div class="card-label">Non, pas pour l'instant</div>
+            </div>
+        </div>
+        <div id="gmbMessage" style="display:none; text-align:center; margin-top:20px; color:var(--text-secondary); font-size:0.92rem;">
+            On en reparlera, c'est souvent un levier sous-estimé 😉
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(11)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(13)" id="nav12next" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 13 — RDV ====== -->
+    <div class="step" data-step="13">
+        <h2 class="step-title">Votre RDV</h2>
+        <p class="step-subtitle">Comment souhaitez-vous échanger ?</p>
+        <div class="cards-grid cols-3" data-field="rdv" data-single>
+            <div class="card-option" data-value="OK avec le créneau envoyé">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">📅</span>
+                <div class="card-label">OK avec le créneau envoyé</div>
+            </div>
+            <div class="card-option" data-value="Pas reçu de créneau">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">📧</span>
+                <div class="card-label">Je n'ai pas reçu de créneau</div>
+            </div>
+            <div class="card-option" data-value="Préfère par écrit">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">✍️</span>
+                <div class="card-label">Je préfère par écrit</div>
+                <div class="card-desc">Email / WhatsApp</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(12)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(14)" id="nav13next" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 14 — Communication ====== -->
+    <div class="step" data-step="14">
+        <h2 class="step-title">Mode de communication</h2>
+        <div class="infobox">
+            <strong>💡 Pourquoi l'écrit est un avantage</strong><br><br>
+            Chez Alti-Web, nous privilégions la communication écrite. Ce choix, lié à une préférence personnelle liée au handicap, est en réalité un <strong>vrai atout pour vous</strong> : chaque échange est tracé, rien ne se perd, et vous gardez un historique complet de toutes nos recommandations et actions. Fini les malentendus téléphoniques !
+        </div>
+        <div class="cards-grid cols-3" data-field="communication" data-single>
+            <div class="card-option" data-value="Email">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">📧</span>
+                <div class="card-label">Email</div>
+            </div>
+            <div class="card-option" data-value="WhatsApp">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">💬</span>
+                <div class="card-label">WhatsApp</div>
+            </div>
+            <div class="card-option" data-value="Alti-Board">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">📋</span>
+                <div class="card-label">Tableau de bord Alti-Board</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(13)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="goTo(15)" id="nav14next" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 15 — Dernier mot ====== -->
+    <div class="step" data-step="15">
+        <h2 class="step-title">Un dernier mot ?</h2>
+        <p class="step-subtitle">Une question, un détail, une attente particulière ? C'est le moment !</p>
+        <div class="input-group">
+            <textarea class="text-input" id="dernierMot" placeholder="Écrivez ici ce que vous avez en tête..."></textarea>
+        </div>
+        <div class="recorder">
+            <p style="font-size:0.88rem; color:var(--text-secondary); margin-bottom:4px">Ou laissez un message vocal (max 2 min)</p>
+            <div class="record-btn" id="recordBtn" onclick="toggleRecording()"></div>
+            <div class="record-timer" id="recordTimer" style="display:none">00:00</div>
+            <div class="audio-preview" id="audioPreview" style="display:none">
+                <audio id="audioPlayer" controls></audio>
+                <button class="audio-delete" onclick="deleteRecording()">✕ Supprimer</button>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(14)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" onclick="submitForm()">Envoyer ✨</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 16 — Merci ====== -->
+    <div class="step" data-step="16">
+        <div class="welcome-screen" style="min-height:auto; padding-top:40px">
+            <h1 style="font-size:2.4rem; margin-bottom:20px">🎉 Merci !</h1>
+            <p class="subtitle">Votre formulaire a bien été envoyé. On revient vers vous très vite.</p>
+        </div>
+        <div id="recapContainer"></div>
+        <div class="final-counter" id="finalCounter"></div>
+        <div class="testimonial">
+            "Grâce à Alti-Web, notre visibilité a été transformée en seulement 3 mois. Le suivi est impeccable et les résultats parlent d'eux-mêmes."
+            <div class="author">— Marie L., Thérapeute à Lyon</div>
+        </div>
+        <div class="social-links">
+            <a href="https://www.linkedin.com/company/alti-web" target="_blank">🔗 LinkedIn</a>
+            <a href="https://wa.me/33600000000" target="_blank">💬 WhatsApp</a>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    // ---- URL Params ----
+    const params = new URLSearchParams(window.location.search);
+    const prenom = params.get('prenom') || '';
+    const siteParam = params.get('site') || '';
+    const emailParam = params.get('email') || '';
+
+    // ---- Welcome personalization ----
+    const welcomeTitle = document.getElementById('welcomeTitle');
+    if (prenom) {
+        welcomeTitle.textContent = prenom + ', préparez votre appel stratégique';
+    }
+
+    // ---- Pre-fill site URL ----
+    if (siteParam) {
+        document.getElementById('siteUrl').value = siteParam;
+    }
+
+    // ---- Form data ----
+    const formData = {
+        prenom: prenom,
+        email: emailParam,
+        profil: '',
+        niveauSEO: '',
+        siteUrl: siteParam,
+        cms: '',
+        secteur: '',
+        secteurAutre: '',
+        anciennete: '',
+        objectifs: [],
+        objectifPrioritaire: '',
+        motsCles: [],
+        villesCibles: [],
+        concurrents: [],
+        services: [],
+        formule: '',
+        garantie: false,
+        gmb: '',
+        rdv: '',
+        communication: '',
+        dernierMot: '',
+        audioMessage: false
+    };
+
+    const TOTAL_STEPS = 16;
+    let currentStep = 0;
+
+    // ---- EmailJS init ----
+    emailjs.init('nf_vsJRJn_ucqKgbR');
+
+    // ---- Navigation ----
+    window.goTo = function(step) {
+        const currentEl = document.querySelector('.step.active');
+        if (currentEl) {
+            currentEl.classList.remove('active');
+            currentEl.classList.add('exiting');
+            setTimeout(() => { currentEl.classList.remove('exiting'); }, 300);
+        }
+        setTimeout(() => {
+            const nextEl = document.querySelector('[data-step="' + step + '"]');
+            if (nextEl) {
+                nextEl.classList.add('active');
+                currentStep = step;
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                // Show pricing badge based on anciennete
+                if (step === 10) {
+                    const badge = document.getElementById('badgeSolidaire');
+                    if (formData.anciennete === 'Moins de 2 ans') {
+                        badge.classList.add('show');
+                        // Pre-select Solidaire
+                        const solidaireCard = document.querySelector('.pricing-card[data-value="Solidaire"]');
+                        if (solidaireCard && !formData.formule) {
+                            selectPricing(solidaireCard);
+                        }
+                    }
+                }
+            }
+        }, 310);
+    };
+
+    function updateProgress() {
+        const pct = currentStep === 0 ? 0 : Math.round((currentStep / TOTAL_STEPS) * 100);
+        document.getElementById('progressBar').style.width = pct + '%';
+        const counter = document.getElementById('stepCounter');
+        if (currentStep === 0 || currentStep === TOTAL_STEPS) {
+            counter.textContent = '';
+        } else {
+            counter.textContent = 'Étape ' + currentStep + '/' + (TOTAL_STEPS - 1);
+        }
+    }
+
+    // ---- Card selection ----
+    document.querySelectorAll('.cards-grid[data-single]').forEach(grid => {
+        const field = grid.dataset.field;
+        grid.querySelectorAll('.card-option').forEach(card => {
+            card.addEventListener('click', () => {
+                grid.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                formData[field] = card.dataset.value;
+
+                // Enable next button
+                const stepEl = card.closest('.step');
+                const stepNum = stepEl.dataset.step;
+                const nextBtn = document.getElementById('nav' + stepNum + 'next');
+                if (nextBtn) nextBtn.disabled = false;
+
+                // Handle "Autre" for secteur
+                if (field === 'secteur') {
+                    const wrap = document.getElementById('secteurAutreWrap');
+                    wrap.classList.toggle('visible', card.dataset.value === 'Autre');
+                }
+
+                // Handle GMB message
+                if (field === 'gmb' && card.dataset.value === 'Non') {
+                    document.getElementById('gmbMessage').style.display = 'block';
+                } else if (field === 'gmb') {
+                    document.getElementById('gmbMessage').style.display = 'none';
+                }
+
+                // Auto-advance for single select steps (optional UX)
+            });
+        });
+    });
+
+    // ---- Multi-select cards ----
+    document.querySelectorAll('.cards-grid[data-multi]').forEach(grid => {
+        const field = grid.dataset.field;
+        grid.querySelectorAll('.card-option').forEach(card => {
+            card.addEventListener('click', () => {
+                card.classList.toggle('selected');
+                const selected = Array.from(grid.querySelectorAll('.card-option.selected')).map(c => c.dataset.value);
+                formData[field] = selected;
+
+                // Enable next button
+                const stepEl = card.closest('.step');
+                const stepNum = stepEl.dataset.step;
+                const nextBtn = document.getElementById('nav' + stepNum + 'next');
+                if (nextBtn) nextBtn.disabled = selected.length === 0;
+
+                // Build priority cards for objectifs
+                if (field === 'objectifs') {
+                    buildPriorityCards(selected);
+                }
+            });
+        });
+    });
+
+    function buildPriorityCards(selected) {
+        const section = document.getElementById('prioritySection');
+        const container = document.getElementById('priorityCards');
+        if (selected.length === 0) {
+            section.classList.remove('visible');
+            return;
+        }
+        section.classList.add('visible');
+        container.innerHTML = '';
+        selected.forEach(val => {
+            const card = document.createElement('div');
+            card.className = 'card-option';
+            card.dataset.value = val;
+            card.innerHTML = '<span class="check-mark">✓</span><div class="card-label">' + val + '</div>';
+            card.addEventListener('click', () => {
+                container.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
+                formData.objectifPrioritaire = val;
+                document.getElementById('nav6next').disabled = false;
+            });
+            container.appendChild(card);
+        });
+        // Re-select if already chosen
+        if (formData.objectifPrioritaire && selected.includes(formData.objectifPrioritaire)) {
+            const existing = container.querySelector('[data-value="' + formData.objectifPrioritaire + '"]');
+            if (existing) existing.classList.add('selected');
+        } else {
+            formData.objectifPrioritaire = '';
+            document.getElementById('nav6next').disabled = true;
+        }
+    }
+
+    // ---- Anciennete selection (separate grid in step 5) ----
+    // Already handled by data-field="anciennete" single select grid
+
+    // Step 5 next button logic: need both secteur and anciennete
+    function checkStep5() {
+        document.getElementById('nav5next').disabled = !(formData.secteur && formData.anciennete);
+    }
+    document.querySelectorAll('[data-field="secteur"] .card-option, [data-field="anciennete"] .card-option').forEach(card => {
+        card.addEventListener('click', () => { setTimeout(checkStep5, 50); });
+    });
+
+    // ---- Tags input ----
+    function setupTags(containerId, inputId, dataKey) {
+        const container = document.getElementById(containerId);
+        const input = document.getElementById(inputId);
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && this.value.trim()) {
+                e.preventDefault();
+                const val = this.value.trim();
+                formData[dataKey].push(val);
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.innerHTML = val + ' <span class="tag-remove" onclick="removeTag(this, \'' + dataKey + '\', \'' + val.replace(/'/g, "\\'") + '\')">✕</span>';
+                container.insertBefore(tag, input);
+                this.value = '';
+            }
+        });
+    }
+    setupTags('keywordsContainer', 'keywordsInput', 'motsCles');
+    setupTags('citiesContainer', 'citiesInput', 'villesCibles');
+
+    window.removeTag = function(el, dataKey, val) {
+        const idx = formData[dataKey].indexOf(val);
+        if (idx > -1) formData[dataKey].splice(idx, 1);
+        el.parentElement.remove();
+    };
+
+    // ---- Site preview ----
+    window.previewSite = function() {
+        const url = document.getElementById('siteUrl').value.trim();
+        if (!url) return;
+        formData.siteUrl = url;
+        const preview = document.getElementById('sitePreview');
+        const img = document.getElementById('sitePreviewImg');
+        img.src = 'https://image.thum.io/get/width/400/crop/600/' + url;
+        preview.style.display = 'block';
+    };
+
+    window.saveSiteUrl = function() {
+        formData.siteUrl = document.getElementById('siteUrl').value.trim();
+    };
+
+    // ---- Competitor previews ----
+    window.previewCompetitors = function() {
+        const container = document.getElementById('competitorPreviews');
+        container.innerHTML = '';
+        document.querySelectorAll('.competitor-url').forEach(input => {
+            const url = input.value.trim();
+            if (url) {
+                const div = document.createElement('div');
+                div.className = 'site-preview';
+                div.style.marginBottom = '16px';
+                div.innerHTML = '<img src="https://image.thum.io/get/width/400/crop/600/' + url + '" alt="Aperçu concurrent"><div class="preview-label">' + url + '</div>';
+                container.appendChild(div);
+            }
+        });
+    };
+
+    window.saveCompetitors = function() {
+        formData.concurrents = [];
+        document.querySelectorAll('.competitor-url').forEach(input => {
+            const url = input.value.trim();
+            if (url) formData.concurrents.push(url);
+        });
+    };
+
+    // ---- Pricing selection ----
+    window.selectPricing = function(card) {
+        document.querySelectorAll('.pricing-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        formData.formule = card.dataset.value;
+    };
+
+    // ---- Garantie toggle ----
+    window.toggleGarantie = function() {
+        const toggle = document.getElementById('garantieToggle');
+        const label = document.getElementById('garantieLabel');
+        toggle.classList.toggle('on');
+        formData.garantie = toggle.classList.contains('on');
+        label.textContent = formData.garantie ? 'Garantie activée ✅' : 'Garantie désactivée';
+    };
+
+    // ---- Audio recording ----
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recordingInterval = null;
+    let recordingSeconds = 0;
+    let audioBlob = null;
+
+    window.toggleRecording = function() {
+        const btn = document.getElementById('recordBtn');
+        if (btn.classList.contains('recording')) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    };
+
+    function startRecording() {
+        navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            audioChunks = [];
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            mediaRecorder.onstop = () => {
+                audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+                const url = URL.createObjectURL(audioBlob);
+                document.getElementById('audioPlayer').src = url;
+                document.getElementById('audioPreview').style.display = 'flex';
+                formData.audioMessage = true;
+                stream.getTracks().forEach(t => t.stop());
+            };
+            mediaRecorder.start();
+            const btn = document.getElementById('recordBtn');
+            btn.classList.add('recording');
+            document.getElementById('recordTimer').style.display = 'block';
+            recordingSeconds = 0;
+            updateTimerDisplay();
+            recordingInterval = setInterval(() => {
+                recordingSeconds++;
+                updateTimerDisplay();
+                if (recordingSeconds >= 120) stopRecording();
+            }, 1000);
+        }).catch(() => {
+            alert('Impossible d\'accéder au microphone.');
+        });
+    }
+
+    function stopRecording() {
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+        }
+        clearInterval(recordingInterval);
+        document.getElementById('recordBtn').classList.remove('recording');
+    }
+
+    function updateTimerDisplay() {
+        const m = String(Math.floor(recordingSeconds / 60)).padStart(2, '0');
+        const s = String(recordingSeconds % 60).padStart(2, '0');
+        document.getElementById('recordTimer').textContent = m + ':' + s;
+    }
+
+    window.deleteRecording = function() {
+        audioBlob = null;
+        formData.audioMessage = false;
+        document.getElementById('audioPreview').style.display = 'none';
+        document.getElementById('audioPlayer').src = '';
+        document.getElementById('recordTimer').style.display = 'none';
+    };
+
+    // ---- Submit ----
+    window.submitForm = function() {
+        // Save last fields
+        formData.dernierMot = document.getElementById('dernierMot').value.trim();
+        formData.secteurAutre = document.getElementById('secteurAutre')?.value.trim() || '';
+
+        // Prevent duplicates
+        if (localStorage.getItem('altiweb_form_submitted_' + formData.email)) {
+            alert('Vous avez déjà soumis ce formulaire. Merci !');
+            return;
+        }
+
+        // Build email body
+        const body = buildEmailBody();
+
+        emailjs.send('service_12wtkng', 'template_tib1gk7', {
+            name: body
+        }).then(() => {
+            if (formData.email) {
+                localStorage.setItem('altiweb_form_submitted_' + formData.email, 'true');
+            }
+            buildRecap();
+            goTo(TOTAL_STEPS);
+        }).catch(err => {
+            console.error('EmailJS error:', err);
+            alert('Une erreur est survenue. Veuillez réessayer.');
+        });
+    };
+
+    function buildEmailBody() {
+        let lines = [];
+        lines.push('=== NOUVEAU PROSPECT ===');
+        lines.push('');
+        lines.push('Prénom : ' + (formData.prenom || 'Non renseigné'));
+        lines.push('Email : ' + (formData.email || 'Non renseigné'));
+        lines.push('Profil : ' + formData.profil);
+        lines.push('Niveau SEO : ' + formData.niveauSEO);
+        lines.push('Site : ' + (formData.siteUrl || 'Non renseigné'));
+        lines.push('CMS : ' + formData.cms);
+        lines.push('Secteur : ' + (formData.secteur === 'Autre' ? formData.secteurAutre || 'Autre' : formData.secteur));
+        lines.push('Ancienneté : ' + formData.anciennete);
+        lines.push('');
+        lines.push('--- OBJECTIFS ---');
+        lines.push('Objectifs : ' + (formData.objectifs.join(', ') || 'Aucun'));
+        lines.push('Objectif prioritaire : ' + (formData.objectifPrioritaire || 'Non défini'));
+        lines.push('');
+        lines.push('--- CIBLAGE ---');
+        lines.push('Mots-clés : ' + (formData.motsCles.join(', ') || 'Aucun'));
+        lines.push('Villes : ' + (formData.villesCibles.join(', ') || 'Aucune'));
+        lines.push('Concurrents : ' + (formData.concurrents.join(', ') || 'Aucun'));
+        lines.push('');
+        lines.push('--- SERVICES ---');
+        lines.push('Services : ' + (formData.services.join(', ') || 'Aucun'));
+        lines.push('Formule : ' + (formData.formule || 'Non choisie'));
+        lines.push('Garantie : ' + (formData.garantie ? 'Oui' : 'Non'));
+        lines.push('');
+        lines.push('--- CONTACT ---');
+        lines.push('Google My Business : ' + formData.gmb);
+        lines.push('RDV : ' + formData.rdv);
+        lines.push('Communication : ' + formData.communication);
+        lines.push('');
+        if (formData.dernierMot) {
+            lines.push('--- MESSAGE ---');
+            lines.push(formData.dernierMot);
+            lines.push('');
+        }
+        if (formData.audioMessage) {
+            lines.push('⚠️ Un message vocal a été enregistré (non transmis par email)');
+        }
+        return lines.join('\n');
+    }
+
+    function buildRecap() {
+        const container = document.getElementById('recapContainer');
+        const items = [
+            { label: 'Profil', value: formData.profil },
+            { label: 'Niveau SEO', value: formData.niveauSEO },
+            { label: 'Site web', value: formData.siteUrl || '—' },
+            { label: 'CMS', value: formData.cms },
+            { label: 'Secteur', value: formData.secteur === 'Autre' ? (formData.secteurAutre || 'Autre') : formData.secteur },
+            { label: 'Ancienneté', value: formData.anciennete },
+            { label: 'Objectifs', value: formData.objectifs.join(', ') || '—' },
+            { label: 'Objectif prioritaire', value: formData.objectifPrioritaire || '—' },
+            { label: 'Mots-clés', value: formData.motsCles.join(', ') || '—' },
+            { label: 'Villes cibles', value: formData.villesCibles.join(', ') || '—' },
+            { label: 'Concurrents', value: formData.concurrents.join(', ') || '—' },
+            { label: 'Services', value: formData.services.join(', ') || '—' },
+            { label: 'Formule', value: formData.formule || '—' },
+            { label: 'Garantie', value: formData.garantie ? 'Activée' : 'Non' },
+            { label: 'Google My Business', value: formData.gmb },
+            { label: 'RDV', value: formData.rdv },
+            { label: 'Communication', value: formData.communication },
+        ];
+        container.innerHTML = items.map(i =>
+            '<div class="recap-card"><div class="recap-label">' + i.label + '</div><div class="recap-value">' + i.value + '</div></div>'
+        ).join('');
+
+        // Counter
+        const month = new Date().getMonth();
+        const count = 40 + ((month * 17 + 13) % 41); // 40-80 deterministic
+        document.getElementById('finalCounter').textContent =
+            '🏆 Vous êtes le ' + count + 'ème professionnel à nous faire confiance ce mois-ci';
+    }
+
+    // Init progress
+    updateProgress();
+})();
+</script>
+</body>
+</html>
