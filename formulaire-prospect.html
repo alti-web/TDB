@@ -435,11 +435,13 @@
         <div class="welcome-screen">
             <h1 id="welcomeTitle">Préparez votre appel stratégique</h1>
             <p class="subtitle">Savez-vous combien vous coûte l'inaction&nbsp;? Gagnez du temps, boostez votre business.</p>
+            <p class="subtitle" style="margin-bottom:24px; font-size:0.95rem; max-width:560px">L'objectif de ces questions est que :</p>
             <div class="trust-badges">
-                <div class="trust-badge">✅ A partir de 79€ tout compris</div>
-                <div class="trust-badge">✅ Aucun engagement</div>
-                <div class="trust-badge">✅ 1 article de blog + Réseaux sociaux par semaine</div>
+                <div class="trust-badge">✅ Je comprenne bien votre contexte</div>
+                <div class="trust-badge">✅ Que je vérifie si je peux vous apporter un vrai "+"</div>
+                <div class="trust-badge">✅ Que je prépare au mieux notre échange téléphonique</div>
             </div>
+            <p style="color:var(--text-secondary); font-size:0.85rem; margin-bottom:32px; font-style:italic; opacity:0.8">Évidemment, ce formulaire n'est pas un engagement, c'est purement informatif.</p>
             <button class="btn btn-primary" onclick="goTo(1)">C'est parti →</button>
         </div>
     </div>
@@ -589,6 +591,9 @@
     <div class="step" data-step="5">
         <h2 class="step-title">Votre activité</h2>
         <p class="step-subtitle">Dans quel secteur exercez-vous ?</p>
+        <div class="input-group" style="margin-bottom:20px">
+            <input type="text" class="text-input" id="secteurLibre" placeholder="Autre : mon activité est..." style="font-size:0.9rem">
+        </div>
         <div class="cards-grid" data-field="secteur" data-single>
             <div class="card-option" data-value="E-commerce"><span class="check-mark">✓</span><span class="card-icon">🛒</span><div class="card-label">E-commerce</div></div>
             <div class="card-option" data-value="Thérapeute/Bien-être"><span class="check-mark">✓</span><span class="card-icon">🧘</span><div class="card-label">Thérapeute / Bien-être</div></div>
@@ -659,6 +664,17 @@
     <div class="step" data-step="8">
         <h2 class="step-title">Vos villes cibles</h2>
         <p class="step-subtitle">Dans quelles villes souhaitez-vous être visible ?</p>
+        <div style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:20px">
+            <label style="display:flex; align-items:center; gap:8px; padding:10px 18px; background:var(--bg-card); border:2px solid rgba(79,140,255,0.08); border-radius:var(--radius-btn); cursor:pointer; transition:all 0.25s; font-size:0.92rem; color:var(--text-primary)" onmouseover="this.style.borderColor='rgba(79,140,255,0.25)'" onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='rgba(79,140,255,0.08)'">
+                <input type="checkbox" id="cityFrance" style="accent-color:var(--accent); width:18px; height:18px; cursor:pointer" onchange="toggleCityCheckbox(this, 'Toute la France')"> 🇫🇷 Toute la France
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; padding:10px 18px; background:var(--bg-card); border:2px solid rgba(79,140,255,0.08); border-radius:var(--radius-btn); cursor:pointer; transition:all 0.25s; font-size:0.92rem; color:var(--text-primary)" onmouseover="this.style.borderColor='rgba(79,140,255,0.25)'" onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='rgba(79,140,255,0.08)'">
+                <input type="checkbox" id="citySuisse" style="accent-color:var(--accent); width:18px; height:18px; cursor:pointer" onchange="toggleCityCheckbox(this, 'Suisse')"> 🇨🇭 Suisse
+            </label>
+            <label style="display:flex; align-items:center; gap:8px; padding:10px 18px; background:var(--bg-card); border:2px solid rgba(79,140,255,0.08); border-radius:var(--radius-btn); cursor:pointer; transition:all 0.25s; font-size:0.92rem; color:var(--text-primary)" onmouseover="this.style.borderColor='rgba(79,140,255,0.25)'" onmouseout="if(!this.querySelector('input').checked) this.style.borderColor='rgba(79,140,255,0.08)'">
+                <input type="checkbox" id="cityBelgique" style="accent-color:var(--accent); width:18px; height:18px; cursor:pointer" onchange="toggleCityCheckbox(this, 'Belgique')"> 🇧🇪 Belgique
+            </label>
+        </div>
         <div class="tags-container" id="citiesContainer" onclick="document.getElementById('citiesInput').focus()">
             <input type="text" class="tags-input" id="citiesInput" placeholder="Ex: Paris, Lyon, Marseille...">
         </div>
@@ -704,7 +720,36 @@
             <div class="card-option" data-value="Google ADS"><span class="check-mark">✓</span><span class="card-icon">📢</span><div class="card-label">Google ADS</div></div>
             <div class="card-option" data-value="Rédaction web"><span class="check-mark">✓</span><span class="card-icon">✍️</span><div class="card-label">Rédaction web</div></div>
             <div class="card-option" data-value="Réseaux sociaux"><span class="check-mark">✓</span><span class="card-icon">📱</span><div class="card-label">Réseaux sociaux</div></div>
-            <div class="card-option" data-value="Audit SEO"><span class="check-mark">✓</span><span class="card-icon">📊</span><div class="card-label">Audit SEO</div></div>
+            <div class="card-option" data-value="Formation"><span class="check-mark">✓</span><span class="card-icon">📚</span><div class="card-label">Formation</div></div>
+            <div class="card-option" data-value="Modifications techniques"><span class="check-mark">✓</span><span class="card-icon">⚙️</span><div class="card-label">Modifications techniques</div></div>
+            <div class="card-option" data-value="Application téléphone"><span class="check-mark">✓</span><span class="card-icon">📲</span><div class="card-label">Application téléphone</div></div>
+            <div class="card-option" data-value="Tunnel de vente"><span class="check-mark">✓</span><span class="card-icon">🎯</span><div class="card-label">Tunnel de vente</div></div>
+            <div class="card-option" data-value="Landing page génératrice"><span class="check-mark">✓</span><span class="card-icon">🚀</span><div class="card-label">Landing page génératrice de demande ou de vente</div></div>
+            <div class="card-option" data-value="1 site par semaine"><span class="check-mark">✓</span><span class="card-icon">🌐</span><div class="card-label">Système 1 site/semaine (4/mois) pour dominer votre marché</div></div>
+            <div class="card-option" data-value="Optimisation CRO"><span class="check-mark">✓</span><span class="card-icon">📈</span><div class="card-label">Optimiser le taux de conversion (CRO)</div></div>
+        </div>
+
+        <h3 style="margin-top:36px; margin-bottom:8px; font-size:1.15rem; text-align:center">Comment souhaitez-vous travailler ?</h3>
+        <p class="step-subtitle">Choisissez le mode qui vous correspond</p>
+        <div class="cards-grid cols-3" data-field="modeCollab" data-single>
+            <div class="card-option" data-value="Tout de A à Z">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🙌</span>
+                <div class="card-label">Vous faites tout de A à Z</div>
+                <div class="card-desc">Je délègue entièrement</div>
+            </div>
+            <div class="card-option" data-value="Collaboratif">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🤝</span>
+                <div class="card-label">Collaboratif</div>
+                <div class="card-desc">Vous faites tout mais je peux aussi contribuer</div>
+            </div>
+            <div class="card-option" data-value="Coaching">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🎓</span>
+                <div class="card-label">Coaching</div>
+                <div class="card-desc">Vous me guidez, je fais les modifications</div>
+            </div>
         </div>
 
         <h3 style="margin-top:36px; margin-bottom:8px; font-size:1.15rem; text-align:center">Choisissez votre formule</h3>
@@ -716,11 +761,8 @@
                 <div class="pricing-name">Solidaire</div>
                 <div class="pricing-price">79€ <span>/mois</span></div>
                 <ul>
-                    <li>SEO on-site optimisé</li>
-                    <li>1 article de blog / semaine</li>
-                    <li>Réseaux sociaux inclus</li>
-                    <li>Suivi mensuel</li>
-                    <li>Aucun engagement</li>
+                    <li>Mon activité a moins de deux ans</li>
+                    <li>Ou je ne génère pas assez de ventes / clientèle</li>
                 </ul>
             </div>
             <div class="pricing-card" data-value="Boost" onclick="selectPricing(this)">
@@ -729,12 +771,7 @@
                 <div class="pricing-name">Boost</div>
                 <div class="pricing-price">179€ <span>/mois</span></div>
                 <ul>
-                    <li>Tout Solidaire +</li>
-                    <li>Stratégie backlinks</li>
-                    <li>2 articles / semaine</li>
-                    <li>Audit technique complet</li>
-                    <li>Rapport hebdomadaire</li>
-                    <li>Aucun engagement</li>
+                    <li>Je souhaite passer à l'étape supérieure</li>
                 </ul>
             </div>
             <div class="pricing-card" data-value="Sur place" onclick="selectPricing(this)">
@@ -742,14 +779,6 @@
                 <div class="pricing-icon">🏢</div>
                 <div class="pricing-name">Sur place</div>
                 <div class="pricing-price">779€ <span>/mois</span></div>
-                <ul>
-                    <li>Tout Boost +</li>
-                    <li>Intervention sur site</li>
-                    <li>Formation équipe</li>
-                    <li>Stratégie complète</li>
-                    <li>Support prioritaire</li>
-                    <li>Aucun engagement</li>
-                </ul>
             </div>
         </div>
         <div class="nav-buttons">
@@ -837,11 +866,13 @@
     <!-- ====== STEP 14 — Communication ====== -->
     <div class="step" data-step="14">
         <h2 class="step-title">Mode de communication</h2>
+        <p class="step-subtitle">Comment préférez-vous échanger ? (plusieurs choix possibles)</p>
         <div class="infobox">
             <strong>💡 Pourquoi l'écrit est un avantage</strong><br><br>
-            Chez Alti-Web, nous privilégions la communication écrite. Ce choix, lié à une préférence personnelle liée au handicap, est en réalité un <strong>vrai atout pour vous</strong> : chaque échange est tracé, rien ne se perd, et vous gardez un historique complet de toutes nos recommandations et actions. Fini les malentendus téléphoniques !
+            Chez Alti-Web, nous privilégions la communication écrite : chaque échange est tracé, rien ne se perd, et vous gardez un historique complet de toutes nos recommandations et actions. Fini les malentendus !
+            <br><small style="color:var(--text-secondary); opacity:0.7; margin-top:8px; display:inline-block">Pas d'appels téléphoniques (handicap neurologique)</small>
         </div>
-        <div class="cards-grid cols-3" data-field="communication" data-single>
+        <div class="cards-grid cols-3" data-field="communication" data-multi>
             <div class="card-option" data-value="Email">
                 <span class="check-mark">✓</span>
                 <span class="card-icon">📧</span>
@@ -861,7 +892,7 @@
         <div class="nav-buttons">
             <button class="btn btn-secondary" onclick="goTo(13)">← Retour</button>
             <div class="spacer"></div>
-            <button class="btn btn-primary" onclick="goTo(15)" id="nav14next" disabled>Suivant →</button>
+            <button class="btn btn-primary" onclick="goTo(15)">Suivant →</button>
         </div>
     </div>
 
@@ -899,10 +930,6 @@
         <div class="testimonial">
             "Grâce à Alti-Web, notre visibilité a été transformée en seulement 3 mois. Le suivi est impeccable et les résultats parlent d'eux-mêmes."
             <div class="author">— Marie L., Thérapeute à Lyon</div>
-        </div>
-        <div class="social-links">
-            <a href="https://www.linkedin.com/company/alti-web" target="_blank">🔗 LinkedIn</a>
-            <a href="https://wa.me/33600000000" target="_blank">💬 WhatsApp</a>
         </div>
     </div>
 </div>
@@ -943,12 +970,14 @@
         villesCibles: [],
         concurrents: [],
         services: [],
+        modeCollab: '',
         formule: '',
         garantie: false,
         gmb: '',
         rdv: '',
-        communication: '',
+        communication: [],
         dernierMot: '',
+        secteurLibre: '',
         audioMessage: false
     };
 
@@ -1126,6 +1155,21 @@
         el.parentElement.remove();
     };
 
+    // ---- City checkboxes ----
+    window.toggleCityCheckbox = function(cb, label) {
+        const parent = cb.closest('label');
+        if (cb.checked) {
+            if (!formData.villesCibles.includes(label)) formData.villesCibles.push(label);
+            parent.style.borderColor = 'var(--accent)';
+            parent.style.background = 'rgba(79,140,255,0.08)';
+        } else {
+            const idx = formData.villesCibles.indexOf(label);
+            if (idx > -1) formData.villesCibles.splice(idx, 1);
+            parent.style.borderColor = 'rgba(79,140,255,0.08)';
+            parent.style.background = 'var(--bg-card)';
+        }
+    };
+
     // ---- Site preview ----
     window.previewSite = function() {
         const url = document.getElementById('siteUrl').value.trim();
@@ -1253,6 +1297,7 @@
         // Save last fields
         formData.dernierMot = document.getElementById('dernierMot').value.trim();
         formData.secteurAutre = document.getElementById('secteurAutre')?.value.trim() || '';
+        formData.secteurLibre = document.getElementById('secteurLibre')?.value.trim() || '';
 
         // Prevent duplicates
         if (localStorage.getItem('altiweb_form_submitted_' + formData.email)) {
@@ -1287,7 +1332,7 @@
         lines.push('Niveau SEO : ' + formData.niveauSEO);
         lines.push('Site : ' + (formData.siteUrl || 'Non renseigné'));
         lines.push('CMS : ' + formData.cms);
-        lines.push('Secteur : ' + (formData.secteur === 'Autre' ? formData.secteurAutre || 'Autre' : formData.secteur));
+        lines.push('Secteur : ' + (formData.secteurLibre || (formData.secteur === 'Autre' ? formData.secteurAutre || 'Autre' : formData.secteur)));
         lines.push('Ancienneté : ' + formData.anciennete);
         lines.push('');
         lines.push('--- OBJECTIFS ---');
@@ -1301,13 +1346,14 @@
         lines.push('');
         lines.push('--- SERVICES ---');
         lines.push('Services : ' + (formData.services.join(', ') || 'Aucun'));
+        lines.push('Mode de collaboration : ' + (formData.modeCollab || 'Non choisi'));
         lines.push('Formule : ' + (formData.formule || 'Non choisie'));
         lines.push('Garantie : ' + (formData.garantie ? 'Oui' : 'Non'));
         lines.push('');
         lines.push('--- CONTACT ---');
         lines.push('Google My Business : ' + formData.gmb);
         lines.push('RDV : ' + formData.rdv);
-        lines.push('Communication : ' + formData.communication);
+        lines.push('Communication : ' + (Array.isArray(formData.communication) ? (formData.communication.join(', ') || 'Non renseigné') : formData.communication));
         lines.push('');
         if (formData.dernierMot) {
             lines.push('--- MESSAGE ---');
@@ -1327,7 +1373,7 @@
             { label: 'Niveau SEO', value: formData.niveauSEO },
             { label: 'Site web', value: formData.siteUrl || '—' },
             { label: 'CMS', value: formData.cms },
-            { label: 'Secteur', value: formData.secteur === 'Autre' ? (formData.secteurAutre || 'Autre') : formData.secteur },
+            { label: 'Secteur', value: formData.secteurLibre || (formData.secteur === 'Autre' ? (formData.secteurAutre || 'Autre') : formData.secteur) },
             { label: 'Ancienneté', value: formData.anciennete },
             { label: 'Objectifs', value: formData.objectifs.join(', ') || '—' },
             { label: 'Objectif prioritaire', value: formData.objectifPrioritaire || '—' },
@@ -1335,21 +1381,20 @@
             { label: 'Villes cibles', value: formData.villesCibles.join(', ') || '—' },
             { label: 'Concurrents', value: formData.concurrents.join(', ') || '—' },
             { label: 'Services', value: formData.services.join(', ') || '—' },
+            { label: 'Mode de collaboration', value: formData.modeCollab || '—' },
             { label: 'Formule', value: formData.formule || '—' },
             { label: 'Garantie', value: formData.garantie ? 'Activée' : 'Non' },
             { label: 'Google My Business', value: formData.gmb },
             { label: 'RDV', value: formData.rdv },
-            { label: 'Communication', value: formData.communication },
+            { label: 'Communication', value: Array.isArray(formData.communication) ? (formData.communication.join(', ') || '—') : formData.communication },
         ];
         container.innerHTML = items.map(i =>
             '<div class="recap-card"><div class="recap-label">' + i.label + '</div><div class="recap-value">' + i.value + '</div></div>'
         ).join('');
 
         // Counter
-        const month = new Date().getMonth();
-        const count = 40 + ((month * 17 + 13) % 41); // 40-80 deterministic
         document.getElementById('finalCounter').textContent =
-            '🏆 Vous êtes le ' + count + 'ème professionnel à nous faire confiance ce mois-ci';
+            '🏆 Vous êtes le 7ème professionnel à nous faire confiance ce mois-ci';
     }
 
     // Init progress
