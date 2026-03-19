@@ -3243,6 +3243,7 @@ function resetDashboardState() {
   if (tasksEl && _originalTasksHTML !== null) {
     tasksEl.innerHTML = _originalTasksHTML;
     tasksEl.style.display = '';
+    tasksEl.style.opacity = '';
   }
   // Restaurer le badge "Actif"
   var badges = document.querySelectorAll('.status-badge');
@@ -3278,17 +3279,39 @@ function applyFinishedStatus(email) {
     statusItems[j].style.background = '#9ca3af';
     statusItems[j].style.boxShadow = 'none';
   }
-  // Remplacer les tâches en cours par le bloc CGV / Charte
+  // Afficher les tâches en mode "En arrêt" avec % floutés
   var tasksEl = document.querySelector('.live-tasks');
   if (tasksEl) {
-    tasksEl.innerHTML = '<a href="https://alti-board.fr/Charte_Handicap_RSE.pdf" target="_blank" style="display:block;text-decoration:none;background:linear-gradient(135deg,rgba(52,211,153,0.12),rgba(79,140,255,0.08));border:1px solid rgba(52,211,153,0.25);border-radius:16px;padding:28px 24px;text-align:center;transition:transform 0.2s,box-shadow 0.2s" onmouseover="this.style.transform=\'translateY(-2px)\';this.style.boxShadow=\'0 8px 30px rgba(52,211,153,0.2)\'" onmouseout="this.style.transform=\'\';this.style.boxShadow=\'\'">' +
-      '<div style="font-size:42px;margin-bottom:14px">📋✅</div>' +
-      '<div style="font-size:1.15rem;font-weight:700;color:var(--text-primary,#fff);margin-bottom:8px">CGV & Charte Handicap validées</div>' +
-      '<div style="font-size:0.9rem;color:var(--accent-green,#34d399);font-weight:600;margin-bottom:14px">Tous les documents ont été acceptés en début de projet</div>' +
-      '<div style="display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:10px;background:linear-gradient(135deg,var(--accent-green,#34d399),#22b07d);color:#fff;font-weight:600;font-size:0.95rem">' +
-        '<span>📄</span> Consulter la Charte RSE & Handicap' +
-      '</div>' +
-    '</a>';
+    // Ajouter le badge "En arrêt" en haut
+    var header = tasksEl.querySelector('.live-tasks-header');
+    if (header) {
+      var dot = header.querySelector('.live-dot');
+      if (dot) { dot.style.background = '#9ca3af'; dot.style.boxShadow = 'none'; dot.style.animation = 'none'; }
+      var badge = document.createElement('span');
+      badge.style.cssText = 'margin-left:auto;padding:4px 12px;border-radius:20px;background:rgba(156,163,175,0.15);color:#9ca3af;font-size:12px;font-weight:600;letter-spacing:0.5px';
+      badge.textContent = 'En arrêt';
+      header.appendChild(badge);
+    }
+    // Flouter les pourcentages et barres de progression
+    var progressPct = tasksEl.querySelector('#progressPct');
+    if (progressPct) progressPct.style.filter = 'blur(4px)';
+    var progressFill = tasksEl.querySelector('#progressFill');
+    if (progressFill) progressFill.style.filter = 'blur(4px)';
+    var backlinksFill = tasksEl.querySelector('#backlinksProgressFill');
+    if (backlinksFill) backlinksFill.style.filter = 'blur(4px)';
+    var desaveuxFill = tasksEl.querySelector('#desaveuxProgressFill');
+    if (desaveuxFill) desaveuxFill.style.filter = 'blur(4px)';
+    var pageCount = tasksEl.querySelector('#pageCount');
+    if (pageCount) pageCount.style.filter = 'blur(4px)';
+    // Griser les dots des sous-tâches
+    var subDots = tasksEl.querySelectorAll('.live-dot');
+    for (var k = 0; k < subDots.length; k++) {
+      subDots[k].style.background = '#9ca3af';
+      subDots[k].style.boxShadow = 'none';
+      subDots[k].style.animation = 'none';
+    }
+    // Réduire l'opacité globale
+    tasksEl.style.opacity = '0.6';
   }
 }
 
