@@ -3244,6 +3244,9 @@ function resetDashboardState() {
     tasksEl.innerHTML = _originalTasksHTML;
     tasksEl.style.display = '';
     tasksEl.style.opacity = '';
+    // Supprimer le bloc charte s'il existe
+    var charteBlock = document.getElementById('charteFinishedBlock');
+    if (charteBlock) charteBlock.remove();
   }
   // Restaurer le badge "Actif"
   var badges = document.querySelectorAll('.status-badge');
@@ -3312,6 +3315,20 @@ function applyFinishedStatus(email) {
     }
     // Réduire l'opacité globale
     tasksEl.style.opacity = '0.6';
+    // Ajouter le bloc CGV / Charte RSE Handicap après les tâches
+    var charteBlock = document.createElement('a');
+    charteBlock.href = 'https://alti-board.fr/Charte_Handicap_RSE.pdf';
+    charteBlock.target = '_blank';
+    charteBlock.id = 'charteFinishedBlock';
+    charteBlock.style.cssText = 'display:block;text-decoration:none;background:linear-gradient(135deg,rgba(52,211,153,0.12),rgba(79,140,255,0.08));border:1px solid rgba(52,211,153,0.25);border-radius:16px;padding:24px 20px;text-align:center;margin-top:20px;transition:transform 0.2s,box-shadow 0.2s';
+    charteBlock.onmouseover = function() { this.style.transform = 'translateY(-2px)'; this.style.boxShadow = '0 8px 30px rgba(52,211,153,0.2)'; };
+    charteBlock.onmouseout = function() { this.style.transform = ''; this.style.boxShadow = ''; };
+    charteBlock.innerHTML = '<div style="font-size:36px;margin-bottom:10px">📋✅</div>' +
+      '<div style="font-size:1.05rem;font-weight:700;color:var(--text-primary,#fff);margin-bottom:6px">CGV & Charte RSE Handicap validées</div>' +
+      '<div style="font-size:0.85rem;color:var(--accent-green,#34d399);font-weight:600;margin-bottom:12px">Documents acceptés en début de projet</div>' +
+      '<div style="display:inline-flex;align-items:center;gap:8px;padding:9px 20px;border-radius:10px;background:linear-gradient(135deg,var(--accent-green,#34d399),#22b07d);color:#fff;font-weight:600;font-size:0.9rem">' +
+        '<span>📄</span> Consulter la Charte RSE & Handicap</div>';
+    tasksEl.parentNode.insertBefore(charteBlock, tasksEl.nextSibling);
   }
 }
 
