@@ -661,7 +661,7 @@
             <div class="card-option" data-value="Devenir autonome en SEO"><span class="check-mark">✓</span><span class="card-icon">🎓</span><div class="card-label">Devenir autonome en SEO</div></div>
         </div>
         <div class="priority-section" id="prioritySection">
-            <h3 style="text-align:center; font-size:1.05rem; margin-bottom:16px">🎯 Lequel est le plus important ?</h3>
+            <h3 style="text-align:center; font-size:1.05rem; margin-bottom:16px">🎯 Lequel est le plus important ? <span style="font-size:0.8rem; color:var(--text-secondary); font-weight:400">(facultatif)</span></h3>
             <div class="cards-grid" id="priorityCards" data-field="objectifPrioritaire" data-single></div>
         </div>
         <div class="nav-buttons">
@@ -1145,7 +1145,6 @@
             if (existing) existing.classList.add('selected');
         } else {
             formData.objectifPrioritaire = '';
-            document.getElementById('nav6next').disabled = true;
         }
     }
 
@@ -1462,11 +1461,13 @@
       <p style="color:var(--text-secondary,#8892A8);font-size:0.88rem;margin-top:8px">On a deviné ce que vous vouliez savoir !</p>
     </div>
     <div id="faqAccordion">
+      <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Bref, qu'allez-vous m'apporter ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Un gain de temps, de la croissance et de la trésorerie. J'envoie une estimation des résultats après notre échange téléphonique.</div></div>
       <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Est-ce que vous vous occupez de tout ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Oui, on peut tout gérer de A à Z. Mais on peut aussi avancer en collaboration avec vous, ou simplement vous coacher et vous accompagner. On s'adapte à votre fonctionnement !</div></div>
       <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Allez-vous modifier des éléments visuels du site ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Non, nous intervenons uniquement sur le code (la partie non visible). Si un changement visuel s'avère nécessaire, nous vous consultons systématiquement avant toute modification.</div></div>
       <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Quel est le prix ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">L'investissement est de <strong style="color:var(--green,#34D399)">2,45 € HT / jour</strong>.</div></div>
       <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Ça dure combien de temps ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Pour certains clients, 4 semaines suffisent. En moyenne, comptez 6 à 8 semaines. Et nous accompagnons certains clients depuis 12 à 14 ans — le retour sur trésorerie par rapport au coût est tout simplement inestimable.</div></div>
       <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Y a-t-il un engagement ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer"><strong style="color:var(--green,#34D399)">Aucun.</strong></div></div>
+      <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Vous proposez une garantie ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Oui. En cas de non résultats (positionnement sur les mots clés que nous aurons décidé ensemble), je vous rembourse intégralement, au bout de 2 / 3 mois. C'est la formule la plus juste trouvée avec l'expérience. Cela est rarissime mais cela peut arriver avec Google. Si pas de résultat, pas d'intérêt, ni pour vous, ni pour moi.</div></div>
       <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Comment proposez-vous un forfait aussi bas ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Nos forfaits classiques en entreprise se situent entre 600 € et 1 200 €, ce qui correspond à la moyenne en France. Le forfait Solidaire est volontairement accessible grâce à l'apport des nouvelles technologies. Il nous permet aussi de générer du bouche-à-oreille. Et dans les faits, beaucoup de clients, une fois les résultats au rendez-vous, choisissent de passer au forfait supérieur. C'est donc gagnant-gagnant.</div></div>
       <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Qu'est-ce que vous allez faire exactement ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Tous les éléments du SEO détaillés dans votre rapport d'action. Mais nous sommes aussi là pour vos autres besoins — tout est compris dans votre forfait : publicités, réseaux sociaux, accompagnement, formation, interventions techniques, etc.</div></div>
       <div class="faq-item"><div class="faq-question" onclick="toggleFaq(this)"><span>Comment je verrai ce qui a été fait ?</span><span class="faq-arrow">▼</span></div><div class="faq-answer">Vous recevez un récapitulatif chaque semaine par e-mail, et tout est également visible en temps réel sur votre <strong style="color:var(--accent,#4F8CFF)">tableau de bord</strong>.</div></div>
