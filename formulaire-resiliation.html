@@ -257,6 +257,25 @@
             border-color: var(--accent);
             background: rgba(79,140,255,0.06);
         }
+        .cgv-link.cgv-highlight {
+            background: linear-gradient(135deg, rgba(79,140,255,0.15), rgba(167,139,250,0.15));
+            border: 2px solid var(--accent);
+            padding: 18px 32px;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #fff;
+            box-shadow: 0 0 25px rgba(79,140,255,0.2), 0 0 50px rgba(79,140,255,0.08);
+            animation: cgvPulse 2.5s ease-in-out infinite;
+        }
+        .cgv-link.cgv-highlight:hover {
+            background: linear-gradient(135deg, rgba(79,140,255,0.25), rgba(167,139,250,0.25));
+            box-shadow: 0 0 35px rgba(79,140,255,0.35);
+            transform: translateY(-2px);
+        }
+        @keyframes cgvPulse {
+            0%, 100% { box-shadow: 0 0 25px rgba(79,140,255,0.2), 0 0 50px rgba(79,140,255,0.08); }
+            50% { box-shadow: 0 0 35px rgba(79,140,255,0.35), 0 0 70px rgba(79,140,255,0.15); }
+        }
 
         .info-box {
             background: rgba(79,140,255,0.06);
@@ -407,7 +426,7 @@
                 <div class="card-label">Non, j'aimerais bien les recevoir</div>
                 <div class="card-desc">Nous vous les enverrons par email</div>
             </div>
-            <div class="card-option" onclick="selectChoice(3, 'non-pas-recevoir', 'end-early')">
+            <div class="card-option" onclick="selectChoice(3, 'non-pas-recevoir', 4)">
                 <span class="check-mark">✓</span>
                 <span class="card-icon">🚫</span>
                 <div class="card-label">Je ne veux pas les recevoir</div>
@@ -547,7 +566,7 @@
                 </div>
             </div>
             <div style="margin-top:24px">
-                <a href="https://alti-board.fr/Charte_Handicap_RSE.pdf" target="_blank" class="cgv-link">📋 Nos CGV / Charte RSE Handicap</a>
+                <a href="https://alti-board.fr/Charte_Handicap_RSE.pdf" target="_blank" class="cgv-link cgv-highlight">📋 Nos CGV / Charte RSE Handicap</a>
             </div>
             <p style="color:var(--text-secondary); margin-top:24px; font-size:0.9rem; line-height:1.6">
                 Nous continuerons de vous aider gratuitement, n'hésitez pas en cas de besoin.
@@ -573,7 +592,7 @@
                 </div>
             </div>
             <div style="margin-top:24px">
-                <a href="https://alti-board.fr/Charte_Handicap_RSE.pdf" target="_blank" class="cgv-link">📋 Nos CGV / Charte RSE Handicap</a>
+                <a href="https://alti-board.fr/Charte_Handicap_RSE.pdf" target="_blank" class="cgv-link cgv-highlight">📋 Nos CGV / Charte RSE Handicap</a>
             </div>
             <p style="color:var(--text-secondary); margin-top:24px; font-size:0.9rem; line-height:1.6">
                 Nous continuerons de vous aider gratuitement, n'hésitez pas en cas de besoin.
