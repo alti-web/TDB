@@ -12,8 +12,16 @@ $appUrl = "https://alti-board.fr/"
 $appDescription = "Tableau de bord client Alti-Web SEO"
 $desktopPath = [Environment]::GetFolderPath("Desktop")
 $shortcutPath = Join-Path $desktopPath "$appName.lnk"
-$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+
+# Détecter le dossier courant (compatible .exe compilé et .ps1)
+$scriptDir = $null
+try { $scriptDir = Split-Path -Parent ([System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName) } catch {}
+if (-not $scriptDir) { try { $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path } catch {} }
+if (-not $scriptDir) { $scriptDir = [System.IO.Directory]::GetCurrentDirectory() }
+if (-not $scriptDir) { $scriptDir = $PWD.Path }
+
 $iconPath = Join-Path $scriptDir "alti-board.ico"
+$hasIcon = Test-Path $iconPath
 
 # ─── Vérifier si déjà installé ───
 if (Test-Path $shortcutPath) {
@@ -38,8 +46,8 @@ $form.ForeColor = [System.Drawing.Color]::FromArgb(232, 236, 244)
 $form.Font = New-Object System.Drawing.Font("Segoe UI", 10)
 
 # Icône de la fenêtre
-if (Test-Path $iconPath) {
-    $form.Icon = New-Object System.Drawing.Icon($iconPath)
+if ($hasIcon) {
+    try { $form.Icon = New-Object System.Drawing.Icon($iconPath) } catch {}
 }
 
 # ─── Titre ───
@@ -103,13 +111,15 @@ $installBtn.Add_Click({
         $sc = $ws.CreateShortcut($shortcutPath)
         $sc.TargetPath = $appUrl
         $sc.Description = $appDescription
-        if (Test-Path $iconPath) {
-            # Copier l'icône dans un dossier permanent
-            $appDataDir = Join-Path $env:APPDATA "AltiBoard"
-            if (-not (Test-Path $appDataDir)) { New-Item -Path $appDataDir -ItemType Directory -Force | Out-Null }
-            $permanentIcon = Join-Path $appDataDir "alti-board.ico"
-            Copy-Item $iconPath $permanentIcon -Force
-            $sc.IconLocation = "$permanentIcon,0"
+        if ($hasIcon) {
+            try {
+                # Copier l'icône dans un dossier permanent
+                $appDataDir = Join-Path $env:APPDATA "AltiBoard"
+                if (-not (Test-Path $appDataDir)) { New-Item -Path $appDataDir -ItemType Directory -Force | Out-Null }
+                $permanentIcon = Join-Path $appDataDir "alti-board.ico"
+                Copy-Item $iconPath $permanentIcon -Force
+                $sc.IconLocation = "$permanentIcon,0"
+            } catch {}
         }
         $sc.Save()
 
