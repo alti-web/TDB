@@ -2136,64 +2136,71 @@ if (window.location.hostname === 'alti-web.github.io') {
 </div>
 
 <script>
-(function() {
+function seededRandom(seed) {
+  var x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+function randomBetween(min, max, seed) {
+  return min + Math.floor(seededRandom(seed) * (max - min + 1));
+}
+
+function initTasksAnimation() {
+  // Animation envoi moteurs de recherche
   var fill = document.getElementById('progressFill');
   var pct = document.getElementById('progressPct');
   var counter = document.getElementById('pageCount');
+  if (!fill || !pct || !counter) return;
+
   var totalPages = 4;
   var stops = [1, 2, 3]; // 25%, 50%, 75% — jamais 100%
   var maxPage = stops[Math.floor(Math.random() * stops.length)];
   var current = 0;
 
   function animateStep() {
-    if (current >= maxPage) return; // Stop définitif au palier
-
+    if (current >= maxPage) return;
     current++;
     var progress = Math.round((current / totalPages) * 100);
     fill.style.width = progress + '%';
     pct.textContent = progress + '%';
     counter.textContent = current;
-
     if (current < maxPage) {
       setTimeout(animateStep, 1200 + Math.random() * 1800);
     }
   }
 
   setTimeout(animateStep, 1500);
-})();
 
-// Nombres aléatoires qui changent tous les 7 jours
-(function() {
+  // Nombres aléatoires qui changent tous les 7 jours
   var daysSinceEpoch = Math.floor(Date.now() / 86400000);
   var period = Math.floor(daysSinceEpoch / 7);
 
-  function seededRandom(seed) {
-    var x = Math.sin(seed) * 10000;
-    return x - Math.floor(x);
-  }
+  var taskSeoEl = document.getElementById('taskSeo');
+  var taskOffsiteEl = document.getElementById('taskOffsite');
+  var taskBacklinksEl = document.getElementById('taskBacklinks');
+  var taskDesaveuxEl = document.getElementById('taskDesaveux');
+  var backlinksFill = document.getElementById('backlinksProgressFill');
+  var desaveuxFill = document.getElementById('desaveuxProgressFill');
 
-  function randomBetween(min, max, seed) {
-    return min + Math.floor(seededRandom(seed) * (max - min + 1));
-  }
+  if (taskSeoEl) taskSeoEl.textContent = randomBetween(4, 8, period * 5 + 1);
+  if (taskOffsiteEl) taskOffsiteEl.textContent = randomBetween(4, 8, period * 5 + 2);
 
-  document.getElementById('taskSeo').textContent = randomBetween(4, 8, period * 5 + 1);
-  document.getElementById('taskOffsite').textContent = randomBetween(4, 8, period * 5 + 2);
-
-  // Backlinks et désaveux : 2 à 10, tous les 7 jours
   var backlinksCount = randomBetween(2, 10, period * 5 + 3);
   var desaveuxCount = randomBetween(2, 10, period * 5 + 4);
-  document.getElementById('taskBacklinks').textContent = backlinksCount;
-  document.getElementById('taskDesaveux').textContent = desaveuxCount;
+  if (taskBacklinksEl) taskBacklinksEl.textContent = backlinksCount;
+  if (taskDesaveuxEl) taskDesaveuxEl.textContent = desaveuxCount;
 
-  // Barres de progression aléatoires pour backlinks et désaveux
   var backlinksPct = randomBetween(15, 85, period * 5 + 5);
   var desaveuxPct = randomBetween(15, 85, period * 5 + 6);
 
   setTimeout(function() {
-    document.getElementById('backlinksProgressFill').style.width = backlinksPct + '%';
-    document.getElementById('desaveuxProgressFill').style.width = desaveuxPct + '%';
+    if (backlinksFill) backlinksFill.style.width = backlinksPct + '%';
+    if (desaveuxFill) desaveuxFill.style.width = desaveuxPct + '%';
   }, 800);
-})();
+}
+
+// Lancer l'animation au chargement
+initTasksAnimation();
 
 function toggleGarantie() {
   var checkbox = document.getElementById('marketingCheck');
@@ -3325,6 +3332,7 @@ function hideTasksIfNewEmail(email) {
     var overlay = document.getElementById('loginOverlay');
     if (overlay) overlay.classList.add('hidden');
     resetDashboardState();
+    initTasksAnimation();
     hideTasksIfNewEmail(savedEmail);
     applyFinishedStatus(savedEmail);
   } else {
@@ -3343,6 +3351,7 @@ function handleLogin(e) {
     localStorage.setItem('altiweb_login_time', Date.now().toString());
     errorEl.classList.remove('visible');
     resetDashboardState();
+    initTasksAnimation();
     hideTasksIfNewEmail(email);
     applyFinishedStatus(email);
     var overlay = document.getElementById('loginOverlay');
