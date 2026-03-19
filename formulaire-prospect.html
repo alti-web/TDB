@@ -574,6 +574,31 @@
                 <span class="card-icon">🏪</span>
                 <div class="card-label">WooCommerce</div>
             </div>
+            <div class="card-option" data-value="Lovable">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">💜</span>
+                <div class="card-label">Lovable</div>
+            </div>
+            <div class="card-option" data-value="IA (autre)">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🤖</span>
+                <div class="card-label">IA (autre)</div>
+            </div>
+            <div class="card-option" data-value="Sur mesure">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🔧</span>
+                <div class="card-label">Sur mesure</div>
+            </div>
+            <div class="card-option" data-value="React.JS">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">⚛️</span>
+                <div class="card-label">React.JS</div>
+            </div>
+            <div class="card-option" data-value="Astro.JS">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🚀</span>
+                <div class="card-label">Astro.JS</div>
+            </div>
             <div class="card-option" data-value="Autre">
                 <span class="check-mark">✓</span>
                 <span class="card-icon">❓</span>
@@ -649,7 +674,8 @@
     <!-- ====== STEP 7 — Mots-clés ====== -->
     <div class="step" data-step="7">
         <h2 class="step-title">Vos mots-clés cibles</h2>
-        <p class="step-subtitle">Tapez un mot-clé puis appuyez sur Entrée pour l'ajouter</p>
+        <p class="step-subtitle">Sur quelle recherche Google aimeriez-vous être 1er ?</p>
+        <p style="text-align:center; color:var(--text-secondary); font-size:0.82rem; margin-bottom:20px; opacity:0.7">Tapez un mot-clé puis appuyez sur Entrée pour l'ajouter</p>
         <div class="tags-container" id="keywordsContainer" onclick="document.getElementById('keywordsInput').focus()">
             <input type="text" class="tags-input" id="keywordsInput" placeholder="Ex: plombier Marseille, coiffeur Lyon...">
         </div>
@@ -755,11 +781,11 @@
         <h3 style="margin-top:36px; margin-bottom:8px; font-size:1.15rem; text-align:center">Choisissez votre formule</h3>
         <p class="step-subtitle">La formule idéale dépend de votre situation</p>
         <div class="pricing-grid" id="pricingGrid">
-            <div class="pricing-card" data-value="Solidaire" onclick="selectPricing(this)">
-                <div class="pricing-badge" id="badgeSolidaire">Recommandé pour vous</div>
+            <div class="pricing-card selected" data-value="Solidaire" onclick="selectPricing(this)" style="border-color:var(--green); box-shadow:0 0 30px rgba(52,211,153,0.15); transform:scale(1.03)">
+                <div class="pricing-badge show" id="badgeSolidaire">Recommandé pour vous</div>
                 <div class="pricing-icon">💚</div>
                 <div class="pricing-name">Solidaire</div>
-                <div class="pricing-price">79€ <span>/mois</span></div>
+                <div class="pricing-price">2,45€ HT <span>/jour, sans aucun engagement</span></div>
                 <ul>
                     <li>Mon activité a moins de deux ans</li>
                     <li>Ou je ne génère pas assez de ventes / clientèle</li>
@@ -870,9 +896,9 @@
         <div class="infobox">
             <strong>💡 Pourquoi l'écrit est un avantage</strong><br><br>
             Chez Alti-Web, nous privilégions la communication écrite : chaque échange est tracé, rien ne se perd, et vous gardez un historique complet de toutes nos recommandations et actions. Fini les malentendus !
-            <br><small style="color:var(--text-secondary); opacity:0.7; margin-top:8px; display:inline-block">Pas d'appels téléphoniques (handicap neurologique)</small>
+            <br><br><span style="color:var(--text-secondary); font-size:0.85rem">Comme convenu dans notre proposition et indiqué sur notre site, pas d'appel téléphonique dans le cadre de ma maladie neurodégénérative.</span>
         </div>
-        <div class="cards-grid cols-3" data-field="communication" data-multi>
+        <div class="cards-grid cols-4" data-field="communication" data-multi>
             <div class="card-option" data-value="Email">
                 <span class="check-mark">✓</span>
                 <span class="card-icon">📧</span>
@@ -882,6 +908,11 @@
                 <span class="check-mark">✓</span>
                 <span class="card-icon">💬</span>
                 <div class="card-label">WhatsApp</div>
+            </div>
+            <div class="card-option" data-value="WhatsApp Vocal">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🎙️</span>
+                <div class="card-label">WhatsApp Vocal</div>
             </div>
             <div class="card-option" data-value="Alti-Board">
                 <span class="check-mark">✓</span>
@@ -971,7 +1002,7 @@
         concurrents: [],
         services: [],
         modeCollab: '',
-        formule: '',
+        formule: 'Solidaire',
         garantie: false,
         gmb: '',
         rdv: '',
@@ -1401,5 +1432,11 @@
     updateProgress();
 })();
 </script>
+
+<!-- ═══ STICKER TABLEAU DE BORD ═══ -->
+<a href="https://alti-board.fr/" target="_blank" style="position:fixed; bottom:20px; right:20px; z-index:999; display:flex; align-items:center; gap:8px; padding:12px 20px; background:linear-gradient(135deg, var(--accent, #4F8CFF), #6C63FF); color:#fff; text-decoration:none; border-radius:50px; font-family:'DM Sans',sans-serif; font-size:0.85rem; font-weight:600; box-shadow:0 4px 20px rgba(79,140,255,0.35); transition:all 0.3s ease; white-space:nowrap" onmouseover="this.style.transform='translateY(-3px) scale(1.03)'; this.style.boxShadow='0 8px 30px rgba(79,140,255,0.45)'" onmouseout="this.style.transform=''; this.style.boxShadow='0 4px 20px rgba(79,140,255,0.35)'">
+    <span style="font-size:1.1rem">📊</span> Tableau de bord client
+</a>
+
 </body>
 </html>
