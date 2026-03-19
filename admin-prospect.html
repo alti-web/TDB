@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administration — Générateur de formulaire prospect</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-primary: #0B0F1A;
+    --bg-card: #131825;
+    --bg-card-hover: #1A2035;
+    --bg-surface: #0E1220;
+    --accent: #4F8CFF;
+    --accent-glow: rgba(79, 140, 255, 0.15);
+    --accent-green: #34D399;
+    --accent-orange: #FB923C;
+    --accent-red: #F87171;
+    --accent-purple: #A78BFA;
+    --text-primary: #E8ECF4;
+    --text-secondary: #8892A8;
+    --text-muted: #4A5568;
+    --border: rgba(255,255,255,0.06);
+    --border-hover: rgba(79,140,255,0.25);
+    --radius: 16px;
+    --radius-sm: 10px;
+    --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ─── LOGIN ─── */
+  .login-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: var(--bg-primary);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .login-overlay.hiding {
+    opacity: 0;
+    transform: scale(1.05);
+    pointer-events: none;
+  }
+  .login-overlay.hidden { display: none; }
+
+  .login-bg {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    overflow: hidden;
+  }
+  .login-bg .orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0;
+    animation: orbFloat 8s ease-in-out infinite, orbFadeIn 1.5s ease forwards;
+  }
+  .login-bg .orb:nth-child(1) {
+    width: 400px; height: 400px;
+    background: radial-gradient(circle, rgba(79,140,255,0.2), transparent 70%);
+    top: -100px; right: -100px;
+    animation-delay: 0s;
+  }
+  .login-bg .orb:nth-child(2) {
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(52,211,153,0.15), transparent 70%);
+    bottom: -50px; left: -50px;
+    animation-delay: 2s;
+  }
+  .login-bg .orb:nth-child(3) {
+    width: 250px; height: 250px;
+    background: radial-gradient(circle, rgba(167,139,250,0.12), transparent 70%);
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 4s;
+  }
+
+  @keyframes orbFloat {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(30px, -20px); }
+  }
+  @keyframes orbFadeIn {
+    to { opacity: 1; }
+  }
+
+  .login-card {
+    position: relative;
+    z-index: 1;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 48px 40px;
+    width: 90%;
+    max-width: 420px;
+    text-align: center;
+    box-shadow: var(--shadow);
+  }
+  .login-card .logo-icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+  }
+  .login-card h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .login-card p {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 28px;
+  }
+  .login-card input {
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s;
+    margin-bottom: 16px;
+  }
+  .login-card input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .login-card button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--accent), #6BA3FF);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .login-card button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(79,140,255,0.3);
+  }
+  .login-error {
+    color: var(--accent-red);
+    font-size: 13px;
+    margin-top: 12px;
+    display: none;
+  }
+
+  /* ─── ADMIN PANEL ─── */
+  .admin-panel {
+    display: none;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+  .admin-panel.visible { display: block; }
+
+  .admin-header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .admin-header .badge {
+    display: inline-block;
+    background: var(--accent-glow);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .admin-header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .admin-header p {
+    color: var(--text-secondary);
+    font-size: 15px;
+  }
+  .admin-header .logout-btn {
+    display: inline-block;
+    margin-top: 14px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-family: inherit;
+    padding: 6px 16px;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .admin-header .logout-btn:hover {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+    transition: border-color 0.3s;
+  }
+  .card:hover { border-color: var(--border-hover); }
+  .card h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card h2 .icon { font-size: 22px; }
+
+  /* Form */
+  .form-group {
+    margin-bottom: 18px;
+  }
+  .form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-surface);
+    color: var(--text-primary);
+    font-size: 15px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .form-group input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .form-group input::placeholder {
+    color: var(--text-muted);
+  }
+  .form-group .hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+  }
+
+  .btn-generate {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: var(--radius-sm);
+    background: linear-gradient(135deg, var(--accent), #6BA3FF);
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    margin-top: 6px;
+  }
+  .btn-generate:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(79,140,255,0.3);
+  }
+  .btn-generate:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+  }
+
+  /* Generated link */
+  .result-box {
+    display: none;
+    margin-top: 24px;
+    background: var(--bg-surface);
+    border: 1px solid var(--accent);
+    border-radius: var(--radius-sm);
+    padding: 18px;
+  }
+  .result-box.visible { display: block; animation: fadeSlideIn 0.4s ease; }
+  .result-box .result-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent-green);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .result-box .link-display {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+  }
+  .result-box .link-text {
+    flex: 1;
+    padding: 12px 14px;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--accent);
+    font-size: 13px;
+    word-break: break-all;
+    line-height: 1.5;
+    font-family: 'DM Sans', monospace;
+  }
+  .btn-copy {
+    padding: 12px 18px;
+    border: none;
+    border-radius: 8px;
+    background: var(--accent-green);
+    color: #000;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.2s, background 0.2s;
+    white-space: nowrap;
+  }
+  .btn-copy:hover {
+    transform: translateY(-1px);
+    background: #4AE6AC;
+  }
+  .btn-copy.copied {
+    background: var(--accent-purple);
+    color: #fff;
+  }
+
+  /* Preview */
+  .preview-section {
+    display: none;
+    margin-top: 24px;
+  }
+  .preview-section.visible { display: block; animation: fadeSlideIn 0.4s ease; }
+  .preview-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+  }
+  .preview-frame {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 32px 24px;
+    text-align: center;
+  }
+  .preview-frame .preview-greeting {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .preview-frame .preview-greeting span {
+    color: var(--accent);
+  }
+  .preview-frame .preview-subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-bottom: 18px;
+  }
+  .preview-frame .preview-site {
+    display: inline-block;
+    padding: 8px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--accent-orange);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  /* Stats */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+  .stat-item {
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 20px;
+    text-align: center;
+  }
+  .stat-item .stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-item .stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* History */
+  .history-list {
+    list-style: none;
+  }
+  .history-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 10px;
+    transition: border-color 0.3s;
+  }
+  .history-item:hover { border-color: var(--border-hover); }
+  .history-info {
+    flex: 1;
+    min-width: 0;
+  }
+  .history-name {
+    font-weight: 600;
+    font-size: 14px;
+    margin-bottom: 2px;
+  }
+  .history-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .history-link {
+    font-size: 12px;
+    color: var(--accent);
+    word-break: break-all;
+    display: block;
+    margin-top: 4px;
+  }
+  .btn-copy-sm {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 600;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .btn-copy-sm:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn-copy-sm.copied {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 30px;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .btn-clear-history {
+    display: inline-block;
+    margin-top: 12px;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-family: inherit;
+    padding: 6px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: border-color 0.3s, color 0.3s;
+  }
+  .btn-clear-history:hover {
+    border-color: var(--accent-red);
+    color: var(--accent-red);
+  }
+
+  /* Animations */
+  @keyframes fadeSlideIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .admin-panel { padding: 24px 16px 40px; }
+    .card { padding: 24px 20px; }
+    .login-card { padding: 36px 24px; }
+    .result-box .link-display { flex-direction: column; }
+    .admin-header h1 { font-size: 22px; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-bg">
+    <div class="orb"></div>
+    <div class="orb"></div>
+    <div class="orb"></div>
+  </div>
+  <div class="login-card">
+    <div class="logo-icon">&#x1f512;</div>
+    <h1>Administration</h1>
+    <p>Acc&egrave;s r&eacute;serv&eacute; &mdash; G&eacute;n&eacute;rateur de formulaire prospect</p>
+    <input type="password" id="loginPassword" placeholder="Mot de passe" autocomplete="off">
+    <button id="loginBtn" onclick="attemptLogin()">Se connecter</button>
+    <div class="login-error" id="loginError">Mot de passe incorrect</div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN PANEL ═══ -->
+<div class="admin-panel" id="adminPanel">
+
+  <div class="admin-header">
+    <div class="badge">Administration</div>
+    <h1>G&eacute;n&eacute;rateur de formulaire prospect</h1>
+    <p>Cr&eacute;ez des liens personnalis&eacute;s pour vos prospects</p>
+    <button class="logout-btn" onclick="logout()">D&eacute;connexion</button>
+  </div>
+
+  <!-- ─── Generator ─── -->
+  <div class="card">
+    <h2><span class="icon">&#x1f517;</span> Nouveau lien prospect</h2>
+
+    <div class="form-group">
+      <label>Pr&eacute;nom du prospect *</label>
+      <input type="text" id="prospectPrenom" placeholder="Sophie" required>
+    </div>
+
+    <div class="form-group">
+      <label>Site web du prospect *</label>
+      <input type="url" id="prospectSite" placeholder="https://example.com">
+    </div>
+
+    <div class="form-group">
+      <label>Email du prospect</label>
+      <input type="email" id="prospectEmail" placeholder="sophie@example.com">
+      <div class="hint">Optionnel &mdash; sera pr&eacute;-rempli dans le formulaire</div>
+    </div>
+
+    <button class="btn-generate" id="btnGenerate" onclick="generateLink()">G&eacute;n&eacute;rer le lien</button>
+
+    <!-- Result -->
+    <div class="result-box" id="resultBox">
+      <div class="result-label">&#x2714; Lien g&eacute;n&eacute;r&eacute; avec succ&egrave;s</div>
+      <div class="link-display">
+        <div class="link-text" id="generatedLink"></div>
+        <button class="btn-copy" id="btnCopyMain" onclick="copyLink(this, 'generatedLink')">Copier</button>
+      </div>
+    </div>
+
+    <!-- Preview -->
+    <div class="preview-section" id="previewSection">
+      <div class="preview-label">&#x1f441; Aper&ccedil;u prospect</div>
+      <div class="preview-frame">
+        <div class="preview-greeting">Bonjour <span id="previewName">Sophie</span>,</div>
+        <div class="preview-subtitle">Votre rapport SEO personnalis&eacute; est pr&ecirc;t</div>
+        <div class="preview-site" id="previewSite">example.com</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Stats ─── -->
+  <div class="card">
+    <h2><span class="icon">&#x1f4ca;</span> Statistiques</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <div class="stat-value" id="statTotal">0</div>
+        <div class="stat-label">Liens g&eacute;n&eacute;r&eacute;s</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statThisMonth">0</div>
+        <div class="stat-label">Ce mois-ci</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-value" id="statThisWeek">0</div>
+        <div class="stat-label">Cette semaine</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── History ─── -->
+  <div class="card">
+    <h2><span class="icon">&#x1f4cb;</span> Historique des liens</h2>
+    <ul class="history-list" id="historyList"></ul>
+    <div class="empty-state" id="emptyState">Aucun lien g&eacute;n&eacute;r&eacute; pour le moment</div>
+    <div style="text-align:center;">
+      <button class="btn-clear-history" id="btnClearHistory" onclick="clearHistory()" style="display:none;">Vider l'historique</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const STORAGE_KEY = 'admin_prospect_history';
+  const BASE_URL = 'https://alti-board.fr/formulaire-prospect.html';
+
+  // ─── Login ───
+  function attemptLogin() {
+    const pwd = document.getElementById('loginPassword').value;
+    if (pwd === 'altiweb2024') {
+      const overlay = document.getElementById('loginOverlay');
+      overlay.classList.add('hiding');
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        document.getElementById('adminPanel').classList.add('visible');
+        loadHistory();
+      }, 600);
+    } else {
+      const err = document.getElementById('loginError');
+      err.style.display = 'block';
+      document.getElementById('loginPassword').value = '';
+      document.getElementById('loginPassword').focus();
+      setTimeout(() => { err.style.display = 'none'; }, 3000);
+    }
+  }
+
+  document.getElementById('loginPassword').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') attemptLogin();
+  });
+
+  function logout() {
+    document.getElementById('adminPanel').classList.remove('visible');
+    const overlay = document.getElementById('loginOverlay');
+    overlay.classList.remove('hiding', 'hidden');
+    document.getElementById('loginPassword').value = '';
+    document.getElementById('resultBox').classList.remove('visible');
+    document.getElementById('previewSection').classList.remove('visible');
+    document.getElementById('prospectPrenom').value = '';
+    document.getElementById('prospectSite').value = '';
+    document.getElementById('prospectEmail').value = '';
+  }
+
+  // ─── Generate link ───
+  function generateLink() {
+    const prenom = document.getElementById('prospectPrenom').value.trim();
+    const site = document.getElementById('prospectSite').value.trim();
+    const email = document.getElementById('prospectEmail').value.trim();
+
+    if (!prenom || !site) {
+      alert('Veuillez remplir le prénom et le site web du prospect.');
+      return;
+    }
+
+    const params = new URLSearchParams();
+    params.set('prenom', prenom);
+    params.set('site', site);
+    if (email) params.set('email', email);
+
+    const url = BASE_URL + '?' + params.toString();
+
+    // Display result
+    document.getElementById('generatedLink').textContent = url;
+    document.getElementById('resultBox').classList.add('visible');
+
+    // Preview
+    document.getElementById('previewName').textContent = prenom;
+    try {
+      const siteUrl = new URL(site.startsWith('http') ? site : 'https://' + site);
+      document.getElementById('previewSite').textContent = siteUrl.hostname;
+    } catch {
+      document.getElementById('previewSite').textContent = site;
+    }
+    document.getElementById('previewSection').classList.add('visible');
+
+    // Save to history
+    const history = getHistory();
+    history.unshift({
+      prenom,
+      site,
+      email: email || null,
+      url,
+      date: new Date().toISOString()
+    });
+    // Keep max 50 entries
+    if (history.length > 50) history.length = 50;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
+
+    loadHistory();
+  }
+
+  // ─── Copy ───
+  function copyLink(btn, sourceId) {
+    const text = document.getElementById(sourceId).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const original = btn.textContent;
+      btn.textContent = 'Copié !';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = original;
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  function copyFromHistory(btn, url) {
+    navigator.clipboard.writeText(url).then(() => {
+      btn.textContent = 'Copié !';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = 'Copier';
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  // ─── History ───
+  function getHistory() {
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    } catch {
+      return [];
+    }
+  }
+
+  function loadHistory() {
+    const history = getHistory();
+    const list = document.getElementById('historyList');
+    const emptyState = document.getElementById('emptyState');
+    const btnClear = document.getElementById('btnClearHistory');
+
+    if (history.length === 0) {
+      list.innerHTML = '';
+      emptyState.style.display = 'block';
+      btnClear.style.display = 'none';
+      updateStats(history);
+      return;
+    }
+
+    emptyState.style.display = 'none';
+    btnClear.style.display = 'inline-block';
+
+    list.innerHTML = history.map((item, i) => {
+      const d = new Date(item.date);
+      const dateStr = d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short', year: 'numeric' }) + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+      const emailInfo = item.email ? ' — ' + item.email : '';
+      return `
+        <li class="history-item">
+          <div class="history-info">
+            <div class="history-name">${escapeHtml(item.prenom)}${emailInfo ? ' <span style="color:var(--text-muted);font-weight:400;font-size:12px;">' + escapeHtml(emailInfo) + '</span>' : ''}</div>
+            <div class="history-meta">${dateStr}</div>
+            <div class="history-link">${escapeHtml(item.url)}</div>
+          </div>
+          <button class="btn-copy-sm" onclick="copyFromHistory(this, '${escapeAttr(item.url)}')">Copier</button>
+        </li>
+      `;
+    }).join('');
+
+    updateStats(history);
+  }
+
+  function updateStats(history) {
+    document.getElementById('statTotal').textContent = history.length;
+
+    const now = new Date();
+    const thisMonth = history.filter(h => {
+      const d = new Date(h.date);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    }).length;
+    document.getElementById('statThisMonth').textContent = thisMonth;
+
+    const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const thisWeek = history.filter(h => new Date(h.date) >= weekAgo).length;
+    document.getElementById('statThisWeek').textContent = thisWeek;
+  }
+
+  function clearHistory() {
+    if (confirm('Vider tout l\'historique des liens générés ?')) {
+      localStorage.removeItem(STORAGE_KEY);
+      loadHistory();
+      document.getElementById('resultBox').classList.remove('visible');
+      document.getElementById('previewSection').classList.remove('visible');
+    }
+  }
+
+  // ─── Helpers ───
+  function escapeHtml(str) {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function escapeAttr(str) {
+    return str.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+  }
+</script>
+
+</body>
+</html>
