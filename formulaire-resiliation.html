@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alti-Web — Formulaire de résiliation</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --bg-primary: #0B0F1A;
+            --bg-card: #131825;
+            --bg-hover: #1A2035;
+            --accent: #4F8CFF;
+            --green: #34D399;
+            --orange: #FB923C;
+            --red: #F87171;
+            --purple: #A78BFA;
+            --text-primary: #E8ECF4;
+            --text-secondary: #8892A8;
+            --radius-card: 16px;
+            --radius-btn: 10px;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 { font-family: 'Playfair Display', serif; }
+
+        /* ---- Progress Bar ---- */
+        .progress-container {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: var(--bg-card);
+            padding: 0;
+            height: 4px;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--purple));
+            transition: width 0.5s ease;
+            border-radius: 0 2px 2px 0;
+            width: 0%;
+        }
+
+        /* ---- Logo ---- */
+        .logo {
+            position: fixed; top: 16px; left: 24px; z-index: 101;
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem; font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ---- Step counter ---- */
+        .step-counter {
+            position: fixed; top: 18px; right: 24px; z-index: 101;
+            font-size: 0.85rem; color: var(--text-secondary);
+        }
+
+        /* ---- Wizard container ---- */
+        .wizard {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 60px 20px 120px;
+            position: relative;
+        }
+
+        .step {
+            display: none;
+            animation: fadeSlideIn 0.45s ease forwards;
+        }
+        .step.active { display: block; }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeSlideOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-30px); }
+        }
+        .step.exiting {
+            display: block;
+            animation: fadeSlideOut 0.3s ease forwards;
+        }
+
+        /* ---- Welcome ---- */
+        .welcome-screen {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 80vh; text-align: center;
+        }
+        .welcome-screen h1 {
+            font-size: 2.2rem; margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--text-primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .welcome-screen .subtitle {
+            font-size: 1.1rem; color: var(--text-secondary); max-width: 520px;
+            margin-bottom: 32px; line-height: 1.6;
+        }
+
+        /* ---- Step title ---- */
+        .step-title {
+            font-size: 1.6rem; text-align: center; margin-bottom: 8px;
+        }
+        .step-subtitle {
+            text-align: center; color: var(--text-secondary); margin-bottom: 32px;
+            font-size: 0.95rem; line-height: 1.5;
+        }
+
+        /* ---- Cards grid ---- */
+        .cards-grid {
+            display: grid; gap: 14px;
+            grid-template-columns: 1fr;
+        }
+        .cards-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+
+        .card-option {
+            background: var(--bg-card);
+            border: 2px solid rgba(79,140,255,0.08);
+            border-radius: var(--radius-card);
+            padding: 22px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+        .card-option:hover {
+            background: var(--bg-hover);
+            border-color: rgba(79,140,255,0.25);
+            transform: translateY(-2px);
+        }
+        .card-option.selected {
+            border-color: var(--accent);
+            background: rgba(79,140,255,0.08);
+            box-shadow: 0 0 20px rgba(79,140,255,0.12);
+        }
+        .card-option .card-icon {
+            font-size: 1.6rem; margin-bottom: 8px; display: block;
+        }
+        .card-option .card-label {
+            font-weight: 600; font-size: 1rem; margin-bottom: 4px;
+        }
+        .card-option .card-desc {
+            font-size: 0.82rem; color: var(--text-secondary); line-height: 1.4;
+        }
+        .card-option .check-mark {
+            position: absolute; top: 10px; right: 10px;
+            width: 22px; height: 22px; border-radius: 50%;
+            background: var(--accent); color: #fff;
+            display: none; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 700;
+        }
+        .card-option.selected .check-mark { display: flex; }
+
+        /* ---- Inputs ---- */
+        .input-group { margin-bottom: 20px; }
+        .input-group label {
+            display: block; font-size: 0.88rem; color: var(--text-secondary);
+            margin-bottom: 8px; font-weight: 500;
+        }
+        .text-input {
+            width: 100%; padding: 14px 18px;
+            background: var(--bg-card); border: 2px solid rgba(79,140,255,0.12);
+            border-radius: var(--radius-btn); color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif; font-size: 1rem;
+            transition: border-color 0.25s;
+            outline: none;
+        }
+        .text-input:focus { border-color: var(--accent); }
+        .text-input::placeholder { color: var(--text-secondary); opacity: 0.6; }
+
+        /* ---- Buttons ---- */
+        .btn {
+            padding: 14px 32px; border: none; border-radius: var(--radius-btn);
+            font-family: 'DM Sans', sans-serif; font-size: 1rem; font-weight: 600;
+            cursor: pointer; transition: all 0.25s ease;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            color: #fff;
+        }
+        .btn-primary:hover:not(:disabled) {
+            box-shadow: 0 8px 30px rgba(79,140,255,0.3);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--bg-card);
+            border: 1px solid rgba(79,140,255,0.2);
+            color: var(--text-secondary);
+        }
+        .btn-secondary:hover { color: var(--text-primary); border-color: var(--accent); }
+
+        .nav-buttons {
+            display: flex; justify-content: center; gap: 12px;
+            margin-top: 36px;
+        }
+
+        /* ---- Final screen ---- */
+        .final-screen {
+            text-align: center;
+        }
+        .final-screen h1 {
+            font-size: 2rem; margin-bottom: 16px;
+            background: linear-gradient(135deg, var(--green), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+
+        .recap-card {
+            background: var(--bg-card);
+            border: 1px solid rgba(79,140,255,0.1);
+            border-radius: var(--radius-card);
+            padding: 28px 24px;
+            margin: 24px auto;
+            max-width: 500px;
+            text-align: left;
+        }
+        .recap-card .recap-row {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(79,140,255,0.06);
+            font-size: 0.92rem;
+        }
+        .recap-card .recap-row:last-child { border-bottom: none; }
+        .recap-card .recap-label { color: var(--text-secondary); }
+        .recap-card .recap-value { font-weight: 600; text-align: right; max-width: 60%; }
+
+        .cgv-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid rgba(79,140,255,0.15);
+            border-radius: var(--radius-btn);
+            padding: 14px 24px;
+            margin-top: 20px;
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.25s;
+        }
+        .cgv-link:hover {
+            border-color: var(--accent);
+            background: rgba(79,140,255,0.06);
+        }
+
+        .info-box {
+            background: rgba(79,140,255,0.06);
+            border: 1px solid rgba(79,140,255,0.15);
+            border-radius: var(--radius-card);
+            padding: 20px 24px;
+            margin: 20px 0;
+            font-size: 0.92rem;
+            line-height: 1.6;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .success-check {
+            width: 80px; height: 80px;
+            border-radius: 50%;
+            background: rgba(52,211,153,0.1);
+            border: 3px solid var(--green);
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 2.5rem;
+        }
+
+        /* ---- Sticker tableau de bord ---- */
+        .sticker-tdb {
+            position: fixed; bottom: 24px; right: 24px; z-index: 200;
+            background: linear-gradient(135deg, var(--accent), var(--purple));
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-decoration: none;
+            box-shadow: 0 8px 25px rgba(79,140,255,0.3);
+            transition: all 0.25s;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .sticker-tdb:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 35px rgba(79,140,255,0.4);
+        }
+
+        /* ---- Loading spinner ---- */
+        .loading-spinner {
+            display: none;
+            margin: 20px auto;
+            width: 40px; height: 40px;
+            border: 3px solid rgba(79,140,255,0.15);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ---- Responsive ---- */
+        @media (max-width: 600px) {
+            .wizard { padding: 50px 16px 100px; }
+            .welcome-screen h1 { font-size: 1.6rem; }
+            .step-title { font-size: 1.3rem; }
+            .cards-grid.cols-2 { grid-template-columns: 1fr; }
+            .sticker-tdb { bottom: 12px; right: 12px; font-size: 0.78rem; padding: 10px 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Progress Bar -->
+<div class="progress-container">
+    <div class="progress-bar" id="progressBar"></div>
+</div>
+
+<!-- Logo -->
+<div class="logo">Alti-Web</div>
+
+<!-- Step Counter -->
+<div class="step-counter" id="stepCounter"></div>
+
+<!-- Sticker Tableau de bord -->
+<a href="https://alti-board.fr/" class="sticker-tdb" target="_blank">📊 Tableau de bord client</a>
+
+<div class="wizard" id="wizard">
+
+    <!-- ========== STEP 0 : Accueil ========== -->
+    <div class="step active" data-step="0">
+        <div class="welcome-screen">
+            <h1>Formulaire de résiliation</h1>
+            <p class="subtitle">Ce formulaire nous permet de traiter votre demande rapidement et de vous transmettre tous les éléments de votre dossier.</p>
+            <div style="margin-bottom:32px">
+                <div style="color:var(--text-secondary); font-size:0.92rem; line-height:1.8">
+                    ✅ Rapide — quelques questions seulement<br>
+                    ✅ Récupérez l'ensemble de votre travail<br>
+                    ✅ Résiliation immédiate, sans engagement
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="goTo(1)">Commencer →</button>
+        </div>
+    </div>
+
+    <!-- ========== STEP 1 : Email Stripe ========== -->
+    <div class="step" data-step="1">
+        <h2 class="step-title">📧 Votre email de paiement</h2>
+        <p class="step-subtitle">Quel est l'email de votre compte Stripe de paiement ?<br><span style="font-size:0.82rem; opacity:0.7">Cet email nous permet uniquement d'identifier votre abonnement Stripe</span></p>
+        <div class="input-group">
+            <label for="emailStripe">Adresse email Stripe</label>
+            <input type="email" id="emailStripe" class="text-input" placeholder="votre-email@example.com" oninput="checkEmail()">
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(0)">← Retour</button>
+            <button class="btn btn-primary" onclick="goTo(2)" id="nav1next" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ========== STEP 2 : Résultats Google ========== -->
+    <div class="step" data-step="2">
+        <h2 class="step-title">📊 Résultats Google</h2>
+        <p class="step-subtitle">Souhaitez-vous recevoir les résultats Google (positionnements) ?</p>
+        <div class="cards-grid">
+            <div class="card-option" onclick="selectChoice(2, 'oui', 'end-early')">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">✅</span>
+                <div class="card-label">Oui, je souhaite les recevoir</div>
+                <div class="card-desc">Nous vous enverrons le rapport de positionnement</div>
+            </div>
+            <div class="card-option" onclick="selectChoice(2, 'non', 3)">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">❌</span>
+                <div class="card-label">Non, je ne souhaite pas les voir</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(1)">← Retour</button>
+        </div>
+    </div>
+
+    <!-- ========== STEP 3 : Cocons sémantiques ========== -->
+    <div class="step" data-step="3">
+        <h2 class="step-title">📄 Vos cocons sémantiques</h2>
+        <p class="step-subtitle">Avez-vous bien reçu les 90 pages du site (cocons sémantiques) ?</p>
+        <div class="cards-grid">
+            <div class="card-option" onclick="selectChoice(3, 'oui-recu', 4)">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">✅</span>
+                <div class="card-label">Oui, je les ai bien reçues !</div>
+            </div>
+            <div class="card-option" onclick="selectChoice(3, 'non-recevoir', 'end-early')">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">📩</span>
+                <div class="card-label">Non, j'aimerais bien les recevoir</div>
+                <div class="card-desc">Nous vous les enverrons par email</div>
+            </div>
+            <div class="card-option" onclick="selectChoice(3, 'non-pas-recevoir', 'end-early')">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🚫</span>
+                <div class="card-label">Je ne veux pas les recevoir</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(2)">← Retour</button>
+        </div>
+    </div>
+
+    <!-- ========== STEP 4 : Actions restantes ========== -->
+    <div class="step" data-step="4">
+        <h2 class="step-title">⚙️ Actions restantes</h2>
+        <p class="step-subtitle">Dois-je vous envoyer les actions restantes / en cours ?</p>
+        <div class="cards-grid cols-2">
+            <div class="card-option" onclick="selectChoice(4, 'oui', 'end-early')">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">✅</span>
+                <div class="card-label">Oui</div>
+                <div class="card-desc">Envoyez-moi le détail des actions</div>
+            </div>
+            <div class="card-option" onclick="selectChoice(4, 'non', 5)">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">❌</span>
+                <div class="card-label">Non</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(3)">← Retour</button>
+        </div>
+    </div>
+
+    <!-- ========== STEP 5 : Don association ========== -->
+    <div class="step" data-step="5">
+        <h2 class="step-title">💜 Association Adapt83</h2>
+        <p class="step-subtitle">Dans le cadre de ma maladie dégénérative, souhaitez-vous faire un don à l'association Adapt83 ?</p>
+        <div class="info-box">
+            📋 Les <a href="https://alti-board.fr/Charte_Handicap_RSE.pdf" target="_blank" style="color:var(--accent)">CGV / RSE et handicap</a> validés en début de projet
+        </div>
+        <div class="cards-grid cols-2">
+            <div class="card-option" onclick="selectChoice(5, 'oui-don', 'redirect-don')">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">💝</span>
+                <div class="card-label">Oui, avec plaisir</div>
+                <div class="card-desc">Redirection vers ladaptvar.net</div>
+            </div>
+            <div class="card-option" onclick="selectChoice(5, 'non', 6)">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">➡️</span>
+                <div class="card-label">Non, merci</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(4)">← Retour</button>
+        </div>
+    </div>
+
+    <!-- ========== STEP 6 : 1 mois gratuit ========== -->
+    <div class="step" data-step="6">
+        <h2 class="step-title">🎁 1 mois 100% gratuit</h2>
+        <p class="step-subtitle">Souhaitez-vous bénéficier d'1 mois 100% gratuit pour corriger les difficultés rencontrées ?</p>
+        <div class="cards-grid cols-2">
+            <div class="card-option" onclick="selectChoice(6, 'oui', 'end-early')">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🎉</span>
+                <div class="card-label">Oui !</div>
+                <div class="card-desc">1 mois offert, sans engagement</div>
+            </div>
+            <div class="card-option" onclick="selectChoice(6, 'non', 7)">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">➡️</span>
+                <div class="card-label">Non, merci</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(5)">← Retour</button>
+        </div>
+    </div>
+
+    <!-- ========== STEP 7 : Rapport backlinks ========== -->
+    <div class="step" data-step="7">
+        <h2 class="step-title">🔗 Rapport des backlinks</h2>
+        <p class="step-subtitle">Souhaitez-vous recevoir le rapport des backlinks créés ? (90 backlinks créés)</p>
+        <div class="cards-grid cols-2">
+            <div class="card-option" onclick="selectChoice(7, 'oui', 'end-early')">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">📋</span>
+                <div class="card-label">Oui</div>
+                <div class="card-desc">Recevoir le rapport complet</div>
+            </div>
+            <div class="card-option" onclick="selectChoice(7, 'non', 8)">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">➡️</span>
+                <div class="card-label">Non</div>
+            </div>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(6)">← Retour</button>
+        </div>
+    </div>
+
+    <!-- ========== STEP 8 : Fin complète (webhook) ========== -->
+    <div class="step" data-step="8">
+        <div class="final-screen" id="finalComplete">
+            <div class="success-check">✓</div>
+            <h1>Merci !</h1>
+            <p class="step-subtitle" style="margin-top:8px">Votre demande de résiliation a bien été prise en compte.</p>
+            <div class="loading-spinner" id="webhookSpinner"></div>
+            <div class="recap-card">
+                <div class="recap-row">
+                    <span class="recap-label">Abonnement résilié sur</span>
+                    <span class="recap-value" id="recapEmail">—</span>
+                </div>
+                <div class="recap-row">
+                    <span class="recap-label">Résultats Google</span>
+                    <span class="recap-value" id="recapResultats">—</span>
+                </div>
+                <div class="recap-row">
+                    <span class="recap-label">Cocons sémantiques</span>
+                    <span class="recap-value" id="recapCocons">—</span>
+                </div>
+                <div class="recap-row">
+                    <span class="recap-label">Actions restantes</span>
+                    <span class="recap-value" id="recapActions">—</span>
+                </div>
+                <div class="recap-row">
+                    <span class="recap-label">Don Adapt83</span>
+                    <span class="recap-value" id="recapDon">—</span>
+                </div>
+                <div class="recap-row">
+                    <span class="recap-label">1 mois gratuit</span>
+                    <span class="recap-value" id="recapGratuit">—</span>
+                </div>
+                <div class="recap-row">
+                    <span class="recap-label">Rapport backlinks</span>
+                    <span class="recap-value" id="recapBacklinks">—</span>
+                </div>
+            </div>
+            <div style="margin-top:24px">
+                <a href="https://alti-board.fr/Charte_Handicap_RSE.pdf" target="_blank" class="cgv-link">📋 Nos CGV / Charte RSE Handicap</a>
+            </div>
+            <p style="color:var(--text-secondary); margin-top:24px; font-size:0.9rem; line-height:1.6">
+                Nous continuerons de vous aider gratuitement, n'hésitez pas en cas de besoin.
+            </p>
+        </div>
+    </div>
+
+    <!-- ========== STEP END-EARLY : Fin anticipée (email) ========== -->
+    <div class="step" data-step="end-early">
+        <div class="final-screen">
+            <div class="success-check">✓</div>
+            <h1>Bien reçu !</h1>
+            <p class="step-subtitle" style="margin-top:8px">L'équipe revient vers vous dans les minutes ou heures qui arrivent.</p>
+            <div class="loading-spinner" id="emailSpinner"></div>
+            <div class="recap-card">
+                <div class="recap-row">
+                    <span class="recap-label">Email du compte</span>
+                    <span class="recap-value" id="recapEmailEarly">—</span>
+                </div>
+                <div class="recap-row">
+                    <span class="recap-label">Dernière réponse</span>
+                    <span class="recap-value" id="recapLastAnswer">—</span>
+                </div>
+            </div>
+            <div style="margin-top:24px">
+                <a href="https://alti-board.fr/Charte_Handicap_RSE.pdf" target="_blank" class="cgv-link">📋 Nos CGV / Charte RSE Handicap</a>
+            </div>
+            <p style="color:var(--text-secondary); margin-top:24px; font-size:0.9rem; line-height:1.6">
+                Nous continuerons de vous aider gratuitement, n'hésitez pas en cas de besoin.
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    // ---- Init EmailJS ----
+    emailjs.init('nf_vsJRJn_ucqKgbR');
+
+    const TOTAL_STEPS = 8;
+    let currentStep = 0;
+    const formData = {
+        email: '',
+        resultatsGoogle: '',
+        coconsSemantiques: '',
+        actionsRestantes: '',
+        donAssociation: '',
+        moisGratuit: '',
+        rapportBacklinks: '',
+        stoppedAt: '',
+        reachedEnd: false
+    };
+
+    window.checkEmail = function() {
+        const email = document.getElementById('emailStripe').value.trim();
+        const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        document.getElementById('nav1next').disabled = !valid;
+        formData.email = email;
+    };
+
+    window.goTo = function(target) {
+        const currentEl = document.querySelector('.step.active');
+        if (currentEl) {
+            currentEl.classList.remove('active');
+            currentEl.classList.add('exiting');
+            setTimeout(() => { currentEl.classList.remove('exiting'); }, 300);
+        }
+
+        setTimeout(() => {
+            // Handle special targets
+            let targetStep = target;
+            if (target === 'end-early' || target === 8) {
+                targetStep = target;
+            }
+
+            const nextEl = document.querySelector('.step[data-step="' + targetStep + '"]');
+            if (nextEl) {
+                nextEl.classList.add('active');
+                currentStep = (typeof target === 'number') ? target : TOTAL_STEPS;
+                updateProgress();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                if (target === 8) {
+                    handleFinalComplete();
+                } else if (target === 'end-early') {
+                    handleEarlyEnd();
+                }
+            }
+        }, 300);
+    };
+
+    const choiceLabels = {
+        2: { 'oui': 'Oui', 'non': 'Non' },
+        3: { 'oui-recu': 'Déjà reçues', 'non-recevoir': 'À envoyer', 'non-pas-recevoir': 'Pas souhaité' },
+        4: { 'oui': 'Oui', 'non': 'Non' },
+        5: { 'oui-don': 'Oui', 'non': 'Non' },
+        6: { 'oui': 'Oui', 'non': 'Non' },
+        7: { 'oui': 'Oui', 'non': 'Non' }
+    };
+
+    const fieldMap = {
+        2: 'resultatsGoogle',
+        3: 'coconsSemantiques',
+        4: 'actionsRestantes',
+        5: 'donAssociation',
+        6: 'moisGratuit',
+        7: 'rapportBacklinks'
+    };
+
+    window.selectChoice = function(step, value, nextTarget) {
+        // Visual selection
+        const stepEl = document.querySelector('.step[data-step="' + step + '"]');
+        stepEl.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+
+        // Save data
+        const field = fieldMap[step];
+        if (field) formData[field] = value;
+
+        // Track where the form stopped
+        formData.stoppedAt = 'step-' + step + '-' + value;
+
+        // Redirect for donation
+        if (nextTarget === 'redirect-don') {
+            window.open('https://www.ladaptvar.net/', '_blank');
+            setTimeout(() => goTo(6), 500);
+            return;
+        }
+
+        // Navigate after a short delay for visual feedback
+        setTimeout(() => {
+            if (nextTarget === 'end-early') {
+                formData.reachedEnd = false;
+                goTo('end-early');
+            } else {
+                goTo(nextTarget);
+            }
+        }, 400);
+    };
+
+    function updateProgress() {
+        const progress = (currentStep / TOTAL_STEPS) * 100;
+        document.getElementById('progressBar').style.width = Math.min(progress, 100) + '%';
+
+        if (currentStep > 0 && currentStep <= TOTAL_STEPS) {
+            document.getElementById('stepCounter').textContent = 'Étape ' + currentStep + ' / ' + TOTAL_STEPS;
+        } else {
+            document.getElementById('stepCounter').textContent = '';
+        }
+    }
+
+    // ---- Handle final complete (Step 8) → Webhook ----
+    function handleFinalComplete() {
+        formData.reachedEnd = true;
+        fillRecap();
+
+        const spinner = document.getElementById('webhookSpinner');
+        spinner.style.display = 'block';
+
+        // Call Make webhook
+        fetch('https://hook.eu2.make.com/nnfd3iluz8xlgbu07240fci4pe8k6a8w', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                email: formData.email,
+                resultatsGoogle: formData.resultatsGoogle,
+                coconsSemantiques: formData.coconsSemantiques,
+                actionsRestantes: formData.actionsRestantes,
+                donAssociation: formData.donAssociation,
+                moisGratuit: formData.moisGratuit,
+                rapportBacklinks: formData.rapportBacklinks,
+                date: new Date().toISOString(),
+                type: 'resiliation_complete'
+            })
+        }).then(() => {
+            spinner.style.display = 'none';
+        }).catch(() => {
+            spinner.style.display = 'none';
+        });
+    }
+
+    // ---- Handle early end → EmailJS ----
+    function handleEarlyEnd() {
+        document.getElementById('recapEmailEarly').textContent = formData.email || '—';
+
+        const lastStep = formData.stoppedAt || '';
+        let lastAnswerText = 'Formulaire interrompu';
+        if (lastStep.includes('step-2')) {
+            lastAnswerText = 'Souhaite recevoir les résultats Google';
+        } else if (lastStep.includes('step-3-non-recevoir')) {
+            lastAnswerText = 'Souhaite recevoir les cocons sémantiques';
+        } else if (lastStep.includes('step-3-non-pas-recevoir')) {
+            lastAnswerText = 'Ne souhaite pas recevoir les cocons';
+        } else if (lastStep.includes('step-4')) {
+            lastAnswerText = 'Souhaite recevoir les actions restantes';
+        } else if (lastStep.includes('step-6')) {
+            lastAnswerText = 'Souhaite 1 mois gratuit';
+        } else if (lastStep.includes('step-7')) {
+            lastAnswerText = 'Souhaite recevoir le rapport backlinks';
+        }
+        document.getElementById('recapLastAnswer').textContent = lastAnswerText;
+
+        const spinner = document.getElementById('emailSpinner');
+        spinner.style.display = 'block';
+
+        // Build email content
+        const lines = [];
+        lines.push('=== FORMULAIRE RÉSILIATION (arrêt anticipé) ===');
+        lines.push('Email Stripe : ' + formData.email);
+        lines.push('Résultats Google : ' + (formData.resultatsGoogle || '—'));
+        lines.push('Cocons sémantiques : ' + (formData.coconsSemantiques || '—'));
+        lines.push('Actions restantes : ' + (formData.actionsRestantes || '—'));
+        lines.push('Don Adapt83 : ' + (formData.donAssociation || '—'));
+        lines.push('1 mois gratuit : ' + (formData.moisGratuit || '—'));
+        lines.push('Rapport backlinks : ' + (formData.rapportBacklinks || '—'));
+        lines.push('Arrêt à : ' + lastAnswerText);
+        lines.push('Date : ' + new Date().toLocaleString('fr-FR'));
+
+        emailjs.send('service_12wtkng', 'template_tib1gk7', {
+            name: lines.join('\n'),
+            email: formData.email || 'resiliation@alti-web.fr',
+            message: 'Formulaire de résiliation — arrêt anticipé'
+        }).then(() => {
+            spinner.style.display = 'none';
+        }).catch(() => {
+            spinner.style.display = 'none';
+        });
+    }
+
+    function fillRecap() {
+        document.getElementById('recapEmail').textContent = formData.email || '—';
+        document.getElementById('recapResultats').textContent = getLabel(2, formData.resultatsGoogle);
+        document.getElementById('recapCocons').textContent = getLabel(3, formData.coconsSemantiques);
+        document.getElementById('recapActions').textContent = getLabel(4, formData.actionsRestantes);
+        document.getElementById('recapDon').textContent = getLabel(5, formData.donAssociation);
+        document.getElementById('recapGratuit').textContent = getLabel(6, formData.moisGratuit);
+        document.getElementById('recapBacklinks').textContent = getLabel(7, formData.rapportBacklinks);
+    }
+
+    function getLabel(step, value) {
+        if (!value) return '—';
+        return (choiceLabels[step] && choiceLabels[step][value]) || value;
+    }
+
+    // Init
+    updateProgress();
+})();
+</script>
+
+</body>
+</html>
