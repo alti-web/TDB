@@ -2054,9 +2054,18 @@ if (window.location.hostname === 'alti-web.github.io') {
         <span class="icon" style="background:rgba(248,113,113,0.1)">👤</span>
         Mon compte
       </div>
-      <span class="section-count">3 actions</span>
+      <span class="section-count">4 actions</span>
     </div>
     <div class="cards-grid">
+      <div class="action-card" style="--card-accent: var(--accent-orange); cursor:pointer" onclick="openLoginPassPopup()">
+        <div class="card-icon orange">🔑</div>
+        <div class="card-title">Envoyez-nous vos identifiants</div>
+        <div class="card-desc" style="font-size:0.78rem;color:var(--text-secondary);margin-top:4px;line-height:1.4">Si ce n'est pas encore fait, sinon seules les actions off-site seront possibles</div>
+        <div class="card-row">
+          <span class="card-tag tech">Compte</span>
+          <span class="card-arrow">→</span>
+        </div>
+      </div>
       <a href="https://form.asana.com/?k=WFuEiGCrj9rwmEir7NkqbA&d=930162981590606" class="action-card" style="--card-accent: var(--accent)" target="_blank">
         <div class="card-icon blue">🧾</div>
         <div class="card-title">Recevoir mes factures</div>
@@ -2543,6 +2552,46 @@ function sendHandiUrl() {
   </div>
 </div>
 
+<!-- ═══ POPUP ENVOI LOGIN/PASS ═══ -->
+<div id="loginPassPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:9999;justify-content:center;align-items:center;backdrop-filter:blur(4px)">
+  <div style="background:var(--bg-secondary, #1e1e2e);border-radius:16px;padding:32px;max-width:500px;width:90%;position:relative;box-shadow:0 20px 60px rgba(0,0,0,0.5);border:1px solid rgba(251,146,60,0.2)">
+    <button onclick="closeLoginPassPopup()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:var(--text-secondary,#999);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1">&times;</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:48px;margin-bottom:12px">🔑</div>
+      <h3 style="color:var(--text-primary,#fff);font-size:1.1rem;margin:0">Envoyez-nous vos identifiants</h3>
+    </div>
+    <div style="background:rgba(251,146,60,0.08);border-left:3px solid var(--accent-orange,#FB923C);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:20px">
+      <p style="color:var(--accent-orange,#FB923C);font-size:0.85rem;font-weight:500;margin:0;line-height:1.5">⚠️ Sans vos identifiants, seules les actions off-site (backlinks, netlinking) pourront être réalisées. L'optimisation on-site de votre site nécessite un accès à votre back-office.</p>
+    </div>
+    <p style="color:var(--text-secondary,#aaa);font-size:0.9rem;text-align:center;margin-bottom:20px">Renseignez l'URL et les accès de votre site. Ces informations sont transmises de manière sécurisée.</p>
+    <input id="loginPassUrl" type="url" placeholder="URL du site (ex: https://www.monsite.fr)" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px">
+    <input id="loginPassAdminUrl" type="url" placeholder="URL d'admin (ex: https://www.monsite.fr/wp-admin)" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px">
+    <div style="display:flex;gap:10px;margin-bottom:12px">
+      <input id="loginPassUser" type="text" placeholder="Identifiant / Login" style="flex:1;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none">
+      <input id="loginPassPwd" type="text" placeholder="Mot de passe" style="flex:1;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none">
+    </div>
+    <select id="loginPassCms" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:12px;cursor:pointer">
+      <option value="" disabled selected style="color:#666">Type de CMS / plateforme</option>
+      <option value="WordPress">WordPress</option>
+      <option value="Shopify">Shopify</option>
+      <option value="PrestaShop">PrestaShop</option>
+      <option value="Wix">Wix</option>
+      <option value="Squarespace">Squarespace</option>
+      <option value="Joomla">Joomla</option>
+      <option value="Drupal">Drupal</option>
+      <option value="WooCommerce">WooCommerce</option>
+      <option value="Autre">Autre</option>
+    </select>
+    <textarea id="loginPassNotes" placeholder="Informations complémentaires (optionnel)..." rows="3" style="width:100%;padding:12px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:16px;resize:vertical;font-family:inherit"></textarea>
+    <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;padding:12px 14px;border-radius:10px;background:rgba(52,211,153,0.06);border:1px solid rgba(52,211,153,0.15)">
+      <span style="font-size:1.1rem;flex-shrink:0;margin-top:1px">🔒</span>
+      <span style="color:var(--text-secondary,#aaa);font-size:0.82rem;line-height:1.5">Vos identifiants sont envoyés de manière sécurisée et utilisés uniquement pour l'optimisation SEO de votre site. Ils ne sont jamais partagés.</span>
+    </div>
+    <button id="loginPassSubmitBtn" onclick="sendLoginPass()" style="width:100%;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent-orange,#FB923C),#e67e22);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;transition:opacity 0.2s">Envoyer mes identifiants</button>
+    <p id="loginPassMsg" style="text-align:center;margin-top:12px;font-size:0.85rem;display:none"></p>
+  </div>
+</div>
+
 <script>
 // ─── VOCAL RECORDING ───
 var vocalMediaRecorder = null;
@@ -2790,6 +2839,80 @@ function closeRappelPopup() {
 
 document.getElementById('rappelPopup').addEventListener('click', function(e) {
   if (e.target === this) closeRappelPopup();
+});
+
+// ─── POPUP LOGIN/PASS ───
+function openLoginPassPopup() {
+  document.getElementById('loginPassUrl').value = '';
+  document.getElementById('loginPassAdminUrl').value = '';
+  document.getElementById('loginPassUser').value = '';
+  document.getElementById('loginPassPwd').value = '';
+  document.getElementById('loginPassCms').selectedIndex = 0;
+  document.getElementById('loginPassNotes').value = '';
+  document.getElementById('loginPassMsg').style.display = 'none';
+  var btn = document.getElementById('loginPassSubmitBtn');
+  btn.disabled = false;
+  btn.textContent = 'Envoyer mes identifiants';
+  document.getElementById('loginPassPopup').style.display = 'flex';
+}
+
+function closeLoginPassPopup() {
+  document.getElementById('loginPassPopup').style.display = 'none';
+}
+
+document.getElementById('loginPassPopup').addEventListener('click', function(e) {
+  if (e.target === this) closeLoginPassPopup();
+});
+
+function sendLoginPass() {
+  var url = document.getElementById('loginPassUrl').value.trim();
+  var adminUrl = document.getElementById('loginPassAdminUrl').value.trim();
+  var user = document.getElementById('loginPassUser').value.trim();
+  var pwd = document.getElementById('loginPassPwd').value.trim();
+  var cms = document.getElementById('loginPassCms').value;
+  var notes = document.getElementById('loginPassNotes').value.trim();
+  var msg = document.getElementById('loginPassMsg');
+  var btn = document.getElementById('loginPassSubmitBtn');
+  var savedEmail = localStorage.getItem('altiweb_login_email') || 'inconnu';
+
+  if (!url || !user || !pwd) {
+    msg.style.display = 'block';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Veuillez renseigner au minimum l\'URL, l\'identifiant et le mot de passe.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Envoi en cours...';
+
+  var fullMessage = '🔑 IDENTIFIANTS SITE WEB\n\n' +
+    'Client : ' + savedEmail + '\n' +
+    'URL du site : ' + url + '\n' +
+    'URL admin : ' + (adminUrl || 'non renseignée') + '\n' +
+    'CMS : ' + (cms || 'non renseigné') + '\n' +
+    'Login : ' + user + '\n' +
+    'Mot de passe : ' + pwd + '\n' +
+    (notes ? '\nNotes : ' + notes : '');
+
+  emailjs.send('service_12wtkng', 'template_tib1gk7', {
+    name: fullMessage
+  }).then(function() {
+    msg.style.display = 'block';
+    msg.style.color = '#34d399';
+    msg.textContent = 'Identifiants envoyés avec succès ! Merci.';
+    btn.textContent = 'Envoyé !';
+    setTimeout(closeLoginPassPopup, 2500);
+  }, function(err) {
+    msg.style.display = 'block';
+    msg.style.color = '#f87171';
+    msg.textContent = "Erreur lors de l'envoi. Réessayez.";
+    btn.disabled = false;
+    btn.textContent = 'Envoyer mes identifiants';
+  });
+}
+
+document.getElementById('comptaPopup').addEventListener('click', function(e) {
+  if (e.target === this) closeComptaPopup();
 });
 
 // ─── POPUP RDV LOCAUX ───
