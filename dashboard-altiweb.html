@@ -335,6 +335,86 @@ if (window.location.hostname === 'alti-web.github.io') {
     z-index: 1;
   }
 
+  /* ─── DOWNLOAD BANNER ─── */
+  .download-banner {
+    display: none;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    border: 2px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 24px 32px;
+    margin: 20px 40px 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    box-shadow: 0 0 30px rgba(79, 140, 255, 0.2), 0 0 60px rgba(79, 140, 255, 0.05);
+    animation: bannerPulse 3s ease-in-out infinite;
+    position: relative;
+    overflow: hidden;
+  }
+  .download-banner::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(79, 140, 255, 0.08) 0%, transparent 60%);
+    animation: bannerShine 4s linear infinite;
+  }
+  @keyframes bannerPulse {
+    0%, 100% { box-shadow: 0 0 30px rgba(79, 140, 255, 0.2), 0 0 60px rgba(79, 140, 255, 0.05); }
+    50% { box-shadow: 0 0 40px rgba(79, 140, 255, 0.35), 0 0 80px rgba(79, 140, 255, 0.1); }
+  }
+  @keyframes bannerShine {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+  .download-banner .banner-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+  }
+  .download-banner .banner-icon {
+    font-size: 2.5rem;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+  .download-banner .banner-text h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .download-banner .banner-text p {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+  }
+  .download-banner .banner-btn {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 1rem;
+    padding: 14px 28px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .download-banner .banner-btn:hover {
+    background: #3a7aff;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(79, 140, 255, 0.3);
+  }
+
   /* ─── TOP BAR ─── */
   .topbar {
     display: flex;
@@ -1514,6 +1594,18 @@ if (window.location.hostname === 'alti-web.github.io') {
       <a href="javascript:void(0)" onclick="handleLogout()" class="topbar-btn" style="border-color:var(--accent-red);color:var(--accent-red);font-size:13px;">🔓 Me déconnecter</a>
     </div>
   </header>
+
+  <!-- ═══ DOWNLOAD BANNER (olistik / lotfi) ═══ -->
+  <div class="download-banner" id="downloadBanner">
+    <div class="banner-content">
+      <div class="banner-icon">📄</div>
+      <div class="banner-text">
+        <h3>52 pages Markdown — Votre livrable est prêt !</h3>
+        <p>Téléchargez votre dossier complet de contenus optimisés SEO (fichier .zip)</p>
+      </div>
+    </div>
+    <a href="files.zip" download class="banner-btn">⬇️ Télécharger le .zip</a>
+  </div>
 
   <!-- ═══ HERO ═══ -->
   <section class="hero">
@@ -3398,6 +3490,15 @@ function isFinishedClient(email) {
   return finishedEmails.indexOf(email.toLowerCase().trim()) !== -1;
 }
 
+// Emails avec bannière de téléchargement
+var downloadBannerEmails = ['contact@olistik.ch', 'lotfi.barka@gmail.com'];
+function showDownloadBanner(email) {
+  var banner = document.getElementById('downloadBanner');
+  if (banner) {
+    banner.style.display = downloadBannerEmails.indexOf(email.toLowerCase().trim()) !== -1 ? 'flex' : 'none';
+  }
+}
+
 // Sauvegarde du HTML original pour pouvoir restaurer entre connexions
 var _originalTasksHTML = null;
 var _originalBadgeHTML = null;
@@ -3554,6 +3655,7 @@ function hideTasksIfNewEmail(email) {
     initTasksAnimation();
     hideTasksIfNewEmail(savedEmail);
     applyFinishedStatus(savedEmail);
+    showDownloadBanner(savedEmail);
   } else {
     localStorage.removeItem('altiweb_login_email');
     localStorage.removeItem('altiweb_login_time');
@@ -3573,6 +3675,7 @@ function handleLogin(e) {
     initTasksAnimation();
     hideTasksIfNewEmail(email);
     applyFinishedStatus(email);
+    showDownloadBanner(email);
     var overlay = document.getElementById('loginOverlay');
     overlay.classList.add('hiding');
     setTimeout(function() {
@@ -3598,6 +3701,8 @@ function handleLogout() {
   localStorage.removeItem('altiweb_login_email');
   localStorage.removeItem('altiweb_login_time');
   resetDashboardState();
+  var banner = document.getElementById('downloadBanner');
+  if (banner) banner.style.display = 'none';
   var overlay = document.getElementById('loginOverlay');
   overlay.classList.remove('hidden', 'hiding');
   document.getElementById('loginEmail').value = '';
