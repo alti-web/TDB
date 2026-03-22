@@ -1608,6 +1608,18 @@ if (window.location.hostname === 'alti-web.github.io') {
     <a href="files.zip" download class="banner-btn">⬇️ Télécharger le .zip</a>
   </div>
 
+  <!-- ═══ DOWNLOAD BANNER (peauethique) ═══ -->
+  <div class="download-banner" id="downloadBannerPeauethique" style="display:none;">
+    <div class="banner-content">
+      <div class="banner-icon">🚀</div>
+      <div class="banner-text">
+        <h3>Vos 52 cocons sémantiques SEO à télécharger ici</h3>
+        <p>Votre dossier complet de contenus optimisés est prêt — téléchargez-le maintenant !</p>
+      </div>
+    </div>
+    <a href="content-peauethique.rar" download class="banner-btn">⬇️ Télécharger le .rar</a>
+  </div>
+
   <!-- ═══ HERO ═══ -->
   <section class="hero">
     <div class="hero-grid">
@@ -3514,10 +3526,16 @@ function isFinishedClient(email) {
 
 // Emails avec bannière de téléchargement
 var downloadBannerEmails = ['contact@olistik.ch', 'lotfi.barka@gmail.com'];
+var downloadBannerPeauethique = ['contact@peauethique.com'];
 function showDownloadBanner(email) {
+  var e = email.toLowerCase().trim();
   var banner = document.getElementById('downloadBanner');
   if (banner) {
-    banner.style.display = downloadBannerEmails.indexOf(email.toLowerCase().trim()) !== -1 ? 'flex' : 'none';
+    banner.style.display = downloadBannerEmails.indexOf(e) !== -1 ? 'flex' : 'none';
+  }
+  var bannerPeau = document.getElementById('downloadBannerPeauethique');
+  if (bannerPeau) {
+    bannerPeau.style.display = downloadBannerPeauethique.indexOf(e) !== -1 ? 'flex' : 'none';
   }
 }
 
@@ -3727,6 +3745,8 @@ function handleLogout() {
   resetDashboardState();
   var banner = document.getElementById('downloadBanner');
   if (banner) banner.style.display = 'none';
+  var bannerPeau = document.getElementById('downloadBannerPeauethique');
+  if (bannerPeau) bannerPeau.style.display = 'none';
   var overlay = document.getElementById('loginOverlay');
   overlay.classList.remove('hidden', 'hiding');
   document.getElementById('loginEmail').value = '';
