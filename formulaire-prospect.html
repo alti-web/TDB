@@ -927,8 +927,26 @@
         </div>
     </div>
 
-    <!-- ====== STEP 15 — Dernier mot ====== -->
+    <!-- ====== STEP 15 — Téléphone ====== -->
     <div class="step" data-step="15">
+        <h2 class="step-title">Votre numéro de téléphone</h2>
+        <p class="step-subtitle">Pour que nous puissions vous joindre si besoin</p>
+        <div class="infobox">
+            <strong>📞 Le mien est le 06.79.96.75.02</strong><br><br>
+            Avoir votre numéro nous permet de vous contacter rapidement en cas de besoin urgent ou pour un échange rapide par WhatsApp.
+        </div>
+        <div class="input-group">
+            <input class="text-input" type="tel" id="prospectPhone" placeholder="06 12 34 56 78" required style="text-align:center;font-size:1.2rem;letter-spacing:1px">
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-secondary" onclick="goTo(14)">← Retour</button>
+            <div class="spacer"></div>
+            <button class="btn btn-primary" id="nav15next" onclick="savePhone(); goTo(16)" disabled>Suivant →</button>
+        </div>
+    </div>
+
+    <!-- ====== STEP 16 — Dernier mot ====== -->
+    <div class="step" data-step="16">
         <h2 class="step-title">Un dernier mot ?</h2>
         <p class="step-subtitle">Une question, un détail, une attente particulière ? C'est le moment !</p>
         <div class="input-group">
@@ -944,14 +962,14 @@
             </div>
         </div>
         <div class="nav-buttons">
-            <button class="btn btn-secondary" onclick="goTo(14)">← Retour</button>
+            <button class="btn btn-secondary" onclick="goTo(15)">← Retour</button>
             <div class="spacer"></div>
             <button class="btn btn-primary" onclick="submitForm()">Envoyer ✨</button>
         </div>
     </div>
 
-    <!-- ====== STEP 16 — Merci ====== -->
-    <div class="step" data-step="16">
+    <!-- ====== STEP 17 — Merci ====== -->
+    <div class="step" data-step="17">
         <div class="welcome-screen" style="min-height:auto; padding-top:40px">
             <h1 style="font-size:2.4rem; margin-bottom:20px">🎉 Merci !</h1>
             <p class="subtitle">Votre formulaire a bien été envoyé. On revient vers vous très vite.</p>
@@ -1007,12 +1025,13 @@
         gmb: '',
         rdv: '',
         communication: [],
+        telephone: '',
         dernierMot: '',
         secteurLibre: '',
         audioMessage: false
     };
 
-    const TOTAL_STEPS = 16;
+    const TOTAL_STEPS = 17;
     let currentStep = 0;
 
     // ---- EmailJS init ----
@@ -1218,6 +1237,22 @@
         formData.siteUrl = document.getElementById('siteUrl').value.trim();
     };
 
+    // ---- Phone validation ----
+    (function() {
+        const phoneInput = document.getElementById('prospectPhone');
+        const nav15 = document.getElementById('nav15next');
+        if (phoneInput && nav15) {
+            phoneInput.addEventListener('input', function() {
+                const val = this.value.replace(/\s/g, '');
+                nav15.disabled = val.length < 10;
+            });
+        }
+    })();
+
+    window.savePhone = function() {
+        formData.telephone = document.getElementById('prospectPhone').value.trim();
+    };
+
     // ---- Competitor previews ----
     window.previewCompetitors = function() {
         const container = document.getElementById('competitorPreviews');
@@ -1384,6 +1419,7 @@
         lines.push('Garantie : ' + (formData.garantie ? 'Oui' : 'Non'));
         lines.push('');
         lines.push('--- CONTACT ---');
+        lines.push('Téléphone : ' + (formData.telephone || 'Non renseigné'));
         lines.push('Google My Business : ' + formData.gmb);
         lines.push('RDV : ' + formData.rdv);
         lines.push('Communication : ' + (Array.isArray(formData.communication) ? (formData.communication.join(', ') || 'Non renseigné') : formData.communication));
@@ -1420,6 +1456,7 @@
             { label: 'Google My Business', value: formData.gmb },
             { label: 'RDV', value: formData.rdv },
             { label: 'Communication', value: Array.isArray(formData.communication) ? (formData.communication.join(', ') || '—') : formData.communication },
+            { label: 'Téléphone', value: formData.telephone || '—' },
         ];
         container.innerHTML = items.map(i =>
             '<div class="recap-card"><div class="recap-label">' + i.label + '</div><div class="recap-value">' + i.value + '</div></div>'
