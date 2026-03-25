@@ -2250,6 +2250,39 @@ if (window.location.hostname === 'alti-web.github.io') {
   </div>
 </div>
 
+<!-- ═══ POPUP NOUVEAU CLIENT "JE SUIS PERDU" ═══ -->
+<div id="newClientHelpPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10002;justify-content:center;align-items:center;backdrop-filter:blur(4px)">
+  <div style="background:linear-gradient(135deg, #131825 0%, #1a2035 50%, #0e1220 100%);border-radius:20px;padding:36px 32px 28px;max-width:520px;width:90%;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(52,211,153,0.15);border:1px solid rgba(52,211,153,0.25)">
+    <button onclick="closeNewClientHelpPopup()" style="position:absolute;top:12px;right:16px;background:none;border:none;color:var(--text-secondary,#999);font-size:24px;cursor:pointer;padding:4px 8px;line-height:1">&times;</button>
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="font-size:52px;margin-bottom:12px">🤔</div>
+      <h3 style="color:var(--text-primary,#fff);font-size:1.25rem;margin:0;font-family:'Playfair Display',serif">Je suis perdu, que dois-je faire ?</h3>
+    </div>
+    <div style="background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.2);border-radius:14px;padding:20px;margin-bottom:20px">
+      <p style="color:var(--accent-green,#34d399);font-size:1rem;font-weight:700;margin:0 0 14px 0;text-align:center">Je m'occupe de tout, de A à Z.</p>
+      <p style="color:var(--text-secondary,#ccc);font-size:0.92rem;line-height:1.7;margin:0">En cas de changement sur votre site, prévenez-moi :</p>
+      <div style="margin-top:14px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="background:var(--accent-green,#34d399);color:#000;font-weight:700;min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem">1</span>
+          <span style="color:var(--text-primary,#e8ecf4);font-size:0.92rem;line-height:1.5">Pour <strong>corriger</strong> ce qui doit l'être</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="background:var(--accent,#4F8CFF);color:#fff;font-weight:700;min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem">2</span>
+          <span style="color:var(--text-primary,#e8ecf4);font-size:0.92rem;line-height:1.5">Pour vous <strong>donner des conseils</strong></span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:10px">
+          <span style="background:var(--accent-purple,#a78bfa);color:#fff;font-weight:700;min-width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.85rem">3</span>
+          <span style="color:var(--text-primary,#e8ecf4);font-size:0.92rem;line-height:1.5">Pour que j'<strong>envoie sur les moteurs de recherche</strong></span>
+        </div>
+      </div>
+    </div>
+    <div style="text-align:center">
+      <p style="color:var(--text-secondary,#aaa);font-size:0.85rem;margin:0 0 14px 0">Mon numéro direct : <strong style="color:var(--accent-green,#34d399)">06.79.96.75.02</strong></p>
+      <button onclick="closeNewClientHelpPopup()" style="padding:12px 32px;border-radius:12px;border:none;background:linear-gradient(135deg,var(--accent-green,#34d399),#22b07d);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(52,211,153,0.3)">J'ai compris, merci !</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ POPUP INSTALLER APP BUREAU ═══ -->
 <div id="installAppPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10001;justify-content:center;align-items:center;backdrop-filter:blur(6px);transition:opacity 0.3s ease">
   <div style="background:linear-gradient(135deg, #131825 0%, #1a2035 50%, #0e1220 100%);border-radius:20px;padding:40px 36px 32px;max-width:480px;width:90%;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(79,140,255,0.1);border:1px solid rgba(79,140,255,0.2);animation:popupSlideUp 0.5s cubic-bezier(0.25,0.46,0.45,0.94) forwards">
@@ -3686,6 +3719,21 @@ function hideTasksIfNewEmail(email) {
   // Sauvegarder l'état original du DOM au chargement
   saveOriginalState();
 
+  // ─── JETON SECRET ADMIN ───
+  var urlParams = new URLSearchParams(window.location.search);
+  var acces = urlParams.get('acces');
+  if (acces === 'b7x9K2mQ4wZr8sLp') {
+    var overlay = document.getElementById('loginOverlay');
+    if (overlay) overlay.classList.add('hidden');
+    localStorage.setItem('altiweb_login_email', 'admin@alti-web.fr');
+    localStorage.setItem('altiweb_login_time', Date.now().toString());
+    // Nettoyer l'URL pour ne pas exposer le jeton
+    if (window.history.replaceState) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+    return;
+  }
+
   // Check if already logged in (session expires after 20 min)
   var savedEmail = localStorage.getItem('altiweb_login_email');
   var loginTime = parseInt(localStorage.getItem('altiweb_login_time') || '0', 10);
@@ -3698,6 +3746,7 @@ function hideTasksIfNewEmail(email) {
     hideTasksIfNewEmail(savedEmail);
     applyFinishedStatus(savedEmail);
     showDownloadBanner(savedEmail);
+    showNewClientPopup(savedEmail);
   } else {
     localStorage.removeItem('altiweb_login_email');
     localStorage.removeItem('altiweb_login_time');
@@ -3718,6 +3767,7 @@ function handleLogin(e) {
     hideTasksIfNewEmail(email);
     applyFinishedStatus(email);
     showDownloadBanner(email);
+    showNewClientPopup(email);
     var overlay = document.getElementById('loginOverlay');
     overlay.classList.add('hiding');
     setTimeout(function() {
@@ -3739,6 +3789,35 @@ function handleLogin(e) {
   return false;
 }
 
+// ─── POPUP "JE SUIS PERDU" POUR NOUVEAUX CLIENTS (7 jours) ───
+function showNewClientPopup(email) {
+  var e = email.toLowerCase().trim();
+  if (!newEmailDates[e]) return;
+  var addedDate = new Date(newEmailDates[e]);
+  var now = new Date();
+  var diffDays = (now - addedDate) / 86400000;
+  if (diffDays >= 7) return;
+  // Ne pas montrer si déjà fermée dans cette session
+  if (sessionStorage.getItem('newClientPopupClosed_' + e)) return;
+  setTimeout(function() {
+    var popup = document.getElementById('newClientHelpPopup');
+    if (popup) popup.style.display = 'flex';
+  }, 1500);
+}
+
+function closeNewClientHelpPopup() {
+  var popup = document.getElementById('newClientHelpPopup');
+  if (popup) {
+    popup.style.display = 'none';
+    var email = (localStorage.getItem('altiweb_login_email') || '').toLowerCase().trim();
+    if (email) sessionStorage.setItem('newClientPopupClosed_' + email, '1');
+  }
+}
+
+document.getElementById('newClientHelpPopup').addEventListener('click', function(e) {
+  if (e.target === this) closeNewClientHelpPopup();
+});
+
 function handleLogout() {
   localStorage.removeItem('altiweb_login_email');
   localStorage.removeItem('altiweb_login_time');
@@ -3747,6 +3826,8 @@ function handleLogout() {
   if (banner) banner.style.display = 'none';
   var bannerPeau = document.getElementById('downloadBannerPeauethique');
   if (bannerPeau) bannerPeau.style.display = 'none';
+  var ncPopup = document.getElementById('newClientHelpPopup');
+  if (ncPopup) ncPopup.style.display = 'none';
   var overlay = document.getElementById('loginOverlay');
   overlay.classList.remove('hidden', 'hiding');
   document.getElementById('loginEmail').value = '';
