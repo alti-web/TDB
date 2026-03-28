@@ -1608,6 +1608,18 @@ if (window.location.hostname === 'alti-web.github.io') {
     <a href="files.zip" download class="banner-btn">⬇️ Télécharger le .zip</a>
   </div>
 
+  <!-- ═══ DOWNLOAD BANNER (bacheron) ═══ -->
+  <div class="download-banner" id="downloadBannerBacheron" style="display:none;">
+    <div class="banner-content">
+      <div class="banner-icon">📄</div>
+      <div class="banner-text">
+        <h3>28 pages Markdown — Votre livrable est prêt !</h3>
+        <p>Téléchargez votre dossier complet de contenus optimisés SEO (fichier .zip)</p>
+      </div>
+    </div>
+    <a href="content-bacheron.zip" download class="banner-btn">⬇️ Télécharger le .zip</a>
+  </div>
+
   <!-- ═══ DOWNLOAD BANNER (peauethique) ═══ -->
   <div class="download-banner" id="downloadBannerPeauethique" style="display:none;">
     <div class="banner-content">
@@ -3570,6 +3582,7 @@ function isFinishedClient(email) {
 // Emails avec bannière de téléchargement
 var downloadBannerEmails = ['contact@olistik.ch', 'lotfi.barka@gmail.com'];
 var downloadBannerPeauethique = ['contact@peauethique.com'];
+var downloadBannerBacheron = ['bacheron@gmail.com'];
 function showDownloadBanner(email) {
   var e = email.toLowerCase().trim();
   var banner = document.getElementById('downloadBanner');
@@ -3579,6 +3592,10 @@ function showDownloadBanner(email) {
   var bannerPeau = document.getElementById('downloadBannerPeauethique');
   if (bannerPeau) {
     bannerPeau.style.display = downloadBannerPeauethique.indexOf(e) !== -1 ? 'flex' : 'none';
+  }
+  var bannerBacheron = document.getElementById('downloadBannerBacheron');
+  if (bannerBacheron) {
+    bannerBacheron.style.display = downloadBannerBacheron.indexOf(e) !== -1 ? 'flex' : 'none';
   }
 }
 
@@ -3838,6 +3855,8 @@ function handleLogout() {
   if (bannerPeau) bannerPeau.style.display = 'none';
   var ncPopup = document.getElementById('newClientHelpPopup');
   if (ncPopup) ncPopup.style.display = 'none';
+  var bannerBacheron = document.getElementById('downloadBannerBacheron');
+  if (bannerBacheron) bannerBacheron.style.display = 'none';
   var overlay = document.getElementById('loginOverlay');
   overlay.classList.remove('hidden', 'hiding');
   document.getElementById('loginEmail').value = '';
