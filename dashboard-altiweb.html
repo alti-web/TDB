@@ -1620,6 +1620,18 @@ if (window.location.hostname === 'alti-web.github.io') {
     <a href="content-bacheron.zip" download class="banner-btn">⬇️ Télécharger le .zip</a>
   </div>
 
+  <!-- ═══ DOWNLOAD BANNER (ad-coaching) ═══ -->
+  <div class="download-banner" id="downloadBannerAdcoaching" style="display:none;">
+    <div class="banner-content">
+      <div class="banner-icon">📄</div>
+      <div class="banner-text">
+        <h3>28 pages Markdown — Votre livrable est prêt !</h3>
+        <p>Téléchargez votre dossier complet de contenus optimisés SEO (fichier .zip)</p>
+      </div>
+    </div>
+    <a href="content-adcoaching.zip" download class="banner-btn">⬇️ Télécharger le .zip</a>
+  </div>
+
   <!-- ═══ DOWNLOAD BANNER (peauethique) ═══ -->
   <div class="download-banner" id="downloadBannerPeauethique" style="display:none;">
     <div class="banner-content">
@@ -3583,6 +3595,7 @@ function isFinishedClient(email) {
 var downloadBannerEmails = ['contact@olistik.ch', 'lotfi.barka@gmail.com'];
 var downloadBannerPeauethique = ['contact@peauethique.com'];
 var downloadBannerBacheron = ['bacheron@gmail.com'];
+var downloadBannerAdcoaching = ['contact@ad-coaching.fr'];
 function showDownloadBanner(email) {
   var e = email.toLowerCase().trim();
   var banner = document.getElementById('downloadBanner');
@@ -3596,6 +3609,10 @@ function showDownloadBanner(email) {
   var bannerBacheron = document.getElementById('downloadBannerBacheron');
   if (bannerBacheron) {
     bannerBacheron.style.display = downloadBannerBacheron.indexOf(e) !== -1 ? 'flex' : 'none';
+  }
+  var bannerAdc = document.getElementById('downloadBannerAdcoaching');
+  if (bannerAdc) {
+    bannerAdc.style.display = downloadBannerAdcoaching.indexOf(e) !== -1 ? 'flex' : 'none';
   }
 }
 
@@ -3857,6 +3874,8 @@ function handleLogout() {
   if (ncPopup) ncPopup.style.display = 'none';
   var bannerBacheron = document.getElementById('downloadBannerBacheron');
   if (bannerBacheron) bannerBacheron.style.display = 'none';
+  var bannerAdc = document.getElementById('downloadBannerAdcoaching');
+  if (bannerAdc) bannerAdc.style.display = 'none';
   var overlay = document.getElementById('loginOverlay');
   overlay.classList.remove('hidden', 'hiding');
   document.getElementById('loginEmail').value = '';
