@@ -3819,22 +3819,19 @@ function hideTasksIfNewEmail(email) {
   var urlParams = new URLSearchParams(window.location.search);
   var acces = urlParams.get('acces');
   if (acces === 'b7x9K2mQ4wZr8sLp') {
-    var overlay = document.getElementById('loginOverlay');
-    if (overlay) overlay.classList.add('hidden');
     localStorage.setItem('altiweb_login_email', 'admin@alti-web.fr');
     localStorage.setItem('altiweb_login_time', Date.now().toString());
-    // Nettoyer l'URL pour ne pas exposer le jeton
     if (window.history.replaceState) {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
-    return;
   }
 
   // Check if already logged in (session expires after 20 min)
   var savedEmail = localStorage.getItem('altiweb_login_email');
   var loginTime = parseInt(localStorage.getItem('altiweb_login_time') || '0', 10);
   var sessionDuration = 20 * 60 * 1000; // 20 minutes
-  if (savedEmail && isEmailAuthorized(savedEmail) && (Date.now() - loginTime) < sessionDuration) {
+  var isAdmin = savedEmail === 'admin@alti-web.fr';
+  if (savedEmail && (isAdmin || isEmailAuthorized(savedEmail)) && (Date.now() - loginTime) < sessionDuration) {
     var overlay = document.getElementById('loginOverlay');
     if (overlay) overlay.classList.add('hidden');
     resetDashboardState();
