@@ -32,7 +32,7 @@
       justify-content:space-between;
       position:sticky;
       top:0;
-      z-index:10;
+      z-index:100;
     }
     .header-brand { display:flex; align-items:center; gap:12px; }
     .header-logo { font-family:'Playfair Display',serif; font-size:1.1rem; }
@@ -66,8 +66,31 @@
     .hero h1 span { color:var(--accent); }
     .hero p { color:var(--sub); font-size:1rem; max-width:480px; margin:0 auto; line-height:1.7; }
 
-    /* MAIN */
-    .main { max-width:860px; margin:0 auto; padding:0 20px 60px; }
+    /* MAIN LAYOUT */
+    .main {
+      max-width:1160px;
+      margin:0 auto;
+      padding:0 20px 60px;
+      display:flex;
+      gap:28px;
+      align-items:flex-start;
+    }
+
+    /* SIDEBAR COMMENTS */
+    .sidebar-comments {
+      width:280px;
+      flex-shrink:0;
+      position:sticky;
+      top:72px;
+      max-height:calc(100vh - 90px);
+      overflow-y:auto;
+      padding-right:4px;
+    }
+    .sidebar-comments::-webkit-scrollbar { width:4px; }
+    .sidebar-comments::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.08); border-radius:2px; }
+
+    /* CARDS COLUMN */
+    .cards-column { flex:1; min-width:0; }
 
     /* CREATION CARD */
     .creation-card {
@@ -100,6 +123,7 @@
       position:absolute;
       inset:0;
       cursor:pointer;
+      z-index:2;
     }
     .site-preview-label {
       position:absolute;
@@ -115,9 +139,21 @@
       display:flex;
       align-items:center;
       gap:5px;
+      z-index:3;
     }
     .preview-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); animation:blink 1.5s infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    /* STICKER */
+    .sticker {
+      position:absolute;
+      z-index:3;
+      font-weight:800;
+      line-height:1.1;
+      text-align:center;
+      pointer-events:none;
+      letter-spacing:-0.01em;
+    }
 
     .card-footer {
       padding:18px 22px;
@@ -154,59 +190,58 @@
     }
     .visit-btn:hover { opacity:0.9; transform:translateY(-1px); box-shadow:0 6px 28px rgba(251,146,60,0.4); }
 
-    /* COMMENTS */
-    .comments-section { margin-top:0; }
+    /* COMMENTS SIDEBAR */
     .comments-header {
       display:flex; align-items:center; gap:10px;
-      margin-bottom:16px;
+      margin-bottom:14px;
     }
-    .comments-header h3 { font-size:1rem; font-weight:700; }
+    .comments-header h3 { font-size:0.95rem; font-weight:700; }
     .comments-count {
       background:rgba(251,146,60,0.12); color:var(--accent);
-      font-size:0.75rem; font-weight:700;
-      padding:3px 10px; border-radius:20px;
+      font-size:0.72rem; font-weight:700;
+      padding:3px 9px; border-radius:20px;
     }
 
-    .comments-list { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+    .comments-list { display:flex; flex-direction:column; gap:8px; margin-bottom:16px; }
 
     .comment-item {
       background:var(--bg3);
       border:1px solid var(--border);
-      border-radius:12px;
-      padding:14px 16px;
+      border-radius:10px;
+      padding:11px 13px;
       animation:fadeIn 0.3s ease;
     }
     @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
 
     .comment-author {
-      font-size:0.78rem; font-weight:700;
-      margin-bottom:5px;
+      font-size:0.75rem; font-weight:700;
+      margin-bottom:4px;
     }
-    .comment-text { font-size:0.88rem; color:#ccc; line-height:1.55; }
+    .comment-text { font-size:0.82rem; color:#ccc; line-height:1.5; }
 
     /* FORM */
     .comment-form {
       background:var(--bg2);
       border:1px solid var(--border);
-      border-radius:14px;
-      padding:18px 20px;
+      border-radius:12px;
+      padding:14px 16px;
     }
-    .comment-form p { font-size:0.82rem; color:var(--sub); margin-bottom:10px; }
+    .comment-form p { font-size:0.78rem; color:var(--sub); margin-bottom:8px; }
     .comment-textarea {
-      width:100%; padding:11px 14px;
-      border-radius:10px; border:1px solid var(--border);
+      width:100%; padding:9px 12px;
+      border-radius:8px; border:1px solid var(--border);
       background:var(--bg); color:var(--text);
-      font-size:0.9rem; font-family:'DM Sans',sans-serif;
+      font-size:0.85rem; font-family:'DM Sans',sans-serif;
       outline:none; resize:none; box-sizing:border-box;
       transition:border-color 0.2s; line-height:1.6;
     }
     .comment-textarea:focus { border-color:var(--accent); }
     .send-btn {
-      margin-top:10px; float:right;
-      padding:9px 22px; border-radius:10px;
+      margin-top:8px; float:right;
+      padding:8px 18px; border-radius:8px;
       border:none; cursor:pointer;
       background:linear-gradient(135deg,var(--accent),var(--accent2));
-      color:#fff; font-size:0.88rem; font-weight:600;
+      color:#fff; font-size:0.82rem; font-weight:600;
       font-family:'DM Sans',sans-serif;
       transition:opacity 0.15s;
     }
@@ -224,7 +259,10 @@
     }
     .page-footer a { color:var(--accent); text-decoration:none; }
 
-    @media (max-width:600px) {
+    @media (max-width:860px) {
+      .main { flex-direction:column; }
+      .sidebar-comments { width:100%; position:static; max-height:none; order:2; }
+      .cards-column { order:1; }
       .hero h1 { font-size:1.6rem; }
       .card-footer { flex-direction:column; align-items:flex-start; }
       .header { padding:14px 16px; }
@@ -248,245 +286,11 @@
 
 <div class="main">
 
-  <!-- FRELON19 -->
-  <div class="creation-card" style="border-color:rgba(239,68,68,0.25)">
-    <div class="site-preview">
-      <iframe src="https://frelon19.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="Frelon19 preview"></iframe>
-      <div class="site-preview-overlay" onclick="window.open('https://frelon19.testdemoaltiweb.fr/','_blank')"></div>
-      <div class="site-preview-label">
-        <span class="preview-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></span> Démo live
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>Frelon19</h2>
-        <p>Destruction de nids de frelons & nuisibles — Intervention rapide en Corrèze</p>
-        <div class="tags">
-          <span class="tag tag-red">Services à domicile</span>
-          <span class="tag tag-green">SEO local</span>
-          <span class="tag tag-orange">Urgence 24/7</span>
-        </div>
-      </div>
-      <a href="https://frelon19.testdemoaltiweb.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#ef4444,#b91c1c)">Visiter le site →</a>
-    </div>
-  </div>
-
-  <!-- ONGLES EXPERT -->
-  <div class="creation-card" style="border-color:rgba(236,72,153,0.25)">
-    <div class="site-preview">
-      <iframe src="https://test-de-carriere.onglesexpertformation.com/" scrolling="no" loading="lazy" title="Ongles Expert Formation preview"></iframe>
-      <div class="site-preview-overlay" onclick="window.open('https://test-de-carriere.onglesexpertformation.com/','_blank')"></div>
-      <div class="site-preview-label">
-        <span class="preview-dot" style="background:#f472b6;box-shadow:0 0 6px #f472b6"></span> Démo live
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>Ongles Expert Formation</h2>
-        <p>Test de carrière interactif — Prothésiste ongulaire, découvrez votre profil idéal</p>
-        <div class="tags">
-          <span class="tag tag-purple">Formation</span>
-          <span class="tag tag-blue">Quiz lead gen</span>
-          <span class="tag tag-green">Conversion</span>
-        </div>
-      </div>
-      <a href="https://test-de-carriere.onglesexpertformation.com/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#ec4899,#9d174d)">Visiter le site →</a>
-    </div>
-  </div>
-
-  <!-- FL-FIT -->
-  <div class="creation-card">
-    <div class="site-preview">
-      <iframe src="https://flfit.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="FL-FIT preview"></iframe>
-      <div class="site-preview-overlay" onclick="window.open('https://flfit.testdemoaltiweb.fr/','_blank')"></div>
-      <div class="site-preview-label">
-        <span class="preview-dot"></span> Démo live
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>FL-FIT</h2>
-        <p>Vêtements techniques sportswear — Bouge. Performe. Vis.</p>
-        <div class="tags">
-          <span class="tag tag-orange">E-commerce</span>
-          <span class="tag tag-blue">Shopify</span>
-          <span class="tag tag-green">SEO optimisé</span>
-        </div>
-      </div>
-      <a href="https://flfit.testdemoaltiweb.fr/" target="_blank" class="visit-btn">Visiter le site →</a>
-    </div>
-  </div>
-
-  <!-- SOCIAL MEDIA BOOSTER -->
-  <div class="creation-card" style="border-color:rgba(167,139,250,0.25)">
-    <div class="site-preview">
-      <iframe src="https://demolecourtier.fr/" scrolling="no" loading="lazy" title="Social Media Booster preview"></iframe>
-      <div class="site-preview-overlay" onclick="window.open('https://demolecourtier.fr/','_blank')"></div>
-      <div class="site-preview-label">
-        <span class="preview-dot" style="background:#a78bfa;box-shadow:0 0 6px #a78bfa"></span> Démo live
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>Social Media Booster</h2>
-        <p>Plateforme SaaS de boost réseaux sociaux — Instagram, TikTok, YouTube, Facebook</p>
-        <div class="tags">
-          <span class="tag tag-purple">SaaS</span>
-          <span class="tag tag-blue">Réseaux sociaux</span>
-          <span class="tag tag-green">SEO optimisé</span>
-        </div>
-      </div>
-      <a href="https://demolecourtier.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">Visiter le site →</a>
-    </div>
-  </div>
-
-  <!-- BIJOUMAEY -->
-  <div class="creation-card" style="border-color:rgba(212,168,83,0.25)">
-    <div class="site-preview">
-      <iframe src="https://quizz.bijoumaey.com/" scrolling="no" loading="lazy" title="Bijoumaey preview"></iframe>
-      <div class="site-preview-overlay" onclick="window.open('https://quizz.bijoumaey.com/','_blank')"></div>
-      <div class="site-preview-label">
-        <span class="preview-dot" style="background:#d4a853;box-shadow:0 0 6px #d4a853"></span> Démo live
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>Bijoumaey</h2>
-        <p>Quiz interactif de découverte bijoux — Et si le bijou parfait vous attendait déjà ?</p>
-        <div class="tags">
-          <span class="tag tag-gold">Quiz lead gen</span>
-          <span class="tag tag-orange">E-commerce</span>
-          <span class="tag tag-green">Conversion</span>
-        </div>
-      </div>
-      <a href="https://quizz.bijoumaey.com/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#d4a853,#b8862e)">Visiter le site →</a>
-    </div>
-  </div>
-
-  <!-- MONTRES & HISTOIRES (pas de lien) -->
-  <div class="creation-card" style="border-color:rgba(212,168,83,0.2)">
-    <div class="site-preview" style="background:linear-gradient(135deg,#0a0a14,#1a1a2e);display:flex;align-items:center;justify-content:center;padding-top:0;height:260px">
-      <div style="text-align:center;padding:40px 20px">
-        <div style="font-size:56px;margin-bottom:16px">⌚</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:#fff;margin-bottom:6px">Montres & Histoires</div>
-        <div style="font-size:0.85rem;color:#d4a853;letter-spacing:0.12em;text-transform:uppercase">L'élégance accessible</div>
-        <div style="margin-top:20px;display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
-          <span style="background:rgba(212,168,83,0.12);border:1px solid rgba(212,168,83,0.3);color:#d4a853;font-size:0.78rem;font-weight:600;padding:5px 14px;border-radius:20px">⭐ 4.7/5 · 150+ avis</span>
-          <span style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#aaa;font-size:0.78rem;font-weight:600;padding:5px 14px;border-radius:20px">Livraison gratuite</span>
-        </div>
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>Montres & Histoires</h2>
-        <p>L'élégance au poignet, l'histoire en plus — Montres & accessoires intemporels</p>
-        <div class="tags">
-          <span class="tag tag-gold">E-commerce</span>
-          <span class="tag tag-blue">Shopify</span>
-          <span class="tag tag-green">SEO optimisé</span>
-        </div>
-      </div>
-      <span style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:12px;background:rgba(212,168,83,0.1);color:#d4a853;border:1px solid rgba(212,168,83,0.3);font-size:0.85rem;font-weight:600">🔒 Site privé</span>
-    </div>
-  </div>
-
-  <!-- HSI HEREDITAS -->
-  <div class="creation-card" style="border-color:rgba(234,120,10,0.25)">
-    <div class="site-preview">
-      <iframe src="https://hsi-hereditas.com/" scrolling="no" loading="lazy" title="HSI Hereditas preview"></iframe>
-      <div class="site-preview-overlay" onclick="window.open('https://hsi-hereditas.com/','_blank')"></div>
-      <div class="site-preview-label">
-        <span class="preview-dot" style="background:#ea780a;box-shadow:0 0 6px #ea780a"></span> Live
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>HSI Hereditas</h2>
-        <p>Legal gateway to Italy — Succession & immobilier, 100% remote, basé à Genève</p>
-        <div class="tags">
-          <span class="tag tag-orange">Services juridiques</span>
-          <span class="tag tag-blue">International</span>
-          <span class="tag tag-green">SEO multilingue</span>
-        </div>
-      </div>
-      <a href="https://hsi-hereditas.com/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#ea780a,#c45e06)">Visiter le site →</a>
-    </div>
-  </div>
-
-  <!-- AEROFACTORY -->
-  <div class="creation-card" style="border-color:rgba(14,165,233,0.25)">
-    <div class="site-preview">
-      <iframe src="https://aerofactory.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="Aerofactory preview"></iframe>
-      <div class="site-preview-overlay" onclick="window.open('https://aerofactory.testdemoaltiweb.fr/','_blank')"></div>
-      <div class="site-preview-label">
-        <span class="preview-dot" style="background:#0ea5e9;box-shadow:0 0 6px #0ea5e9"></span> Démo live
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>Aerofactory</h2>
-        <p>Échappements accordés & innovation aéronautique — Certifié EASA Part-21G & DGAC</p>
-        <div class="tags">
-          <span class="tag tag-cyan">Aéronautique</span>
-          <span class="tag tag-blue">B2B</span>
-          <span class="tag tag-green">SEO technique</span>
-        </div>
-      </div>
-      <a href="https://aerofactory.testdemoaltiweb.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">Visiter le site →</a>
-    </div>
-  </div>
-
-  <!-- CONCIERGERIE -->
-  <div class="creation-card" style="border-color:rgba(212,168,83,0.25)">
-    <div class="site-preview">
-      <iframe src="https://conciergerie.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="Conciergerie preview"></iframe>
-      <div class="site-preview-overlay" onclick="window.open('https://conciergerie.testdemoaltiweb.fr/','_blank')"></div>
-      <div class="site-preview-label">
-        <span class="preview-dot" style="background:#d4a853;box-shadow:0 0 6px #d4a853"></span> Démo live
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>Conciergerie</h2>
-        <p>Services de conciergerie haut de gamme — Votre assistant personnel, disponible 7j/7</p>
-        <div class="tags">
-          <span class="tag tag-gold">Luxury services</span>
-          <span class="tag tag-blue">B2C</span>
-          <span class="tag tag-green">SEO local</span>
-        </div>
-      </div>
-      <a href="https://conciergerie.testdemoaltiweb.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#d4a853,#b8862e)">Visiter le site →</a>
-    </div>
-  </div>
-
-  <!-- TOULON ACCESSIBLE -->
-  <div class="creation-card" style="border-color:rgba(14,165,233,0.25)">
-    <div class="site-preview">
-      <iframe src="https://toulon-accessible.fr/" scrolling="no" loading="lazy" title="Toulon Accessible preview"></iframe>
-      <div class="site-preview-overlay" onclick="window.open('https://toulon-accessible.fr/','_blank')"></div>
-      <div class="site-preview-label">
-        <span class="preview-dot" style="background:#0ea5e9;box-shadow:0 0 6px #0ea5e9"></span> Live
-      </div>
-    </div>
-    <div class="card-footer">
-      <div class="card-info">
-        <h2>Toulon Accessible</h2>
-        <p>Tourisme & accessibilité à Toulon — Guide de la ville pour tous les publics</p>
-        <div class="tags">
-          <span class="tag tag-cyan">Tourisme</span>
-          <span class="tag tag-blue">Accessibilité</span>
-          <span class="tag tag-green">SEO local</span>
-        </div>
-      </div>
-      <a href="https://toulon-accessible.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">Visiter le site →</a>
-    </div>
-  </div>
-
-  <!-- COMMENTAIRES -->
-  <div class="comments-section">
+  <!-- ===== SIDEBAR COMMENTAIRES (GAUCHE) ===== -->
+  <aside class="sidebar-comments">
     <div class="comments-header">
       <h3>💬 Réactions</h3>
-      <span class="comments-count" id="commentsCount">0 commentaires</span>
+      <span class="comments-count" id="commentsCount">0</span>
     </div>
     <div class="comments-list" id="commentsList"></div>
 
@@ -497,9 +301,359 @@
         <button class="send-btn" onclick="postComment()">Envoyer ✈️</button>
       </div>
     </div>
-  </div>
+  </aside>
 
-</div>
+  <!-- ===== COLONNE CARTES (DROITE) ===== -->
+  <div class="cards-column">
+
+    <!-- FRELON19 -->
+    <div class="creation-card" style="border-color:rgba(239,68,68,0.25)">
+      <div class="site-preview">
+        <iframe src="https://frelon19.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="Frelon19 preview"></iframe>
+        <div class="site-preview-overlay" onclick="window.open('https://frelon19.testdemoaltiweb.fr/','_blank')"></div>
+        <div class="site-preview-label">
+          <span class="preview-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></span> Démo live
+        </div>
+        <!-- STICKER 1 : rond vert vif, coin bas-gauche -->
+        <div class="sticker" style="
+          bottom:14px; left:14px;
+          background:linear-gradient(135deg,#22c55e,#16a34a);
+          color:#fff; font-size:0.72rem;
+          padding:8px 12px; border-radius:50px;
+          transform:rotate(-12deg);
+          box-shadow:0 4px 16px rgba(34,197,94,0.5);
+          border:2px solid rgba(255,255,255,0.3);
+        ">💚 Site à 0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>Frelon19</h2>
+          <p>Destruction de nids de frelons & nuisibles — Intervention rapide en Corrèze</p>
+          <div class="tags">
+            <span class="tag tag-red">Services à domicile</span>
+            <span class="tag tag-green">SEO local</span>
+            <span class="tag tag-orange">Urgence 24/7</span>
+          </div>
+        </div>
+        <a href="https://frelon19.testdemoaltiweb.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#ef4444,#b91c1c)">Visiter le site →</a>
+      </div>
+    </div>
+
+    <!-- ONGLES EXPERT -->
+    <div class="creation-card" style="border-color:rgba(236,72,153,0.25)">
+      <div class="site-preview">
+        <iframe src="https://test-de-carriere.onglesexpertformation.com/" scrolling="no" loading="lazy" title="Ongles Expert Formation preview"></iframe>
+        <div class="site-preview-overlay" onclick="window.open('https://test-de-carriere.onglesexpertformation.com/','_blank')"></div>
+        <div class="site-preview-label">
+          <span class="preview-dot" style="background:#f472b6;box-shadow:0 0 6px #f472b6"></span> Démo live
+        </div>
+        <!-- STICKER 2 : étoile rose, coin haut-gauche, texte vertical -->
+        <div class="sticker" style="
+          top:14px; left:14px;
+          background:linear-gradient(135deg,#ec4899,#be185d);
+          color:#fff; font-size:0.68rem;
+          padding:10px 10px; border-radius:12px;
+          transform:rotate(8deg);
+          box-shadow:0 4px 18px rgba(236,72,153,0.55);
+          border:2px dashed rgba(255,255,255,0.4);
+          min-width:62px;
+        ">✨<br>Site<br>à 0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>Ongles Expert Formation</h2>
+          <p>Test de carrière interactif — Prothésiste ongulaire, découvrez votre profil idéal</p>
+          <div class="tags">
+            <span class="tag tag-purple">Formation</span>
+            <span class="tag tag-blue">Quiz lead gen</span>
+            <span class="tag tag-green">Conversion</span>
+          </div>
+        </div>
+        <a href="https://test-de-carriere.onglesexpertformation.com/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#ec4899,#9d174d)">Visiter le site →</a>
+      </div>
+    </div>
+
+    <!-- FL-FIT -->
+    <div class="creation-card">
+      <div class="site-preview">
+        <iframe src="https://flfit.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="FL-FIT preview"></iframe>
+        <div class="site-preview-overlay" onclick="window.open('https://flfit.testdemoaltiweb.fr/','_blank')"></div>
+        <div class="site-preview-label">
+          <span class="preview-dot"></span> Démo live
+        </div>
+        <!-- STICKER 3 : badge orange feu, coin bas-droit -->
+        <div class="sticker" style="
+          bottom:14px; right:14px;
+          background:linear-gradient(135deg,#fb923c,#ea580c);
+          color:#fff; font-size:0.75rem;
+          padding:9px 15px; border-radius:8px;
+          transform:rotate(-6deg);
+          box-shadow:0 4px 20px rgba(251,146,60,0.6);
+          border:2px solid rgba(255,255,255,0.25);
+        ">🔥 Site à 0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>FL-FIT</h2>
+          <p>Vêtements techniques sportswear — Bouge. Performe. Vis.</p>
+          <div class="tags">
+            <span class="tag tag-orange">E-commerce</span>
+            <span class="tag tag-blue">Shopify</span>
+            <span class="tag tag-green">SEO optimisé</span>
+          </div>
+        </div>
+        <a href="https://flfit.testdemoaltiweb.fr/" target="_blank" class="visit-btn">Visiter le site →</a>
+      </div>
+    </div>
+
+    <!-- SOCIAL MEDIA BOOSTER -->
+    <div class="creation-card" style="border-color:rgba(167,139,250,0.25)">
+      <div class="site-preview">
+        <iframe src="https://demolecourtier.fr/" scrolling="no" loading="lazy" title="Social Media Booster preview"></iframe>
+        <div class="site-preview-overlay" onclick="window.open('https://demolecourtier.fr/','_blank')"></div>
+        <div class="site-preview-label">
+          <span class="preview-dot" style="background:#a78bfa;box-shadow:0 0 6px #a78bfa"></span> Démo live
+        </div>
+        <!-- STICKER 4 : hexagone violet, coin haut-gauche -->
+        <div class="sticker" style="
+          top:14px; left:14px;
+          background:linear-gradient(135deg,#a78bfa,#7c3aed);
+          color:#fff; font-size:0.72rem;
+          padding:9px 13px; border-radius:50%;
+          transform:rotate(10deg);
+          box-shadow:0 4px 18px rgba(167,139,250,0.55);
+          border:2px solid rgba(255,255,255,0.3);
+          width:62px; height:62px;
+          display:flex; align-items:center; justify-content:center;
+        ">⚡<br>0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>Social Media Booster</h2>
+          <p>Plateforme SaaS de boost réseaux sociaux — Instagram, TikTok, YouTube, Facebook</p>
+          <div class="tags">
+            <span class="tag tag-purple">SaaS</span>
+            <span class="tag tag-blue">Réseaux sociaux</span>
+            <span class="tag tag-green">SEO optimisé</span>
+          </div>
+        </div>
+        <a href="https://demolecourtier.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#a78bfa,#7c3aed)">Visiter le site →</a>
+      </div>
+    </div>
+
+    <!-- BIJOUMAEY -->
+    <div class="creation-card" style="border-color:rgba(212,168,83,0.25)">
+      <div class="site-preview">
+        <iframe src="https://quizz.bijoumaey.com/" scrolling="no" loading="lazy" title="Bijoumaey preview"></iframe>
+        <div class="site-preview-overlay" onclick="window.open('https://quizz.bijoumaey.com/','_blank')"></div>
+        <div class="site-preview-label">
+          <span class="preview-dot" style="background:#d4a853;box-shadow:0 0 6px #d4a853"></span> Démo live
+        </div>
+        <!-- STICKER 5 : ruban doré incliné, coin bas-gauche -->
+        <div class="sticker" style="
+          bottom:18px; left:-4px;
+          background:linear-gradient(135deg,#d4a853,#b8862e);
+          color:#fff; font-size:0.72rem;
+          padding:7px 20px 7px 16px;
+          border-radius:0 20px 20px 0;
+          transform:rotate(-15deg);
+          box-shadow:0 4px 16px rgba(212,168,83,0.5);
+          border-top:2px solid rgba(255,255,255,0.3);
+          border-bottom:2px solid rgba(255,255,255,0.3);
+        ">✦ Site à 0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>Bijoumaey</h2>
+          <p>Quiz interactif de découverte bijoux — Et si le bijou parfait vous attendait déjà ?</p>
+          <div class="tags">
+            <span class="tag tag-gold">Quiz lead gen</span>
+            <span class="tag tag-orange">E-commerce</span>
+            <span class="tag tag-green">Conversion</span>
+          </div>
+        </div>
+        <a href="https://quizz.bijoumaey.com/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#d4a853,#b8862e)">Visiter le site →</a>
+      </div>
+    </div>
+
+    <!-- MONTRES & HISTOIRES (pas de lien) -->
+    <div class="creation-card" style="border-color:rgba(212,168,83,0.2)">
+      <div class="site-preview" style="background:linear-gradient(135deg,#0a0a14,#1a1a2e);display:flex;align-items:center;justify-content:center;padding-top:0;height:260px">
+        <div style="text-align:center;padding:40px 20px">
+          <div style="font-size:56px;margin-bottom:16px">⌚</div>
+          <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:#fff;margin-bottom:6px">Montres & Histoires</div>
+          <div style="font-size:0.85rem;color:#d4a853;letter-spacing:0.12em;text-transform:uppercase">L'élégance accessible</div>
+          <div style="margin-top:20px;display:flex;justify-content:center;gap:14px;flex-wrap:wrap">
+            <span style="background:rgba(212,168,83,0.12);border:1px solid rgba(212,168,83,0.3);color:#d4a853;font-size:0.78rem;font-weight:600;padding:5px 14px;border-radius:20px">⭐ 4.7/5 · 150+ avis</span>
+            <span style="background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#aaa;font-size:0.78rem;font-weight:600;padding:5px 14px;border-radius:20px">Livraison gratuite</span>
+          </div>
+        </div>
+        <!-- STICKER 6 : tampon circulaire doré, coin haut-droit -->
+        <div class="sticker" style="
+          top:14px; right:14px;
+          background:rgba(212,168,83,0.15);
+          color:#d4a853; font-size:0.65rem;
+          padding:10px; border-radius:50%;
+          transform:rotate(5deg);
+          border:2px dashed #d4a853;
+          width:62px; height:62px;
+          display:flex; align-items:center; justify-content:center;
+          line-height:1.2;
+        ">🏅<br>0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>Montres & Histoires</h2>
+          <p>L'élégance au poignet, l'histoire en plus — Montres & accessoires intemporels</p>
+          <div class="tags">
+            <span class="tag tag-gold">E-commerce</span>
+            <span class="tag tag-blue">Shopify</span>
+            <span class="tag tag-green">SEO optimisé</span>
+          </div>
+        </div>
+        <span style="display:inline-flex;align-items:center;gap:7px;padding:11px 18px;border-radius:12px;background:rgba(212,168,83,0.1);color:#d4a853;border:1px solid rgba(212,168,83,0.3);font-size:0.85rem;font-weight:600">🔒 Site privé</span>
+      </div>
+    </div>
+
+    <!-- HSI HEREDITAS -->
+    <div class="creation-card" style="border-color:rgba(234,120,10,0.25)">
+      <div class="site-preview">
+        <iframe src="https://hsi-hereditas.com/" scrolling="no" loading="lazy" title="HSI Hereditas preview"></iframe>
+        <div class="site-preview-overlay" onclick="window.open('https://hsi-hereditas.com/','_blank')"></div>
+        <div class="site-preview-label">
+          <span class="preview-dot" style="background:#ea780a;box-shadow:0 0 6px #ea780a"></span> Live
+        </div>
+        <!-- STICKER 7 : rectangle angulaire, orange foncé, coin haut-gauche -->
+        <div class="sticker" style="
+          top:14px; left:14px;
+          background:linear-gradient(135deg,#ea780a,#c45e06);
+          color:#fff; font-size:0.73rem;
+          padding:8px 14px; border-radius:6px 14px 14px 6px;
+          transform:rotate(-8deg);
+          box-shadow:0 4px 16px rgba(234,120,10,0.55);
+          border-left:4px solid rgba(255,255,255,0.4);
+        ">🏆 Site à 0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>HSI Hereditas</h2>
+          <p>Legal gateway to Italy — Succession & immobilier, 100% remote, basé à Genève</p>
+          <div class="tags">
+            <span class="tag tag-orange">Services juridiques</span>
+            <span class="tag tag-blue">International</span>
+            <span class="tag tag-green">SEO multilingue</span>
+          </div>
+        </div>
+        <a href="https://hsi-hereditas.com/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#ea780a,#c45e06)">Visiter le site →</a>
+      </div>
+    </div>
+
+    <!-- AEROFACTORY -->
+    <div class="creation-card" style="border-color:rgba(14,165,233,0.25)">
+      <div class="site-preview">
+        <iframe src="https://aerofactory.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="Aerofactory preview"></iframe>
+        <div class="site-preview-overlay" onclick="window.open('https://aerofactory.testdemoaltiweb.fr/','_blank')"></div>
+        <div class="site-preview-label">
+          <span class="preview-dot" style="background:#0ea5e9;box-shadow:0 0 6px #0ea5e9"></span> Démo live
+        </div>
+        <!-- STICKER 8 : bord biseauté cyan, coin bas-droit -->
+        <div class="sticker" style="
+          bottom:14px; right:14px;
+          background:linear-gradient(135deg,#0ea5e9,#0369a1);
+          color:#fff; font-size:0.73rem;
+          padding:8px 14px; border-radius:14px 6px 14px 14px;
+          transform:rotate(12deg);
+          box-shadow:0 4px 18px rgba(14,165,233,0.55);
+          border:2px solid rgba(255,255,255,0.2);
+        ">🚀 Site à 0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>Aerofactory</h2>
+          <p>Échappements accordés & innovation aéronautique — Certifié EASA Part-21G & DGAC</p>
+          <div class="tags">
+            <span class="tag tag-cyan">Aéronautique</span>
+            <span class="tag tag-blue">B2B</span>
+            <span class="tag tag-green">SEO technique</span>
+          </div>
+        </div>
+        <a href="https://aerofactory.testdemoaltiweb.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">Visiter le site →</a>
+      </div>
+    </div>
+
+    <!-- CONCIERGERIE -->
+    <div class="creation-card" style="border-color:rgba(212,168,83,0.25)">
+      <div class="site-preview">
+        <iframe src="https://conciergerie.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="Conciergerie preview"></iframe>
+        <div class="site-preview-overlay" onclick="window.open('https://conciergerie.testdemoaltiweb.fr/','_blank')"></div>
+        <div class="site-preview-label">
+          <span class="preview-dot" style="background:#d4a853;box-shadow:0 0 6px #d4a853"></span> Démo live
+        </div>
+        <!-- STICKER 9 : ovale élégant or, coin haut-gauche -->
+        <div class="sticker" style="
+          top:14px; left:14px;
+          background:linear-gradient(135deg,#fbbf24,#d97706);
+          color:#fff; font-size:0.72rem;
+          padding:8px 16px; border-radius:30px;
+          transform:rotate(-10deg);
+          box-shadow:0 4px 18px rgba(212,168,83,0.6);
+          border:2px solid rgba(255,255,255,0.35);
+          font-style:italic;
+        ">★ Site à 0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>Conciergerie</h2>
+          <p>Services de conciergerie haut de gamme — Votre assistant personnel, disponible 7j/7</p>
+          <div class="tags">
+            <span class="tag tag-gold">Luxury services</span>
+            <span class="tag tag-blue">B2C</span>
+            <span class="tag tag-green">SEO local</span>
+          </div>
+        </div>
+        <a href="https://conciergerie.testdemoaltiweb.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#d4a853,#b8862e)">Visiter le site →</a>
+      </div>
+    </div>
+
+    <!-- TOULON ACCESSIBLE -->
+    <div class="creation-card" style="border-color:rgba(14,165,233,0.25)">
+      <div class="site-preview">
+        <iframe src="https://toulon-accessible.fr/" scrolling="no" loading="lazy" title="Toulon Accessible preview"></iframe>
+        <div class="site-preview-overlay" onclick="window.open('https://toulon-accessible.fr/','_blank')"></div>
+        <div class="site-preview-label">
+          <span class="preview-dot" style="background:#0ea5e9;box-shadow:0 0 6px #0ea5e9"></span> Live
+        </div>
+        <!-- STICKER 10 : rond bleu pointillés, coin bas-gauche -->
+        <div class="sticker" style="
+          bottom:14px; left:14px;
+          background:rgba(14,165,233,0.18);
+          color:#0ea5e9; font-size:0.68rem;
+          padding:10px; border-radius:50%;
+          transform:rotate(7deg);
+          border:2px dotted #0ea5e9;
+          width:64px; height:64px;
+          display:flex; align-items:center; justify-content:center;
+          line-height:1.25; text-align:center;
+          backdrop-filter:blur(4px);
+        ">🌊<br>Site<br>à 0€</div>
+      </div>
+      <div class="card-footer">
+        <div class="card-info">
+          <h2>Toulon Accessible</h2>
+          <p>Tourisme & accessibilité à Toulon — Guide de la ville pour tous les publics</p>
+          <div class="tags">
+            <span class="tag tag-cyan">Tourisme</span>
+            <span class="tag tag-blue">Accessibilité</span>
+            <span class="tag tag-green">SEO local</span>
+          </div>
+        </div>
+        <a href="https://toulon-accessible.fr/" target="_blank" class="visit-btn" style="background:linear-gradient(135deg,#0ea5e9,#0369a1)">Visiter le site →</a>
+      </div>
+    </div>
+
+  </div><!-- /.cards-column -->
+
+</div><!-- /.main -->
 
 <footer class="page-footer">
   <a href="https://alti-web.fr" target="_blank">Alti-Web</a> — Agence SEO & Création web · Tous droits réservés
@@ -572,7 +726,6 @@ function postComment() {
   localStorage.setItem('creations_comments', JSON.stringify(comments));
   input.value = '';
   renderComments();
-  // Scroll to bottom of comments
   var list = document.getElementById('commentsList');
   list.lastElementChild && list.lastElementChild.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
