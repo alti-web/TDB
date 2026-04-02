@@ -259,6 +259,81 @@
     }
     .page-footer a { color:var(--accent); text-decoration:none; }
 
+    /* CTA FLOTTANT */
+    .cta-float {
+      position:fixed;
+      bottom:28px; right:28px;
+      z-index:999;
+      display:flex; align-items:center; gap:10px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff; font-family:'DM Sans',sans-serif;
+      font-size:0.95rem; font-weight:700;
+      padding:14px 22px; border-radius:50px;
+      border:none; cursor:pointer;
+      box-shadow:0 6px 32px rgba(251,146,60,0.5);
+      animation:ctaPulse 2.2s ease-in-out infinite;
+      text-decoration:none;
+      white-space:nowrap;
+    }
+    .cta-float:hover { opacity:0.93; transform:translateY(-2px) scale(1.02); animation:none; box-shadow:0 10px 40px rgba(251,146,60,0.65); }
+    @keyframes ctaPulse {
+      0%,100% { box-shadow:0 6px 32px rgba(251,146,60,0.5); transform:translateY(0); }
+      50%      { box-shadow:0 10px 44px rgba(251,146,60,0.75); transform:translateY(-4px); }
+    }
+
+    /* POPUP CRÉATION */
+    .popup-overlay {
+      display:none; position:fixed; inset:0; z-index:1000;
+      background:rgba(0,0,0,0.7); backdrop-filter:blur(4px);
+      align-items:center; justify-content:center;
+    }
+    .popup-overlay.open { display:flex; }
+    .popup-box {
+      background:var(--bg2);
+      border:1px solid rgba(251,146,60,0.3);
+      border-radius:24px;
+      padding:36px 32px;
+      max-width:420px; width:90%;
+      position:relative;
+      box-shadow:0 20px 80px rgba(0,0,0,0.6);
+      animation:popIn 0.25s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes popIn { from{opacity:0;transform:scale(0.88)} to{opacity:1;transform:scale(1)} }
+    .popup-close {
+      position:absolute; top:14px; right:18px;
+      background:none; border:none; color:var(--sub);
+      font-size:1.4rem; cursor:pointer; line-height:1;
+    }
+    .popup-close:hover { color:var(--text); }
+    .popup-icon { font-size:2.2rem; margin-bottom:12px; }
+    .popup-box h2 { font-size:1.3rem; font-weight:700; margin-bottom:6px; }
+    .popup-box h2 span { color:var(--accent); }
+    .popup-box p { font-size:0.88rem; color:var(--sub); margin-bottom:20px; line-height:1.6; }
+    .popup-input {
+      width:100%; padding:12px 16px;
+      border-radius:12px; border:1px solid var(--border);
+      background:var(--bg); color:var(--text);
+      font-size:0.95rem; font-family:'DM Sans',sans-serif;
+      outline:none; box-sizing:border-box;
+      transition:border-color 0.2s; margin-bottom:14px;
+    }
+    .popup-input:focus { border-color:var(--accent); }
+    .popup-submit {
+      width:100%; padding:13px;
+      border-radius:12px; border:none; cursor:pointer;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff; font-size:1rem; font-weight:700;
+      font-family:'DM Sans',sans-serif;
+      box-shadow:0 4px 20px rgba(251,146,60,0.35);
+      transition:opacity 0.15s;
+    }
+    .popup-submit:hover { opacity:0.9; }
+    .popup-success {
+      display:none; text-align:center; padding:10px 0;
+    }
+    .popup-success .success-icon { font-size:3rem; margin-bottom:10px; }
+    .popup-success p { font-size:0.95rem; color:var(--text); }
+
     @media (max-width:860px) {
       .main { flex-direction:column; }
       .sidebar-comments { width:100%; position:static; max-height:none; order:2; }
@@ -266,6 +341,7 @@
       .hero h1 { font-size:1.6rem; }
       .card-footer { flex-direction:column; align-items:flex-start; }
       .header { padding:14px 16px; }
+      .cta-float { bottom:16px; right:16px; font-size:0.85rem; padding:12px 18px; }
     }
   </style>
 </head>
@@ -280,7 +356,7 @@
 
 <div class="hero">
   <div class="hero-badge">🎨 Portfolio</div>
-  <h1>Nos dernières <span>créations</span></h1>
+  <h1>Nos dernières <span>créations</span>,<br>100% gratuite <span style="color:var(--green)">(0€)</span></h1>
   <p>Des sites web conçus sur-mesure, optimisés SEO dès le départ, pensés pour convertir.</p>
 </div>
 
@@ -314,16 +390,6 @@
         <div class="site-preview-label">
           <span class="preview-dot" style="background:#f87171;box-shadow:0 0 6px #f87171"></span> Démo live
         </div>
-        <!-- STICKER 1 : rond vert vif, coin bas-gauche -->
-        <div class="sticker" style="
-          bottom:14px; left:14px;
-          background:linear-gradient(135deg,#22c55e,#16a34a);
-          color:#fff; font-size:0.72rem;
-          padding:8px 12px; border-radius:50px;
-          transform:rotate(-12deg);
-          box-shadow:0 4px 16px rgba(34,197,94,0.5);
-          border:2px solid rgba(255,255,255,0.3);
-        ">💚 Site à 0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -347,17 +413,6 @@
         <div class="site-preview-label">
           <span class="preview-dot" style="background:#f472b6;box-shadow:0 0 6px #f472b6"></span> Démo live
         </div>
-        <!-- STICKER 2 : étoile rose, coin haut-gauche, texte vertical -->
-        <div class="sticker" style="
-          top:14px; left:14px;
-          background:linear-gradient(135deg,#ec4899,#be185d);
-          color:#fff; font-size:0.68rem;
-          padding:10px 10px; border-radius:12px;
-          transform:rotate(8deg);
-          box-shadow:0 4px 18px rgba(236,72,153,0.55);
-          border:2px dashed rgba(255,255,255,0.4);
-          min-width:62px;
-        ">✨<br>Site<br>à 0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -381,16 +436,6 @@
         <div class="site-preview-label">
           <span class="preview-dot"></span> Démo live
         </div>
-        <!-- STICKER 3 : badge orange feu, coin bas-droit -->
-        <div class="sticker" style="
-          bottom:14px; right:14px;
-          background:linear-gradient(135deg,#fb923c,#ea580c);
-          color:#fff; font-size:0.75rem;
-          padding:9px 15px; border-radius:8px;
-          transform:rotate(-6deg);
-          box-shadow:0 4px 20px rgba(251,146,60,0.6);
-          border:2px solid rgba(255,255,255,0.25);
-        ">🔥 Site à 0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -414,18 +459,6 @@
         <div class="site-preview-label">
           <span class="preview-dot" style="background:#a78bfa;box-shadow:0 0 6px #a78bfa"></span> Démo live
         </div>
-        <!-- STICKER 4 : hexagone violet, coin haut-gauche -->
-        <div class="sticker" style="
-          top:14px; left:14px;
-          background:linear-gradient(135deg,#a78bfa,#7c3aed);
-          color:#fff; font-size:0.72rem;
-          padding:9px 13px; border-radius:50%;
-          transform:rotate(10deg);
-          box-shadow:0 4px 18px rgba(167,139,250,0.55);
-          border:2px solid rgba(255,255,255,0.3);
-          width:62px; height:62px;
-          display:flex; align-items:center; justify-content:center;
-        ">⚡<br>0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -449,18 +482,6 @@
         <div class="site-preview-label">
           <span class="preview-dot" style="background:#d4a853;box-shadow:0 0 6px #d4a853"></span> Démo live
         </div>
-        <!-- STICKER 5 : ruban doré incliné, coin bas-gauche -->
-        <div class="sticker" style="
-          bottom:18px; left:-4px;
-          background:linear-gradient(135deg,#d4a853,#b8862e);
-          color:#fff; font-size:0.72rem;
-          padding:7px 20px 7px 16px;
-          border-radius:0 20px 20px 0;
-          transform:rotate(-15deg);
-          box-shadow:0 4px 16px rgba(212,168,83,0.5);
-          border-top:2px solid rgba(255,255,255,0.3);
-          border-bottom:2px solid rgba(255,255,255,0.3);
-        ">✦ Site à 0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -529,18 +550,6 @@
             </div>
           </div>
         </div>
-        <!-- STICKER 6 : tampon circulaire doré, coin haut-droit -->
-        <div class="sticker" style="
-          top:14px; right:14px;
-          background:rgba(212,168,83,0.15);
-          color:#d4a853; font-size:0.65rem;
-          padding:10px; border-radius:50%;
-          transform:rotate(5deg);
-          border:2px dashed #d4a853;
-          width:62px; height:62px;
-          display:flex; align-items:center; justify-content:center;
-          line-height:1.2;
-        ">🏅<br>0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -564,16 +573,6 @@
         <div class="site-preview-label">
           <span class="preview-dot" style="background:#ea780a;box-shadow:0 0 6px #ea780a"></span> Live
         </div>
-        <!-- STICKER 7 : rectangle angulaire, orange foncé, coin haut-gauche -->
-        <div class="sticker" style="
-          top:14px; left:14px;
-          background:linear-gradient(135deg,#ea780a,#c45e06);
-          color:#fff; font-size:0.73rem;
-          padding:8px 14px; border-radius:6px 14px 14px 6px;
-          transform:rotate(-8deg);
-          box-shadow:0 4px 16px rgba(234,120,10,0.55);
-          border-left:4px solid rgba(255,255,255,0.4);
-        ">🏆 Site à 0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -597,16 +596,6 @@
         <div class="site-preview-label">
           <span class="preview-dot" style="background:#0ea5e9;box-shadow:0 0 6px #0ea5e9"></span> Démo live
         </div>
-        <!-- STICKER 8 : bord biseauté cyan, coin bas-droit -->
-        <div class="sticker" style="
-          bottom:14px; right:14px;
-          background:linear-gradient(135deg,#0ea5e9,#0369a1);
-          color:#fff; font-size:0.73rem;
-          padding:8px 14px; border-radius:14px 6px 14px 14px;
-          transform:rotate(12deg);
-          box-shadow:0 4px 18px rgba(14,165,233,0.55);
-          border:2px solid rgba(255,255,255,0.2);
-        ">🚀 Site à 0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -630,17 +619,6 @@
         <div class="site-preview-label">
           <span class="preview-dot" style="background:#d4a853;box-shadow:0 0 6px #d4a853"></span> Démo live
         </div>
-        <!-- STICKER 9 : ovale élégant or, coin haut-gauche -->
-        <div class="sticker" style="
-          top:14px; left:14px;
-          background:linear-gradient(135deg,#fbbf24,#d97706);
-          color:#fff; font-size:0.72rem;
-          padding:8px 16px; border-radius:30px;
-          transform:rotate(-10deg);
-          box-shadow:0 4px 18px rgba(212,168,83,0.6);
-          border:2px solid rgba(255,255,255,0.35);
-          font-style:italic;
-        ">★ Site à 0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -664,19 +642,6 @@
         <div class="site-preview-label">
           <span class="preview-dot" style="background:#0ea5e9;box-shadow:0 0 6px #0ea5e9"></span> Live
         </div>
-        <!-- STICKER 10 : rond bleu pointillés, coin bas-gauche -->
-        <div class="sticker" style="
-          bottom:14px; left:14px;
-          background:rgba(14,165,233,0.18);
-          color:#0ea5e9; font-size:0.68rem;
-          padding:10px; border-radius:50%;
-          transform:rotate(7deg);
-          border:2px dotted #0ea5e9;
-          width:64px; height:64px;
-          display:flex; align-items:center; justify-content:center;
-          line-height:1.25; text-align:center;
-          backdrop-filter:blur(4px);
-        ">🌊<br>Site<br>à 0€</div>
       </div>
       <div class="card-footer">
         <div class="card-info">
@@ -695,6 +660,29 @@
   </div><!-- /.cards-column -->
 
 </div><!-- /.main -->
+
+<!-- CTA FLOTTANT -->
+<button class="cta-float" onclick="document.getElementById('popupCreation').classList.add('open')">
+  🎁 Je vous créé le mieux, à 0€
+</button>
+
+<!-- POPUP CRÉATION -->
+<div class="popup-overlay" id="popupCreation" onclick="if(event.target===this)closePopup()">
+  <div class="popup-box">
+    <button class="popup-close" onclick="closePopup()">×</button>
+    <div id="popupForm">
+      <div class="popup-icon">🚀</div>
+      <h2>Votre site web, <span>à 0€</span></h2>
+      <p>Entrez votre adresse email et recevez notre offre de création de site internet <strong>100% gratuite</strong>. On s'occupe de tout.</p>
+      <input type="email" class="popup-input" id="popupEmail" placeholder="votre@email.com">
+      <button class="popup-submit" onclick="submitCreationRequest()">Recevoir mon site gratuit →</button>
+    </div>
+    <div class="popup-success" id="popupSuccess">
+      <div class="success-icon">✅</div>
+      <p><strong>Demande envoyée !</strong><br>Nous vous recontactons rapidement pour lancer votre projet.</p>
+    </div>
+  </div>
+</div>
 
 <footer class="page-footer">
   <a href="https://alti-web.fr" target="_blank">Alti-Web</a> — Agence SEO & Création web · Tous droits réservés
@@ -773,6 +761,40 @@ function postComment() {
 
 document.getElementById('commentInput').addEventListener('keydown', function(e) {
   if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) postComment();
+});
+
+// --- POPUP CRÉATION ---
+function closePopup() {
+  var overlay = document.getElementById('popupCreation');
+  overlay.classList.remove('open');
+  // reset après fermeture
+  setTimeout(function() {
+    document.getElementById('popupForm').style.display = '';
+    document.getElementById('popupSuccess').style.display = 'none';
+    document.getElementById('popupEmail').value = '';
+  }, 300);
+}
+
+function submitCreationRequest() {
+  var emailInput = document.getElementById('popupEmail');
+  var email = (emailInput.value || '').trim();
+  if (!email || !email.includes('@')) {
+    emailInput.style.borderColor = '#f87171';
+    emailInput.focus();
+    setTimeout(function(){ emailInput.style.borderColor = ''; }, 2000);
+    return;
+  }
+  // Envoi via mailto (ouvre le client email de Benoit en arrière-plan)
+  var subject = encodeURIComponent('Demande de création de site internet');
+  var body = encodeURIComponent('Bonjour,\n\nUn visiteur souhaite bénéficier de la création de site à 0€.\n\nEmail du prospect : ' + email + '\n\nMerci de le recontacter rapidement.\n\n— Portfolio Alti-Web');
+  window.location.href = 'mailto:benoit@alti-web.fr?subject=' + subject + '&body=' + body;
+  // Affiche le succès
+  document.getElementById('popupForm').style.display = 'none';
+  document.getElementById('popupSuccess').style.display = 'block';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closePopup();
 });
 
 renderComments();
