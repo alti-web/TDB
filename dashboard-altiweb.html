@@ -1668,9 +1668,9 @@ if (window.location.hostname === 'alti-web.github.io') {
           </div>
         </div>
 
-        <!-- Bouton Créations Admin (visible admin uniquement) -->
+        <!-- Bouton Créations (visible par tous) -->
         <a href="creations.html" id="adminCreationsBtn" target="_blank" style="
-          display:none;align-items:center;justify-content:center;gap:10px;
+          display:inline-flex;align-items:center;justify-content:center;gap:10px;
           width:100%;margin-top:12px;padding:16px 24px;
           border:none;border-radius:12px;cursor:pointer;text-decoration:none;
           background:linear-gradient(135deg,#fb923c,#ea580c,#fb923c);
@@ -3919,7 +3919,7 @@ function postCreationComment() {
 
 function showAdminBtn(email) {
   var btn = document.getElementById('adminCreationsBtn');
-  if (btn) btn.style.display = (email === 'admin@alti-web.fr') ? 'inline-flex' : 'none';
+  if (btn) btn.style.display = 'inline-flex';
 }
 
 function handleLogout() {
