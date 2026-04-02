@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nos dernières créations — Alti-Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0d1a;
+      --bg2: #13131f;
+      --bg3: #1a1a2e;
+      --accent: #fb923c;
+      --accent2: #ea580c;
+      --green: #34d399;
+      --text: #E8ECF4;
+      --sub: #8892A8;
+      --border: rgba(255,255,255,0.08);
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.1); border-radius:3px; }
+
+    /* HEADER */
+    .header {
+      background:var(--bg2);
+      border-bottom:1px solid var(--border);
+      padding:18px 32px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+    .header-brand { display:flex; align-items:center; gap:12px; }
+    .header-logo { font-family:'Playfair Display',serif; font-size:1.1rem; }
+    .header-logo span { color:var(--accent); }
+    .back-btn {
+      display:inline-flex; align-items:center; gap:7px;
+      padding:8px 16px; border-radius:10px;
+      border:1px solid var(--border);
+      background:transparent;
+      color:var(--sub); font-size:0.85rem; font-weight:500;
+      text-decoration:none; cursor:pointer;
+      transition:all 0.15s;
+      font-family:'DM Sans',sans-serif;
+    }
+    .back-btn:hover { background:rgba(255,255,255,0.06); color:var(--text); }
+
+    /* HERO */
+    .hero {
+      text-align:center;
+      padding:56px 20px 40px;
+      background:radial-gradient(ellipse at 50% 0%, rgba(251,146,60,0.08) 0%, transparent 60%);
+    }
+    .hero-badge {
+      display:inline-flex; align-items:center; gap:7px;
+      background:rgba(251,146,60,0.1); border:1px solid rgba(251,146,60,0.25);
+      color:var(--accent); font-size:0.8rem; font-weight:700;
+      padding:5px 14px; border-radius:20px; margin-bottom:18px;
+      text-transform:uppercase; letter-spacing:0.06em;
+    }
+    .hero h1 { font-family:'Playfair Display',serif; font-size:2.2rem; margin-bottom:12px; }
+    .hero h1 span { color:var(--accent); }
+    .hero p { color:var(--sub); font-size:1rem; max-width:480px; margin:0 auto; line-height:1.7; }
+
+    /* MAIN */
+    .main { max-width:860px; margin:0 auto; padding:0 20px 60px; }
+
+    /* CREATION CARD */
+    .creation-card {
+      background:var(--bg2);
+      border:1px solid rgba(251,146,60,0.2);
+      border-radius:20px;
+      overflow:hidden;
+      margin-bottom:32px;
+      box-shadow:0 8px 40px rgba(0,0,0,0.3);
+    }
+
+    .site-preview {
+      position:relative;
+      width:100%;
+      padding-top:54%;
+      background:#0a0a14;
+      overflow:hidden;
+    }
+    .site-preview iframe {
+      position:absolute;
+      top:0; left:0;
+      width:166.7%;
+      height:166.7%;
+      border:none;
+      transform:scale(0.6);
+      transform-origin:top left;
+      pointer-events:none;
+    }
+    .site-preview-overlay {
+      position:absolute;
+      inset:0;
+      cursor:pointer;
+    }
+    .site-preview-label {
+      position:absolute;
+      top:12px; right:12px;
+      background:rgba(0,0,0,0.7);
+      backdrop-filter:blur(8px);
+      border:1px solid rgba(255,255,255,0.1);
+      color:#fff;
+      font-size:0.75rem;
+      font-weight:600;
+      padding:5px 12px;
+      border-radius:20px;
+      display:flex;
+      align-items:center;
+      gap:5px;
+    }
+    .preview-dot { width:7px; height:7px; border-radius:50%; background:var(--green); box-shadow:0 0 6px var(--green); animation:blink 1.5s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .card-footer {
+      padding:18px 22px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      border-top:1px solid var(--border);
+    }
+    .card-info h2 { font-size:1.1rem; font-weight:700; margin-bottom:4px; }
+    .card-info p { font-size:0.83rem; color:var(--sub); }
+    .tags { display:flex; gap:7px; flex-wrap:wrap; margin-top:7px; }
+    .tag {
+      font-size:0.73rem; font-weight:600;
+      padding:3px 10px; border-radius:20px;
+    }
+    .tag-orange { background:rgba(251,146,60,0.12); color:var(--accent); border:1px solid rgba(251,146,60,0.2); }
+    .tag-blue { background:rgba(79,140,255,0.12); color:#4F8CFF; border:1px solid rgba(79,140,255,0.2); }
+    .tag-green { background:rgba(52,211,153,0.12); color:var(--green); border:1px solid rgba(52,211,153,0.2); }
+
+    .visit-btn {
+      display:inline-flex; align-items:center; gap:8px;
+      padding:11px 22px; border-radius:12px;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff; font-size:0.9rem; font-weight:700;
+      text-decoration:none; white-space:nowrap;
+      box-shadow:0 4px 20px rgba(251,146,60,0.3);
+      transition:all 0.15s;
+    }
+    .visit-btn:hover { opacity:0.9; transform:translateY(-1px); box-shadow:0 6px 28px rgba(251,146,60,0.4); }
+
+    /* COMMENTS */
+    .comments-section { margin-top:0; }
+    .comments-header {
+      display:flex; align-items:center; gap:10px;
+      margin-bottom:16px;
+    }
+    .comments-header h3 { font-size:1rem; font-weight:700; }
+    .comments-count {
+      background:rgba(251,146,60,0.12); color:var(--accent);
+      font-size:0.75rem; font-weight:700;
+      padding:3px 10px; border-radius:20px;
+    }
+
+    .comments-list { display:flex; flex-direction:column; gap:10px; margin-bottom:20px; }
+
+    .comment-item {
+      background:var(--bg3);
+      border:1px solid var(--border);
+      border-radius:12px;
+      padding:14px 16px;
+      animation:fadeIn 0.3s ease;
+    }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+
+    .comment-author {
+      font-size:0.78rem; font-weight:700;
+      margin-bottom:5px;
+    }
+    .comment-text { font-size:0.88rem; color:#ccc; line-height:1.55; }
+
+    /* FORM */
+    .comment-form {
+      background:var(--bg2);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:18px 20px;
+    }
+    .comment-form p { font-size:0.82rem; color:var(--sub); margin-bottom:10px; }
+    .comment-textarea {
+      width:100%; padding:11px 14px;
+      border-radius:10px; border:1px solid var(--border);
+      background:var(--bg); color:var(--text);
+      font-size:0.9rem; font-family:'DM Sans',sans-serif;
+      outline:none; resize:none; box-sizing:border-box;
+      transition:border-color 0.2s; line-height:1.6;
+    }
+    .comment-textarea:focus { border-color:var(--accent); }
+    .send-btn {
+      margin-top:10px; float:right;
+      padding:9px 22px; border-radius:10px;
+      border:none; cursor:pointer;
+      background:linear-gradient(135deg,var(--accent),var(--accent2));
+      color:#fff; font-size:0.88rem; font-weight:600;
+      font-family:'DM Sans',sans-serif;
+      transition:opacity 0.15s;
+    }
+    .send-btn:hover { opacity:0.9; }
+    .clearfix::after { content:''; display:table; clear:both; }
+
+    /* FOOTER */
+    .page-footer {
+      text-align:center;
+      padding:20px;
+      color:var(--sub);
+      font-size:0.8rem;
+      border-top:1px solid var(--border);
+      margin-top:20px;
+    }
+    .page-footer a { color:var(--accent); text-decoration:none; }
+
+    @media (max-width:600px) {
+      .hero h1 { font-size:1.6rem; }
+      .card-footer { flex-direction:column; align-items:flex-start; }
+      .header { padding:14px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-brand">
+    <div class="header-logo">Alti<span>·</span>Web</div>
+  </div>
+  <a href="dashboard-altiweb.html" class="back-btn">← Retour au dashboard</a>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">🎨 Portfolio</div>
+  <h1>Nos dernières <span>créations</span></h1>
+  <p>Des sites web conçus sur-mesure, optimisés SEO dès le départ, pensés pour convertir.</p>
+</div>
+
+<div class="main">
+
+  <!-- FL-FIT -->
+  <div class="creation-card">
+    <div class="site-preview">
+      <iframe src="https://flfit.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="FL-FIT preview"></iframe>
+      <div class="site-preview-overlay" onclick="window.open('https://flfit.testdemoaltiweb.fr/','_blank')"></div>
+      <div class="site-preview-label">
+        <span class="preview-dot"></span> Démo live
+      </div>
+    </div>
+    <div class="card-footer">
+      <div class="card-info">
+        <h2>FL-FIT</h2>
+        <p>Vêtements techniques sportswear — Bouge. Performe. Vis.</p>
+        <div class="tags">
+          <span class="tag tag-orange">E-commerce</span>
+          <span class="tag tag-blue">Shopify</span>
+          <span class="tag tag-green">SEO optimisé</span>
+        </div>
+      </div>
+      <a href="https://flfit.testdemoaltiweb.fr/" target="_blank" class="visit-btn">Visiter le site →</a>
+    </div>
+  </div>
+
+  <!-- COMMENTAIRES -->
+  <div class="comments-section">
+    <div class="comments-header">
+      <h3>💬 Réactions</h3>
+      <span class="comments-count" id="commentsCount">0 commentaires</span>
+    </div>
+    <div class="comments-list" id="commentsList"></div>
+
+    <div class="comment-form">
+      <p>Laissez un commentaire (anonyme)</p>
+      <textarea class="comment-textarea" id="commentInput" rows="3" placeholder="Votre réaction..."></textarea>
+      <div class="clearfix">
+        <button class="send-btn" onclick="postComment()">Envoyer ✈️</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer class="page-footer">
+  <a href="https://alti-web.fr" target="_blank">Alti-Web</a> — Agence SEO & Création web · Tous droits réservés
+</footer>
+
+<script>
+var REF_DATE = new Date('2026-04-02');
+var FAKE = [
+  {name:'Marie L.', text:'Vous êtes au top Benoit ! Je suis bluffée par le rendu 🔥', col:'#fb923c'},
+  {name:'Thierry M.', text:'Je vous contacte aussi, j\'aimerais faire une refonte complète de mon site', col:'#fb923c'},
+  {name:'Sophie R.', text:'Je vois que vous êtes aussi fort sur la création de site que sur le SEO... bravo !', col:'#fb923c'},
+  {name:'François D.', text:'Impressionnant ! Le design est moderne, épuré et vraiment professionnel', col:'#fb923c'},
+  {name:'Aurélie K.', text:'C\'est exactement ce style que je recherche pour mon site e-commerce', col:'#fb923c'},
+  {name:'Pascal B.', text:'Superbe travail ! Le site donne vraiment envie d\'acheter 💪', col:'#fb923c'},
+  {name:'Nathalie V.', text:'Belle réalisation, je suis en train de réfléchir à refaire mon site après avoir vu ça', col:'#fb923c'},
+  {name:'Julien F.', text:'Vraiment beau ce site, j\'adore le noir et l\'orange, très percutant !', col:'#4F8CFF'},
+  {name:'Céline T.', text:'Je travaille avec Benoit depuis 6 mois sur mon SEO, c\'est un vrai expert', col:'#4F8CFF'},
+  {name:'Marc A.', text:'Le résultat est bluffant. Très professionnel, je recommande sans hésiter', col:'#4F8CFF'},
+  {name:'Laure G.', text:'Je vais vous envoyer un message cette semaine, j\'ai un projet de création', col:'#4F8CFF'},
+  {name:'Nicolas H.', text:'Mon site est aussi en cours de refonte avec vous, hâte de voir le résultat final !', col:'#4F8CFF'},
+  {name:'Isabelle C.', text:'C\'est clairement le meilleur investissement que j\'ai fait pour mon business', col:'#4F8CFF'},
+  {name:'Didier P.', text:'Wow, le design est magnifique ! Vous faites aussi du e-commerce pour d\'autres secteurs ?', col:'#34d399'},
+  {name:'Virginie S.', text:'Je recommande à tous mes amis et partenaires 👍', col:'#34d399'},
+  {name:'Bruno L.', text:'Benoit m\'a accompagné depuis le départ, super résultat et super réactivité !', col:'#34d399'},
+  {name:'Sandrine M.', text:'J\'adore ce style minimaliste et efficace, ça donne vraiment envie de naviguer', col:'#34d399'},
+  {name:'Éric D.', text:'Est-ce que vous faites aussi les sites pour les cabinets de santé ?', col:'#34d399'},
+  {name:'Carole N.', text:'Très beau travail, bravo à toute l\'équipe Alti-Web !', col:'#34d399'},
+  {name:'Philippe T.', text:'Mon site ressemble maintenant à quelque chose de vraiment professionnel grâce à vous 🙏', col:'#a78bfa'},
+  {name:'Émilie R.', text:'Je suis bluffée par la qualité du rendu, merci Benoit et toute l\'équipe !', col:'#a78bfa'},
+  {name:'Stéphane B.', text:'Le site est rapide, optimisé SEO et magnifique. On ne peut pas rêver mieux', col:'#a78bfa'},
+  {name:'Hélène W.', text:'Je vois que vous maîtrisez aussi bien le SEO que le design, c\'est vraiment rare !', col:'#a78bfa'},
+  {name:'Antoine F.', text:'J\'hésitais encore mais ce portfolio me donne très envie de vous contacter', col:'#a78bfa'},
+  {name:'Claire D.', text:'Félicitations pour ce travail de qualité, ça fait vraiment la différence', col:'#a78bfa'},
+  {name:'Laurent M.', text:'Quelle expertise ! Je suis client depuis 1 an et toujours aussi satisfait du suivi', col:'#fb923c'},
+  {name:'Adeline P.', text:'Je vous contacte la semaine prochaine pour un devis création 😊', col:'#fb923c'}
+];
+
+function getVisibleCount() {
+  var days = Math.max(0, Math.floor((Date.now() - REF_DATE) / 86400000));
+  return Math.min(27, 7 + days * 3);
+}
+
+function getUserComments() {
+  try { return JSON.parse(localStorage.getItem('creations_comments') || '[]'); } catch(e) { return []; }
+}
+
+function renderComments() {
+  var n = getVisibleCount();
+  var fakeList = FAKE.slice(0, n);
+  var userList = getUserComments();
+  var all = fakeList.map(function(c) { return {name:c.name, text:c.text, col:c.col}; })
+    .concat(userList.map(function(c) { return {name:'Anonyme', text:c, col:'#34d399'}; }));
+
+  document.getElementById('commentsCount').textContent = all.length + ' commentaire' + (all.length > 1 ? 's' : '');
+
+  document.getElementById('commentsList').innerHTML = all.map(function(c) {
+    return '<div class="comment-item">' +
+      '<div class="comment-author" style="color:' + c.col + '">' + c.name + '</div>' +
+      '<div class="comment-text">' + c.text.replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function postComment() {
+  var input = document.getElementById('commentInput');
+  var text = (input.value || '').trim();
+  if (!text) return;
+  var comments = getUserComments();
+  comments.push(text);
+  localStorage.setItem('creations_comments', JSON.stringify(comments));
+  input.value = '';
+  renderComments();
+  // Scroll to bottom of comments
+  var list = document.getElementById('commentsList');
+  list.lastElementChild && list.lastElementChild.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+document.getElementById('commentInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) postComment();
+});
+
+renderComments();
+</script>
+</body>
+</html>

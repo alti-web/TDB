@@ -1590,8 +1590,7 @@ if (window.location.hostname === 'alti-web.github.io') {
       <a href="https://github.com/alti-web/TDB/raw/main/installer-altiweb/Install-AltiBoard.exe" download class="topbar-btn" style="border-color:var(--accent-purple);color:var(--accent-purple);" title="Télécharger l'app bureau">💻 App Bureau</a>
       <a href="https://wa.me/message/F4D2NDYBFVCTK1" class="topbar-btn">💬 WhatsApp</a>
       <a href="javascript:void(0)" onclick="document.getElementById('videoTdbPopup').style.display='flex'" class="topbar-btn" style="border-color:var(--accent-green);color:var(--accent-green);">🎬 Vidéo : comment ça marche ?</a>
-      <a href="javascript:void(0)" onclick="openCreationsPopup()" id="adminCreationsBtn" class="topbar-btn" style="display:none;border-color:var(--accent-orange);color:var(--accent-orange);font-weight:700;">🎨 Nos dernières créations</a>
-      <a href="javascript:void(0)" onclick="openContactPopup()" class="topbar-btn" style="font-size:13px;">✉️ Contacter</a>
+<a href="javascript:void(0)" onclick="openContactPopup()" class="topbar-btn" style="font-size:13px;">✉️ Contacter</a>
       <a href="javascript:void(0)" onclick="openRappelPopup()" class="topbar-btn" style="border-color:var(--accent-orange);color:var(--accent-orange);">📞 Je souhaite être rappelé</a>
       <a href="javascript:void(0)" onclick="handleLogout()" class="topbar-btn" style="border-color:var(--accent-red);color:var(--accent-red);font-size:13px;">🔓 Me déconnecter</a>
     </div>
@@ -1684,6 +1683,21 @@ if (window.location.hostname === 'alti-web.github.io') {
         " onmouseover="this.style.transform='translateY(-2px) scale(1.02)';this.style.boxShadow='0 6px 30px rgba(99,102,241,0.5),0 0 40px rgba(99,102,241,0.2)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(99,102,241,0.4),0 0 30px rgba(99,102,241,0.15)'">
           <span style="font-size:1.3rem">📱</span> Création de votre APP iPhone (compris dans votre forfait)
         </button>
+
+        <!-- Bouton Créations Admin (visible admin uniquement) -->
+        <a href="creations.html" id="adminCreationsBtn" target="_blank" style="
+          display:none;align-items:center;justify-content:center;gap:10px;
+          width:100%;margin-top:12px;padding:16px 24px;
+          border:none;border-radius:12px;cursor:pointer;text-decoration:none;
+          background:linear-gradient(135deg,#fb923c,#ea580c,#fb923c);
+          background-size:200% 200%;
+          animation:secretBtnPulse 3s ease-in-out infinite;
+          color:#fff;font-size:1.05rem;font-weight:700;font-family:'DM Sans',sans-serif;
+          box-shadow:0 4px 20px rgba(251,146,60,0.5),0 0 30px rgba(251,146,60,0.2);
+          transition:transform 0.2s,box-shadow 0.2s;letter-spacing:0.3px;
+        " onmouseover="this.style.transform='translateY(-2px) scale(1.02)'" onmouseout="this.style.transform=''">
+          <span style="font-size:1.3rem">🎨</span> Voir nos dernières créations
+        </a>
 
         <!-- Bouton Secret SEO -->
         <button onclick="document.getElementById('astuceSeoPopup').style.display='flex'" style="
