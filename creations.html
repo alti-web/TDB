@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nos dernières créations — Alti-Web</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script>(function(){ emailjs.init('nf_vsJRJn_ucqKgbR'); })();</script>
   <style>
     :root {
       --bg: #0d0d1a;
@@ -663,7 +665,7 @@
 
 <!-- CTA FLOTTANT -->
 <button class="cta-float" onclick="document.getElementById('popupCreation').classList.add('open')">
-  🎁 Je vous créé le mieux, à 0€
+  🎁 Je vous créé le miens, à 0€
 </button>
 
 <!-- POPUP CRÉATION -->
@@ -784,13 +786,21 @@ function submitCreationRequest() {
     setTimeout(function(){ emailInput.style.borderColor = ''; }, 2000);
     return;
   }
-  // Envoi via mailto (ouvre le client email de Benoit en arrière-plan)
-  var subject = encodeURIComponent('Demande de création de site internet');
-  var body = encodeURIComponent('Bonjour,\n\nUn visiteur souhaite bénéficier de la création de site à 0€.\n\nEmail du prospect : ' + email + '\n\nMerci de le recontacter rapidement.\n\n— Portfolio Alti-Web');
-  window.location.href = 'mailto:benoit@alti-web.fr?subject=' + subject + '&body=' + body;
-  // Affiche le succès
-  document.getElementById('popupForm').style.display = 'none';
-  document.getElementById('popupSuccess').style.display = 'block';
+  // Envoi via EmailJS
+  var submitBtn = document.querySelector('.popup-submit');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Envoi en cours...';
+  emailjs.send('service_12wtkng', 'template_tib1gk7', {
+    name: '🌐 Demande création de site à 0€ — Email prospect : ' + email
+  }).then(function() {
+    document.getElementById('popupForm').style.display = 'none';
+    document.getElementById('popupSuccess').style.display = 'block';
+  }, function() {
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Recevoir mon site gratuit →';
+    emailInput.style.borderColor = '#f87171';
+    alert('Erreur d\'envoi, veuillez réessayer.');
+  });
 }
 
 document.addEventListener('keydown', function(e) {
