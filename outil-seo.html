@@ -6,16 +6,27 @@
   <title>Outil SEO — Alti-Web</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    html, body { height:100%; background:#0d0d1a; }
+    html, body { height:100%; overflow:hidden; background:#fff; }
+    .wrap {
+      position:fixed;
+      /* dépasse de chaque côté pour masquer les bordures/barre Claude */
+      top:-48px;
+      left:-2px;
+      right:-2px;
+      bottom:-48px;
+      overflow:hidden;
+    }
     iframe {
       display:block;
       width:100%;
-      height:100vh;
+      height:100%;
       border:none;
     }
   </style>
 </head>
 <body>
-  <iframe src="https://claude.site/public/artifacts/e639069e-d4cd-411d-9ad0-6353b8b6a0be/embed" title="Claude Artifact" allow="clipboard-write" allowfullscreen></iframe>
+  <div class="wrap">
+    <iframe src="https://claude.site/public/artifacts/e639069e-d4cd-411d-9ad0-6353b8b6a0be/embed" title="Claude Artifact" allow="clipboard-write" allowfullscreen></iframe>
+  </div>
 </body>
 </html>
