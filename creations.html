@@ -385,7 +385,7 @@
   <div class="cards-column">
 
     <!-- FRELON19 -->
-    <div class="creation-card" style="border-color:rgba(239,68,68,0.25)">
+    <div class="creation-card" id="cardFrelon19" style="border-color:rgba(239,68,68,0.25)">
       <div class="site-preview">
         <iframe src="https://frelon19.testdemoaltiweb.fr/" scrolling="no" loading="lazy" title="Frelon19 preview"></iframe>
         <div class="site-preview-overlay" onclick="window.open('https://frelon19.testdemoaltiweb.fr/','_blank')"></div>
@@ -914,6 +914,16 @@ function submitCreationRequest() {
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closePopup();
 });
+
+// --- MASQUAGE CARTE FRELON19 pour ses propres clients ---
+(function() {
+  var hiddenFromFrelon = ['redflow19@gmail.com', 'contact@frelon19.fr'];
+  var email = (localStorage.getItem('altiweb_login_email') || '').toLowerCase().trim();
+  if (hiddenFromFrelon.indexOf(email) !== -1) {
+    var card = document.getElementById('cardFrelon19');
+    if (card) card.style.display = 'none';
+  }
+})();
 
 renderComments();
 </script>
