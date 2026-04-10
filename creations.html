@@ -831,8 +831,7 @@ var FAKE = [
 ];
 
 function getVisibleCount() {
-  var days = Math.max(0, Math.floor((Date.now() - REF_DATE) / 86400000));
-  return Math.min(27, 7 + days * 3);
+  return 27;
 }
 
 function getUserComments() {
