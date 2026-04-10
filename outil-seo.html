@@ -3,30 +3,456 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Outil SEO — Alti-Web</title>
+  <title>Maquette App Blues'Up — Alti-Web</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-    html, body { height:100%; overflow:hidden; background:#fff; }
-    .wrap {
-      position:fixed;
-      /* dépasse de chaque côté pour masquer les bordures/barre Claude */
-      top:-48px;
-      left:-2px;
-      right:-2px;
-      bottom:-48px;
-      overflow:hidden;
-    }
-    iframe {
-      display:block;
-      width:100%;
-      height:100%;
-      border:none;
-    }
+    html, body { background:#050507; }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <iframe src="https://claude.ai/public/artifacts/eb6106ae-cd77-46b4-8e36-ab477f296885" title="Claude Artifact" allow="clipboard-write" allowfullscreen></iframe>
-  </div>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState } = React;
+
+const C = {
+  bg: "#0A0A0C",
+  surface: "#141418",
+  card: "#1A1A20",
+  cardHover: "#222230",
+  accent: "#3B82F6",
+  accentGlow: "rgba(59, 130, 246, 0.25)",
+  accentSoft: "rgba(59, 130, 246, 0.08)",
+  white: "#F5F5F7",
+  gray: "#8E8E93",
+  grayLight: "#636366",
+  grayDark: "#2C2C2E",
+  red: "#FF453A",
+  green: "#30D158",
+  orange: "#FF9F0A",
+  bit: "#00CEC8",
+};
+
+const FONT = "'SF Pro Display', -apple-system, BlinkMacSystemFont, system-ui, sans-serif";
+
+const ARTISTS = [
+  { name: "Pierre Sibille", genre: "Blues / NB-Blues", img: "🎸", color: "#E74C3C", bit: "pierre-sibille" },
+  { name: "Valerie Ghent", genre: "Soul / Funk", img: "🎤", color: "#9B59B6", bit: "valerie-ghent" },
+  { name: "Raymond Doumbé", genre: "World / Afro", img: "🥁", color: "#F39C12", bit: "raymond-doumbe" },
+  { name: "Alf & Half", genre: "Blues Rock", img: "🎵", color: "#2ECC71", bit: "alf-half" },
+  { name: "Melody Lou", genre: "Chanson / Folk", img: "🎶", color: "#E91E63", bit: "melody-lou" },
+  { name: "DAO Electro", genre: "Electro / Fusion", img: "⚡", color: "#00BCD4", bit: "dao-electro" },
+  { name: "Don Billiez", genre: "Blues", img: "🎷", color: "#FF5722", bit: "don-billiez" },
+  { name: "The Shoeshiners", genre: "Blues Band", img: "🎺", color: "#8BC34A", bit: "the-shoeshiners" },
+];
+
+const NEWS = [
+  { type: "podcast", tag: "PODCAST", title: "Radio Active #47 — Pierre Sibille en session live", date: "28 mars 2026", icon: "🎙️", tagColor: C.accent },
+  { type: "release", tag: "SORTIE", title: "Nouveau single Melody Lou — 'Entre deux rives'", date: "22 mars 2026", icon: "💿", tagColor: "#9B59B6" },
+  { type: "concert", tag: "CONCERT", title: "Valerie Ghent au Palais Neptune, Toulon", date: "18 avril 2026", icon: "🎤", tagColor: C.green },
+  { type: "podcast", tag: "PODCAST", title: "Radio Active #46 — Retour du Camion à Bandol", date: "14 mars 2026", icon: "🎙️", tagColor: C.accent },
+  { type: "concert", tag: "CONCERT", title: "Raymond Doumbé — La Croisette, Marseille", date: "25 avril 2026", icon: "🥁", tagColor: C.green },
+  { type: "release", tag: "SORTIE", title: "Album NB-Blues — Pierre Sibille disponible", date: "1 mars 2026", icon: "💿", tagColor: "#9B59B6" },
+  { type: "concert", tag: "CONCERT", title: "Melody Lou — Théâtre Liberté, Toulon", date: "3 mai 2026", icon: "🎶", tagColor: C.green },
+];
+
+const CONCERTS_BY_ARTIST = [
+  {
+    artist: "Pierre Sibille", img: "🎸", color: "#E74C3C", bit: "pierre-sibille",
+    events: [
+      { venue: "Le Forum", city: "Hyères", date: "12 AVR", time: "20h30" },
+      { venue: "Jazz à Porquerolles", city: "Porquerolles", date: "20 JUI", time: "21h00" },
+    ],
+  },
+  {
+    artist: "Valerie Ghent", img: "🎤", color: "#9B59B6", bit: "valerie-ghent",
+    events: [
+      { venue: "Palais Neptune", city: "Toulon", date: "18 AVR", time: "21h00" },
+    ],
+  },
+  {
+    artist: "Alf & Half", img: "🎵", color: "#2ECC71", bit: "alf-half",
+    events: [
+      { venue: "Camion Blues'Up", city: "Bandol", date: "9 AVR", time: "19h00", live: true },
+      { venue: "Le Silo", city: "Marseille", date: "10 MAI", time: "20h30" },
+    ],
+  },
+  {
+    artist: "Raymond Doumbé", img: "🥁", color: "#F39C12", bit: "raymond-doumbe",
+    events: [
+      { venue: "La Croisette", city: "Marseille", date: "25 AVR", time: "20h00" },
+    ],
+  },
+  {
+    artist: "Melody Lou", img: "🎶", color: "#E91E63", bit: "melody-lou",
+    events: [
+      { venue: "Théâtre Liberté", city: "Toulon", date: "3 MAI", time: "19h30" },
+    ],
+  },
+  {
+    artist: "DAO Electro", img: "⚡", color: "#00BCD4", bit: "dao-electro",
+    events: [
+      { venue: "Mixart Myrys", city: "Toulouse", date: "15 MAI", time: "22h00" },
+    ],
+  },
+];
+
+const EPISODES = [
+  { title: "Radio Active #47 — Pierre Sibille en session live", date: "28 mars 2026", duration: "58 min" },
+  { title: "Radio Active #46 — Retour du Camion à Bandol", date: "14 mars 2026", duration: "42 min" },
+  { title: "Radio Active #45 — Light in Senegal : le bilan", date: "28 fév 2026", duration: "51 min" },
+  { title: "Radio Active #44 — Rencontre avec DAO Electro", date: "14 fév 2026", duration: "37 min" },
+  { title: "Radio Active #43 — Concerts en prison : témoignages", date: "31 jan 2026", duration: "63 min" },
+];
+
+const SHOP_ITEMS = [
+  { name: "Adhésion 2026", price: "20 €", type: "Membre", icon: "🎫" },
+  { name: "T-Shirt Blues'Up", price: "25 €", type: "Merch", icon: "👕" },
+  { name: "Album NB-Blues — Pierre Sibille", price: "12 €", type: "Musique", icon: "💿" },
+  { name: "Tote Bag Blues'Up", price: "15 €", type: "Merch", icon: "👜" },
+  { name: "Don Action Culturelle", price: "Libre", type: "Don", icon: "❤️" },
+];
+
+function NoiseOverlay() {
+  return <div style={{ position: "absolute", top: 0, left: 0, right: 0, bottom: 0, backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E")`, pointerEvents: "none", zIndex: 1 }} />;
+}
+
+function StatusBar() {
+  return (
+    <div style={{ height: 54, padding: "14px 24px 0", display: "flex", justifyContent: "space-between", alignItems: "center", zIndex: 10, position: "relative" }}>
+      <span style={{ color: C.white, fontSize: 15, fontWeight: 600, fontFamily: FONT }}>9:41</span>
+      <div style={{ display: "flex", gap: 5, alignItems: "center" }}>
+        <svg width="17" height="12" viewBox="0 0 17 12"><rect x="0" y="4" width="3" height="8" rx="1" fill={C.white}/><rect x="4.5" y="2.5" width="3" height="9.5" rx="1" fill={C.white}/><rect x="9" y="1" width="3" height="11" rx="1" fill={C.white}/><rect x="13.5" y="0" width="3" height="12" rx="1" fill={C.white}/></svg>
+        <svg width="25" height="12" viewBox="0 0 25 12"><rect x="0" y="1" width="22" height="10" rx="2" stroke={C.white} strokeWidth="1" fill="none"/><rect x="1.5" y="2.5" width="17" height="7" rx="1" fill={C.green}/><rect x="23" y="4" width="2" height="4" rx="0.5" fill={C.white}/></svg>
+      </div>
+    </div>
+  );
+}
+
+function TabBar({ active, onTab }) {
+  const tabs = [
+    { id: "feed", label: "News", icon: "◉" },
+    { id: "artists", label: "Artistes", icon: "♫" },
+    { id: "concerts", label: "Concerts", icon: "⚑" },
+    { id: "radio", label: "Radio", icon: "⏵" },
+    { id: "shop", label: "Shop", icon: "★" },
+  ];
+  return (
+    <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 83, background: "linear-gradient(to top, rgba(10,10,12,0.98) 70%, transparent)", display: "flex", alignItems: "flex-start", justifyContent: "space-around", paddingTop: 10, zIndex: 15, backdropFilter: "blur(20px)" }}>
+      {tabs.map(t => (
+        <button key={t.id} onClick={() => onTab(t.id)} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", flexDirection: "column", alignItems: "center", gap: 3, opacity: active === t.id ? 1 : 0.4, transition: "opacity 0.2s" }}>
+          <span style={{ fontSize: 20, color: active === t.id ? C.accent : C.gray, filter: active === t.id ? `drop-shadow(0 0 6px ${C.accentGlow})` : "none" }}>{t.icon}</span>
+          <span style={{ fontSize: 10, fontWeight: 600, letterSpacing: 0.5, color: active === t.id ? C.accent : C.gray, fontFamily: FONT }}>{t.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+function MiniPlayer() {
+  const [playing, setPlaying] = useState(true);
+  return (
+    <div style={{ position: "absolute", bottom: 83, left: 8, right: 8, height: 56, background: C.card, borderRadius: 14, display: "flex", alignItems: "center", padding: "0 14px", gap: 12, zIndex: 15, border: `1px solid ${C.grayDark}`, boxShadow: "0 -4px 20px rgba(0,0,0,0.4)" }}>
+      <div style={{ width: 36, height: 36, borderRadius: 8, background: `linear-gradient(135deg, ${C.accent}, #1a1a2e)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16 }}>🎙️</div>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ color: C.white, fontSize: 12, fontWeight: 600, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Radio Active #47</div>
+        <div style={{ color: C.gray, fontSize: 10, fontFamily: FONT }}>Pierre Sibille en session</div>
+      </div>
+      <div style={{ width: 50, height: 3, background: C.grayDark, borderRadius: 2, overflow: "hidden" }}>
+        <div style={{ width: "35%", height: "100%", background: C.accent, borderRadius: 2 }} />
+      </div>
+      <button onClick={() => setPlaying(!playing)} style={{ background: "none", border: "none", cursor: "pointer", color: C.white, fontSize: 22, padding: 0, lineHeight: 1 }}>{playing ? "⏸" : "▶"}</button>
+    </div>
+  );
+}
+
+function IPhoneFrame({ children, screenLabel }) {
+  return (
+    <div style={{ width: 375, height: 812, background: C.bg, borderRadius: 44, border: `2px solid ${C.grayDark}`, position: "relative", overflow: "hidden", boxShadow: `0 0 80px rgba(59,130,246,0.08), 0 25px 60px rgba(0,0,0,0.6)`, display: "flex", flexDirection: "column" }}>
+      <NoiseOverlay />
+      <StatusBar />
+      <div style={{ position: "absolute", top: 12, left: "50%", transform: "translateX(-50%)", width: 126, height: 36, background: "#000", borderRadius: 20, zIndex: 20 }} />
+      <div style={{ position: "absolute", bottom: -6, left: "50%", transform: "translateX(-50%)", color: C.gray, fontSize: 9, fontFamily: FONT, letterSpacing: 2, textTransform: "uppercase", whiteSpace: "nowrap", zIndex: 30 }}>{screenLabel}</div>
+      <div style={{ flex: 1, position: "relative", zIndex: 5, overflowY: "auto", overflowX: "hidden" }}>{children}</div>
+    </div>
+  );
+}
+
+function ScreenHeader({ label, title, rightIcon }) {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, marginTop: 4 }}>
+      <div>
+        <div style={{ color: C.gray, fontSize: 12, fontWeight: 500, letterSpacing: 1.5, textTransform: "uppercase", fontFamily: FONT }}>{label}</div>
+        <div style={{ color: C.white, fontSize: 28, fontWeight: 800, fontFamily: FONT, letterSpacing: -0.5 }}>{title}</div>
+      </div>
+      {rightIcon && <div style={{ width: 36, height: 36, borderRadius: 18, background: C.card, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${C.grayDark}`, fontSize: 16 }}>{rightIcon}</div>}
+    </div>
+  );
+}
+
+function BitIcon({ size = 13 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill={C.bit}>
+      <path d="M22.668 5.047c-.726 0-1.313.588-1.313 1.313v11.28c0 .726.587 1.313 1.313 1.313S24 18.366 24 17.64V6.36c0-.725-.588-1.313-1.332-1.313zm-5.063 0c-.725 0-1.312.588-1.312 1.313v11.28c0 .726.587 1.313 1.312 1.313.726 0 1.313-.587 1.313-1.313V6.36c0-.725-.587-1.313-1.313-1.313zm-5.063 0c-.725 0-1.312.588-1.312 1.313v11.28c0 .726.587 1.313 1.312 1.313.726 0 1.313-.587 1.313-1.313V6.36c0-.725-.587-1.313-1.313-1.313zM1.332 5.047C.607 5.047.02 5.635.02 6.36v11.28c0 .726.588 1.313 1.313 1.313s1.313-.587 1.313-1.313V6.36c0-.725-.588-1.313-1.313-1.313zm6.209 3.75c-.726 0-1.313.588-1.313 1.313v4.78c0 .726.587 1.313 1.313 1.313.725 0 1.312-.587 1.312-1.313v-4.78c0-.725-.587-1.313-1.312-1.313z"/>
+    </svg>
+  );
+}
+
+function BitBadge({ small }) {
+  return (
+    <div style={{ display: "inline-flex", alignItems: "center", gap: small ? 4 : 5, background: `${C.bit}18`, border: `1px solid ${C.bit}44`, borderRadius: small ? 6 : 8, padding: small ? "3px 7px" : "5px 10px", cursor: "pointer" }}>
+      <BitIcon size={small ? 10 : 13} />
+      <span style={{ color: C.bit, fontSize: small ? 8 : 10, fontWeight: 700, fontFamily: FONT, letterSpacing: 0.3 }}>{small ? "BIT" : "Bandsintown"}</span>
+      <span style={{ color: C.bit, fontSize: small ? 8 : 10, opacity: 0.6 }}>↗</span>
+    </div>
+  );
+}
+
+function FeedScreen() {
+  return (
+    <div style={{ padding: "10px 16px 160px" }}>
+      <ScreenHeader label="Blues'Up" title="News" rightIcon="🔔" />
+      {NEWS.map((item, i) => (
+        <div key={i} style={{ background: C.card, borderRadius: 16, padding: "14px 16px", marginBottom: 10, border: `1px solid ${C.grayDark}`, display: "flex", alignItems: "flex-start", gap: 12 }}>
+          <div style={{ width: 42, height: 42, borderRadius: 12, flexShrink: 0, background: item.type === "podcast" ? `linear-gradient(135deg, ${C.accent}44, ${C.accent}15)` : item.type === "release" ? `linear-gradient(135deg, #9B59B644, #9B59B615)` : `linear-gradient(135deg, ${C.green}44, ${C.green}15)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 18 }}>{item.icon}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+              <span style={{ background: `${item.tagColor}22`, color: item.tagColor, fontSize: 8, fontWeight: 800, padding: "2px 6px", borderRadius: 4, letterSpacing: 1, fontFamily: FONT }}>{item.tag}</span>
+              <span style={{ color: C.grayLight, fontSize: 10, fontFamily: FONT }}>{item.date}</span>
+            </div>
+            <div style={{ color: C.white, fontSize: 13, fontWeight: 600, fontFamily: FONT, lineHeight: 1.35 }}>{item.title}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ArtistsScreen() {
+  const [selected, setSelected] = useState(null);
+  return (
+    <div style={{ padding: "10px 16px 160px" }}>
+      <ScreenHeader label="Collectif" title="Artistes" />
+      <div style={{ background: C.card, borderRadius: 12, padding: "10px 14px", marginBottom: 16, display: "flex", alignItems: "center", gap: 8, border: `1px solid ${C.grayDark}` }}>
+        <span style={{ color: C.gray, fontSize: 14 }}>🔍</span>
+        <span style={{ color: C.grayLight, fontSize: 14, fontFamily: FONT }}>Rechercher un artiste…</span>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+        {ARTISTS.map((a, i) => (
+          <div key={i} onClick={() => setSelected(selected === i ? null : i)} style={{ background: selected === i ? C.cardHover : C.card, borderRadius: 16, padding: "16px 14px", border: selected === i ? `1px solid ${a.color}44` : `1px solid ${C.grayDark}`, cursor: "pointer", transition: "all 0.2s", boxShadow: selected === i ? `0 0 20px ${a.color}22` : "none" }}>
+            <div style={{ width: 56, height: 56, borderRadius: 28, background: `linear-gradient(135deg, ${a.color}33, ${a.color}11)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 28, marginBottom: 10, border: `2px solid ${a.color}44` }}>{a.img}</div>
+            <div style={{ color: C.white, fontSize: 13, fontWeight: 700, fontFamily: FONT, lineHeight: 1.2 }}>{a.name}</div>
+            <div style={{ color: C.gray, fontSize: 10, fontFamily: FONT, marginTop: 3 }}>{a.genre}</div>
+            {selected === i && (
+              <div style={{ marginTop: 10, display: "flex", gap: 6, flexWrap: "wrap" }}>
+                <div style={{ background: `${a.color}22`, color: a.color, fontSize: 9, fontWeight: 600, padding: "4px 8px", borderRadius: 6 }}>Suivre</div>
+                <div style={{ background: C.accentSoft, color: C.accent, fontSize: 9, fontWeight: 600, padding: "4px 8px", borderRadius: 6 }}>EPK</div>
+                <BitBadge small />
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ConcertsScreen() {
+  const [expandedArtist, setExpandedArtist] = useState(0);
+  return (
+    <div style={{ padding: "10px 16px 160px" }}>
+      <ScreenHeader label="Agenda" title="Concerts" />
+      <div style={{ background: `${C.bit}0C`, border: `1px solid ${C.bit}33`, borderRadius: 14, padding: "12px 14px", marginBottom: 16, display: "flex", alignItems: "center", gap: 10 }}>
+        <BitIcon size={20} />
+        <div style={{ flex: 1 }}>
+          <div style={{ color: C.white, fontSize: 11, fontWeight: 600, fontFamily: FONT }}>Dates synchronisées via Bandsintown</div>
+          <div style={{ color: C.gray, fontSize: 10, fontFamily: FONT }}>Cliquez sur un artiste pour ses dates & billets</div>
+        </div>
+      </div>
+      {CONCERTS_BY_ARTIST.map((group, gi) => (
+        <div key={gi} style={{ marginBottom: 10 }}>
+          <div onClick={() => setExpandedArtist(expandedArtist === gi ? null : gi)} style={{ background: expandedArtist === gi ? C.cardHover : C.card, borderRadius: expandedArtist === gi ? "16px 16px 0 0" : 16, padding: "12px 14px", display: "flex", alignItems: "center", gap: 12, border: `1px solid ${expandedArtist === gi ? group.color + "44" : C.grayDark}`, borderBottom: expandedArtist === gi ? "none" : undefined, cursor: "pointer", transition: "all 0.2s" }}>
+            <div style={{ width: 40, height: 40, borderRadius: 20, background: `linear-gradient(135deg, ${group.color}33, ${group.color}11)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20, border: `1.5px solid ${group.color}44`, flexShrink: 0 }}>{group.img}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: C.white, fontSize: 14, fontWeight: 700, fontFamily: FONT, display: "flex", alignItems: "center", gap: 6 }}>
+                {group.artist}
+                {group.events.some(e => e.live) && <span style={{ background: C.red, color: "#fff", fontSize: 7, fontWeight: 800, padding: "1px 5px", borderRadius: 4, letterSpacing: 0.5 }}>LIVE</span>}
+              </div>
+              <div style={{ color: C.gray, fontSize: 11, fontFamily: FONT, marginTop: 1 }}>{group.events.length} date{group.events.length > 1 ? "s" : ""} à venir</div>
+            </div>
+            <span style={{ color: C.grayLight, fontSize: 16, transition: "transform 0.2s", display: "inline-block", transform: expandedArtist === gi ? "rotate(180deg)" : "rotate(0)" }}>▾</span>
+          </div>
+          {expandedArtist === gi && (
+            <div style={{ background: C.card, borderRadius: "0 0 16px 16px", border: `1px solid ${group.color}44`, borderTop: "none", overflow: "hidden" }}>
+              {group.events.map((ev, ei) => (
+                <div key={ei} style={{ padding: "12px 14px 12px 66px", display: "flex", alignItems: "center", gap: 12, borderTop: ei > 0 ? `1px solid ${C.grayDark}` : "none", background: ev.live ? `rgba(255,69,58,0.04)` : "transparent" }}>
+                  <div style={{ width: 40, textAlign: "center", flexShrink: 0 }}>
+                    <div style={{ color: ev.live ? C.red : C.accent, fontSize: 14, fontWeight: 900, fontFamily: FONT, lineHeight: 1 }}>{ev.date.split(" ")[0]}</div>
+                    <div style={{ color: C.gray, fontSize: 9, fontFamily: FONT, marginTop: 1 }}>{ev.date.split(" ")[1]}</div>
+                  </div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ color: C.white, fontSize: 12, fontWeight: 600, fontFamily: FONT }}>
+                      {ev.venue}
+                      {ev.live && <span style={{ color: C.red, fontSize: 10, marginLeft: 6 }}>● now</span>}
+                    </div>
+                    <div style={{ color: C.grayLight, fontSize: 10, fontFamily: FONT }}>{ev.city} · {ev.time}</div>
+                  </div>
+                </div>
+              ))}
+              <div style={{ padding: "10px 14px 14px 14px", display: "flex", justifyContent: "center", borderTop: `1px solid ${C.grayDark}` }}>
+                <BitBadge />
+              </div>
+            </div>
+          )}
+        </div>
+      ))}
+      <div style={{ marginTop: 10 }}>
+        <div style={{ color: C.gray, fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10, fontFamily: FONT }}>Camion Blues'Up</div>
+        <div style={{ height: 120, borderRadius: 16, background: "linear-gradient(135deg, #0d1b2a 0%, #1b2838 50%, #162447 100%)", position: "relative", overflow: "hidden", border: `1px solid ${C.grayDark}` }}>
+          <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 40% 50%, rgba(59,130,246,0.12), transparent 60%)" }} />
+          {[{x:30,y:40,live:true},{x:55,y:55},{x:75,y:35}].map((d,i) => (
+            <div key={i} style={{ position: "absolute", left: `${d.x}%`, top: `${d.y}%`, width: d.live ? 12 : 7, height: d.live ? 12 : 7, borderRadius: "50%", background: d.live ? C.red : C.accent, boxShadow: d.live ? `0 0 10px ${C.red}` : `0 0 4px ${C.accent}55`, transform: "translate(-50%,-50%)" }} />
+          ))}
+          <div style={{ position: "absolute", left: "30%", top: "40%", transform: "translate(-50%,-160%)", background: "rgba(0,0,0,0.75)", color: C.white, fontSize: 8, fontWeight: 700, padding: "2px 6px", borderRadius: 4, whiteSpace: "nowrap", fontFamily: FONT }}>🚐 Bandol · Ce soir</div>
+          <div style={{ position: "absolute", bottom: 10, left: 12, right: 12, display: "flex", justifyContent: "space-between" }}>
+            <span style={{ color: C.gray, fontSize: 9, fontFamily: FONT }}>Itinérance Var · PACA</span>
+            <span style={{ color: C.accent, fontSize: 9, fontWeight: 600, fontFamily: FONT }}>Parcours complet ↗</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RadioScreen() {
+  const [currentPlaying, setCurrentPlaying] = useState(0);
+  return (
+    <div style={{ padding: "10px 16px 160px" }}>
+      <ScreenHeader label="Podcast" title="Radio Active" />
+      <div style={{ background: "linear-gradient(135deg, #0f1923 0%, #162447 50%, #1a1a40 100%)", borderRadius: 20, padding: 20, marginBottom: 16, position: "relative", overflow: "hidden", border: `1px solid ${C.grayDark}` }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 80% 20%, rgba(59,130,246,0.15), transparent 60%)" }} />
+        <div style={{ position: "relative" }}>
+          <div style={{ width: 80, height: 80, borderRadius: 20, margin: "0 auto 16px", background: `linear-gradient(135deg, ${C.accent}44, ${C.accent}11)`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 40, border: `2px solid ${C.accent}33`, boxShadow: `0 0 40px ${C.accentGlow}` }}>🎙️</div>
+          <div style={{ textAlign: "center" }}>
+            <div style={{ color: C.white, fontSize: 15, fontWeight: 700, fontFamily: FONT }}>Radio Active #47</div>
+            <div style={{ color: C.gray, fontSize: 12, fontFamily: FONT, marginTop: 4 }}>Pierre Sibille en session live</div>
+          </div>
+          <div style={{ marginTop: 16 }}>
+            <div style={{ width: "100%", height: 3, background: C.grayDark, borderRadius: 2 }}>
+              <div style={{ width: "35%", height: "100%", background: C.accent, borderRadius: 2, boxShadow: `0 0 8px ${C.accentGlow}` }} />
+            </div>
+            <div style={{ display: "flex", justifyContent: "space-between", marginTop: 6 }}>
+              <span style={{ color: C.grayLight, fontSize: 10, fontFamily: FONT }}>20:18</span>
+              <span style={{ color: C.grayLight, fontSize: 10, fontFamily: FONT }}>58:00</span>
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 28, marginTop: 12 }}>
+            <span style={{ color: C.gray, fontSize: 22, cursor: "pointer" }}>⏮</span>
+            <div style={{ width: 52, height: 52, borderRadius: 26, background: C.accent, display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", boxShadow: `0 0 20px ${C.accentGlow}` }}><span style={{ color: "#fff", fontSize: 24, marginLeft: 2 }}>⏸</span></div>
+            <span style={{ color: C.gray, fontSize: 22, cursor: "pointer" }}>⏭</span>
+          </div>
+        </div>
+      </div>
+      <div style={{ color: C.gray, fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10, fontFamily: FONT }}>Épisodes récents</div>
+      {EPISODES.map((ep, i) => (
+        <div key={i} onClick={() => setCurrentPlaying(i)} style={{ background: currentPlaying === i ? C.cardHover : C.card, borderRadius: 14, padding: "12px 14px", marginBottom: 8, display: "flex", alignItems: "center", gap: 12, border: currentPlaying === i ? `1px solid ${C.accent}33` : `1px solid ${C.grayDark}`, cursor: "pointer" }}>
+          <div style={{ width: 36, height: 36, borderRadius: 10, background: currentPlaying === i ? `${C.accent}22` : C.grayDark, display: "flex", alignItems: "center", justifyContent: "center", color: currentPlaying === i ? C.accent : C.gray, fontSize: 14, flexShrink: 0 }}>{currentPlaying === i ? "⏸" : "▶"}</div>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ color: currentPlaying === i ? C.white : C.gray, fontSize: 12, fontWeight: 600, fontFamily: FONT, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{ep.title}</div>
+            <div style={{ color: C.grayLight, fontSize: 10, fontFamily: FONT, marginTop: 2 }}>{ep.date} · {ep.duration}</div>
+          </div>
+          <span style={{ color: C.grayLight, fontSize: 14 }}>↓</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function ShopScreen() {
+  return (
+    <div style={{ padding: "10px 16px 160px" }}>
+      <ScreenHeader label="Espace membre" title="Shop" />
+      <div style={{ background: "linear-gradient(135deg, #162447 0%, #1a1a40 50%, #0f1923 100%)", borderRadius: 20, padding: 20, marginBottom: 20, position: "relative", overflow: "hidden", border: `1px solid ${C.accent}33` }}>
+        <div style={{ position: "absolute", inset: 0, background: "radial-gradient(circle at 90% 10%, rgba(59,130,246,0.2), transparent 50%)" }} />
+        <div style={{ position: "relative" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+            <div>
+              <div style={{ color: C.accent, fontSize: 10, fontWeight: 700, letterSpacing: 2, textTransform: "uppercase", fontFamily: FONT }}>Carte membre</div>
+              <div style={{ color: C.white, fontSize: 20, fontWeight: 800, fontFamily: FONT, marginTop: 4 }}>BLUES'UP</div>
+              <div style={{ color: C.gray, fontSize: 11, fontFamily: FONT, marginTop: 2 }}>Adhérent 2026</div>
+            </div>
+            <div style={{ width: 48, height: 48, borderRadius: 10, background: C.accentSoft, display: "flex", alignItems: "center", justifyContent: "center", border: `1px solid ${C.accent}33` }}>
+              <div style={{ width: 32, height: 32, background: `repeating-conic-gradient(${C.accent} 0% 25%, transparent 0% 50%) 0 0 / 8px 8px`, borderRadius: 4 }} />
+            </div>
+          </div>
+          <div style={{ marginTop: 16, display: "flex", gap: 10 }}>
+            <div style={{ background: `${C.green}22`, color: C.green, fontSize: 10, fontWeight: 600, padding: "4px 10px", borderRadius: 8, fontFamily: FONT }}>✓ Actif</div>
+            <div style={{ background: C.accentSoft, color: C.accent, fontSize: 10, fontWeight: 600, padding: "4px 10px", borderRadius: 8, fontFamily: FONT }}>QR Code</div>
+          </div>
+        </div>
+      </div>
+      <div style={{ background: `linear-gradient(135deg, rgba(255,159,10,0.08), rgba(255,159,10,0.02))`, border: `1px solid rgba(255,159,10,0.2)`, borderRadius: 16, padding: 16, marginBottom: 20, display: "flex", alignItems: "center", gap: 12 }}>
+        <span style={{ fontSize: 28 }}>✊</span>
+        <div style={{ flex: 1 }}>
+          <div style={{ color: C.white, fontSize: 13, fontWeight: 700, fontFamily: FONT }}>Soutenir les Actions</div>
+          <div style={{ color: C.gray, fontSize: 11, fontFamily: FONT, marginTop: 2 }}>Prisons · Sénégal · 7 Days in June</div>
+        </div>
+        <div style={{ background: C.orange, color: "#000", fontSize: 10, fontWeight: 700, padding: "6px 12px", borderRadius: 8 }}>Donner</div>
+      </div>
+      <div style={{ color: C.gray, fontSize: 11, fontWeight: 600, letterSpacing: 1, textTransform: "uppercase", marginBottom: 10, fontFamily: FONT }}>Boutique</div>
+      {SHOP_ITEMS.map((item, i) => (
+        <div key={i} style={{ background: C.card, borderRadius: 14, padding: "14px 16px", marginBottom: 8, display: "flex", alignItems: "center", gap: 14, border: `1px solid ${C.grayDark}` }}>
+          <div style={{ width: 44, height: 44, borderRadius: 12, background: i === 0 ? `linear-gradient(135deg, ${C.accent}33, ${C.accent}11)` : i === 4 ? `linear-gradient(135deg, rgba(255,69,58,0.2), rgba(255,69,58,0.05))` : C.grayDark, display: "flex", alignItems: "center", justifyContent: "center", fontSize: 20 }}>{item.icon}</div>
+          <div style={{ flex: 1 }}>
+            <div style={{ color: C.white, fontSize: 13, fontWeight: 600, fontFamily: FONT }}>{item.name}</div>
+            <div style={{ color: C.grayLight, fontSize: 10, fontFamily: FONT, marginTop: 1 }}>{item.type}</div>
+          </div>
+          <div style={{ color: C.accent, fontSize: 14, fontWeight: 700, fontFamily: FONT }}>{item.price}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+const SCREEN_LABELS = {
+  feed: "Écran 1 — News",
+  artists: "Écran 2 — Artistes",
+  concerts: "Écran 3 — Concerts",
+  radio: "Écran 4 — Radio",
+  shop: "Écran 5 — Shop",
+};
+
+function BluesUpApp() {
+  const [activeTab, setActiveTab] = useState("feed");
+  const screens = { feed: FeedScreen, artists: ArtistsScreen, concerts: ConcertsScreen, radio: RadioScreen, shop: ShopScreen };
+  const Screen = screens[activeTab];
+
+  return (
+    <div style={{ minHeight: "100vh", background: "#050507", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "40px 20px", fontFamily: FONT }}>
+      <div style={{ textAlign: "center", marginBottom: 32 }}>
+        <div style={{ color: C.accent, fontSize: 11, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase", marginBottom: 6 }}>Maquette App iPhone</div>
+        <div style={{ color: C.white, fontSize: 32, fontWeight: 900, letterSpacing: -1 }}>BLUES'UP</div>
+        <div style={{ color: C.gray, fontSize: 13, marginTop: 6 }}>Collectif d'artistes indépendants · Hyères</div>
+      </div>
+      <div style={{ display: "flex", gap: 6, marginBottom: 28, flexWrap: "wrap", justifyContent: "center", maxWidth: 520 }}>
+        {Object.entries(SCREEN_LABELS).map(([key, label]) => (
+          <button key={key} onClick={() => setActiveTab(key)} style={{ background: activeTab === key ? C.accent : "rgba(255,255,255,0.06)", color: activeTab === key ? "#fff" : C.gray, border: activeTab === key ? "none" : `1px solid ${C.grayDark}`, borderRadius: 20, padding: "8px 16px", fontSize: 12, fontWeight: 600, cursor: "pointer", transition: "all 0.2s", fontFamily: FONT }}>{label}</button>
+        ))}
+      </div>
+      <IPhoneFrame screenLabel={SCREEN_LABELS[activeTab]}>
+        <Screen />
+        <MiniPlayer />
+        <TabBar active={activeTab} onTab={setActiveTab} />
+      </IPhoneFrame>
+      <div style={{ color: C.grayDark, fontSize: 10, marginTop: 24, letterSpacing: 1, textTransform: "uppercase" }}>Alti-Web · Concept App Blues'Up · 2026</div>
+      <style>{`@keyframes pulse{0%,100%{opacity:1}50%{opacity:.85}}*{-webkit-font-smoothing:antialiased}::-webkit-scrollbar{width:0;height:0}`}</style>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<BluesUpApp />);
+  </script>
 </body>
 </html>
