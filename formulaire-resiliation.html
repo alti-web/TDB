@@ -410,26 +410,26 @@
         </div>
     </div>
 
-    <!-- ========== STEP 3 : Cocons sémantiques ========== -->
+    <!-- ========== STEP 3 : Stratégie DOMINATION ========== -->
     <div class="step" data-step="3">
-        <h2 class="step-title">📄 Vos cocons sémantiques</h2>
-        <p class="step-subtitle">Avez-vous bien reçu les 90 pages du site (cocons sémantiques) ?</p>
+        <h2 class="step-title">🚀 Votre stratégie DOMINATION</h2>
+        <p class="step-subtitle">Avez vous bien reçu votre stratégie DOMINATION, avec la création de 4 plateformes d'actualités par mois ? (compris dans votre forfait) — La 1ère a déjà été créée et est prête.</p>
         <div class="cards-grid">
+            <div class="card-option" onclick="selectChoice(3, 'non-interesse', 4)">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">🚫</span>
+                <div class="card-label">Non, mais cela ne m'intéresse pas</div>
+            </div>
+            <div class="card-option" onclick="selectChoiceDomination()">
+                <span class="check-mark">✓</span>
+                <span class="card-icon">📩</span>
+                <div class="card-label">Je veux recevoir ça, tout de suite</div>
+                <div class="card-desc">Nous vous l'envoyons immédiatement</div>
+            </div>
             <div class="card-option" onclick="selectChoice(3, 'oui-recu', 4)">
                 <span class="check-mark">✓</span>
                 <span class="card-icon">✅</span>
-                <div class="card-label">Oui, je les ai bien reçues !</div>
-            </div>
-            <div class="card-option" onclick="selectChoice(3, 'non-recevoir', 'end-early')">
-                <span class="check-mark">✓</span>
-                <span class="card-icon">📩</span>
-                <div class="card-label">Non, j'aimerais bien les recevoir</div>
-                <div class="card-desc">Nous vous les enverrons par email</div>
-            </div>
-            <div class="card-option" onclick="selectChoice(3, 'non-pas-recevoir', 4)">
-                <span class="check-mark">✓</span>
-                <span class="card-icon">🚫</span>
-                <div class="card-label">Je ne veux pas les recevoir</div>
+                <div class="card-label">Oui déjà reçu</div>
             </div>
         </div>
         <div class="nav-buttons">
@@ -574,6 +574,16 @@
         </div>
     </div>
 
+    <!-- ========== STEP DOMINATION-CONFIRM : Demande stratégie DOMINATION ========== -->
+    <div class="step" data-step="domination-confirm">
+        <div class="final-screen">
+            <div class="success-check">✓</div>
+            <h1>Bien reçu !</h1>
+            <p class="step-subtitle" style="margin-top:8px">Nous revenons vers vous dans les minutes ou heures qui arrivent avec votre stratégie DOMINATION.</p>
+            <div class="loading-spinner" id="dominationSpinner"></div>
+        </div>
+    </div>
+
     <!-- ========== STEP END-EARLY : Fin anticipée (email) ========== -->
     <div class="step" data-step="end-early">
         <div class="final-screen">
@@ -638,7 +648,7 @@
         setTimeout(() => {
             // Handle special targets
             let targetStep = target;
-            if (target === 'end-early' || target === 8) {
+            if (target === 'end-early' || target === 'domination-confirm' || target === 8) {
                 targetStep = target;
             }
 
@@ -653,6 +663,8 @@
                     handleFinalComplete();
                 } else if (target === 'end-early') {
                     handleEarlyEnd();
+                } else if (target === 'domination-confirm') {
+                    handleDominationRequest();
                 }
             }
         }, 300);
@@ -660,7 +672,7 @@
 
     const choiceLabels = {
         2: { 'oui': 'Oui', 'non': 'Non' },
-        3: { 'oui-recu': 'Déjà reçues', 'non-recevoir': 'À envoyer', 'non-pas-recevoir': 'Pas souhaité' },
+        3: { 'oui-recu': 'Déjà reçue', 'non-interesse': 'Pas intéressé', 'domination-demande': 'Envoi demandé' },
         4: { 'oui': 'Oui', 'non': 'Non' },
         5: { 'oui-don': 'Oui', 'non': 'Non' },
         6: { 'oui': 'Oui', 'non': 'Non' },
@@ -741,6 +753,31 @@
                 date: new Date().toISOString(),
                 type: 'resiliation_complete'
             })
+        }).then(() => {
+            spinner.style.display = 'none';
+        }).catch(() => {
+            spinner.style.display = 'none';
+        });
+    }
+
+    window.selectChoiceDomination = function() {
+        const stepEl = document.querySelector('.step[data-step="3"]');
+        stepEl.querySelectorAll('.card-option').forEach(c => c.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        formData.coconsSemantiques = 'domination-demande';
+        formData.stoppedAt = 'step-3-domination-demande';
+        setTimeout(() => { goTo('domination-confirm'); }, 400);
+    };
+
+    // ---- Handle domination request → EmailJS ----
+    function handleDominationRequest() {
+        const spinner = document.getElementById('dominationSpinner');
+        spinner.style.display = 'block';
+
+        emailjs.send('service_12wtkng', 'template_tib1gk7', {
+            name: '=== DEMANDE STRATÉGIE DOMINATION ===\nEmail : ' + (formData.email || '—') + '\nDate : ' + new Date().toLocaleString('fr-FR'),
+            email: formData.email || 'resiliation@alti-web.fr',
+            message: 'Formulaire résiliation — demande stratégie DOMINATION'
         }).then(() => {
             spinner.style.display = 'none';
         }).catch(() => {
