@@ -1018,6 +1018,110 @@ if (window.location.hostname === 'alti-web.github.io') {
     .domination-astronaut { font-size: 56px; }
   }
 
+  /* ─── META LANDING BANNER ─── */
+  .meta-banner {
+    position: relative;
+    margin: 0 auto 48px;
+    max-width: 1320px;
+    border-radius: 24px;
+    overflow: hidden;
+    min-height: 260px;
+    display: flex;
+    align-items: center;
+  }
+  .meta-bg {
+    position: absolute; inset: 0;
+    background-image: url('https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=1600&q=80');
+    background-size: cover;
+    background-position: center 35%;
+    filter: brightness(0.45) saturate(1.4) hue-rotate(-25deg);
+  }
+  .meta-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(120deg, rgba(40,10,30,0.88) 45%, rgba(236,72,153,0.22) 100%);
+  }
+  .meta-stars {
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 12% 28%, rgba(255,200,220,0.7) 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 88% 62%, rgba(255,210,180,0.6) 0%, transparent 100%),
+      radial-gradient(1px 1px at 35% 82%, rgba(255,255,255,0.5) 0%, transparent 100%),
+      radial-gradient(1px 1px at 52% 40%, rgba(255,200,220,0.5) 0%, transparent 100%),
+      radial-gradient(1.5px 1.5px at 6% 72%, rgba(255,180,200,0.4) 0%, transparent 100%),
+      radial-gradient(1px 1px at 95% 38%, rgba(255,210,180,0.5) 0%, transparent 100%);
+  }
+  .meta-content {
+    position: relative; z-index: 2;
+    padding: 48px 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 32px;
+    width: 100%;
+  }
+  .meta-left { flex: 1; }
+  .meta-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(236,72,153,0.22);
+    border: 1px solid rgba(236,72,153,0.4);
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 11px; font-weight: 700; letter-spacing: 1.5px;
+    color: #FFB3D1;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+  }
+  .meta-title {
+    font-size: 32px; font-weight: 800;
+    line-height: 1.15;
+    color: #fff;
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .meta-title span {
+    background: linear-gradient(90deg, #EC4899, #F97316);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .meta-desc {
+    font-size: 14px; color: rgba(240,220,230,0.88);
+    line-height: 1.6; max-width: 560px;
+  }
+  .meta-right {
+    display: flex; flex-direction: column; align-items: center; gap: 16px;
+    flex-shrink: 0;
+  }
+  .meta-rocket {
+    font-size: 72px;
+    filter: drop-shadow(0 0 24px rgba(236,72,153,0.55));
+    animation: float 4s ease-in-out infinite;
+  }
+  .meta-btn {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #EC4899, #F97316);
+    border: none; border-radius: 14px;
+    padding: 16px 28px;
+    font-size: 15px; font-weight: 700;
+    color: #fff; cursor: pointer;
+    box-shadow: 0 4px 24px rgba(236,72,153,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .meta-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(236,72,153,0.55);
+  }
+  .meta-btn:active { transform: translateY(0); }
+  @media (max-width: 768px) {
+    .meta-banner { margin: 0 20px 40px; }
+    .meta-content { flex-direction: column; padding: 36px 28px; text-align: center; }
+    .meta-title { font-size: 24px; }
+    .meta-desc { max-width: 100%; }
+    .meta-rocket { font-size: 56px; }
+  }
+
   /* ─── SEPARATOR ─── */
   .sep {
     height: 1px;
@@ -1919,6 +2023,26 @@ if (window.location.hostname === 'alti-web.github.io') {
         <div class="domination-astronaut">🧑‍🚀</div>
         <a href="https://form.asana.com/?k=sXka3hjh35ATJZ9yJtOxaA&d=930162981590606" target="_blank" class="domination-btn">
           🚀 Recevoir ma stratégie
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LANDING PAGE META ═══ -->
+  <div class="meta-banner" id="metaBanner">
+    <div class="meta-bg"></div>
+    <div class="meta-overlay"></div>
+    <div class="meta-stars"></div>
+    <div class="meta-content">
+      <div class="meta-left">
+        <div class="meta-badge">🪐 Spécial Facebook & Instagram</div>
+        <div class="meta-title">Landing page<br><span>META-READY</span></div>
+        <p class="meta-desc">La landing page qui transforme vos clics Réseaux sociaux en clients. Vos pages Facebook et Instagram méritent mieux qu'une page d'accueil générique — je conçois des landing pages pensées pour le trafic Meta : mobile-first, chargement éclair, message aligné sur votre créa, un seul objectif par page.</p>
+      </div>
+      <div class="meta-right">
+        <div class="meta-rocket">🪐</div>
+        <a href="https://form.asana.com/?k=sXka3hjh35ATJZ9yJtOxaA&d=930162981590606" target="_blank" class="meta-btn">
+          🎯 Créer ma landing
         </a>
       </div>
     </div>
