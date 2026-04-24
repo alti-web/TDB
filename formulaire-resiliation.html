@@ -730,7 +730,8 @@
         }
     }
 
-    // ---- Handle final complete (Step 8) → Webhook ----
+    // ---- Handle final complete (Step 8) → EmailJS uniquement
+    //      (pas de résiliation Stripe auto, pas de webhook Make.com) ----
     function handleFinalComplete() {
         formData.reachedEnd = true;
         fillRecap();
@@ -738,21 +739,24 @@
         const spinner = document.getElementById('webhookSpinner');
         spinner.style.display = 'block';
 
-        // Call Make webhook
-        fetch('https://hook.eu2.make.com/nnfd3iluz8xlgbu07240fci4pe8k6a8w', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                email: formData.email,
-                resultatsGoogle: formData.resultatsGoogle,
-                coconsSemantiques: formData.coconsSemantiques,
-                actionsRestantes: formData.actionsRestantes,
-                donAssociation: formData.donAssociation,
-                moisGratuit: formData.moisGratuit,
-                rapportBacklinks: formData.rapportBacklinks,
-                date: new Date().toISOString(),
-                type: 'resiliation_complete'
-            })
+        // Build email content
+        const lines = [];
+        lines.push('=== FORMULAIRE RÉSILIATION — PARCOURS COMPLET ===');
+        lines.push('Email Stripe : ' + formData.email);
+        lines.push('Résultats Google : ' + (formData.resultatsGoogle || '—'));
+        lines.push('Cocons sémantiques : ' + (formData.coconsSemantiques || '—'));
+        lines.push('Actions restantes : ' + (formData.actionsRestantes || '—'));
+        lines.push('Don Adapt83 : ' + (formData.donAssociation || '—'));
+        lines.push('1 mois gratuit : ' + (formData.moisGratuit || '—'));
+        lines.push('Rapport backlinks : ' + (formData.rapportBacklinks || '—'));
+        lines.push('Date : ' + new Date().toLocaleString('fr-FR'));
+        lines.push('');
+        lines.push('⚠️ À traiter manuellement sur Stripe — aucune résiliation automatique.');
+
+        emailjs.send('service_12wtkng', 'template_tib1gk7', {
+            name: lines.join('\n'),
+            email: formData.email || 'resiliation@alti-web.fr',
+            message: 'Formulaire de résiliation — parcours complet terminé'
         }).then(() => {
             spinner.style.display = 'none';
         }).catch(() => {
