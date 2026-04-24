@@ -1880,9 +1880,9 @@ if (window.location.hostname === 'alti-web.github.io') {
             <div class="hero-stat-value green">2h-2j</div>
             <div class="hero-stat-label">Délai de réponse</div>
           </div>
-          <div class="hero-stat" id="heroStatFocus" onclick="document.getElementById('focusSeoPopup').style.display='flex'" style="cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform=''">
-            <div class="hero-stat-value orange">27/03</div>
-            <div class="hero-stat-label">Action focus du moment<br><span style="font-size:0.65rem;color:var(--text-secondary,#8892A8)">(hors off site et actions de fond hebdo)</span></div>
+          <div class="hero-stat" id="heroStatFocus" onclick="openExcelSuiviPopup()" style="cursor:pointer;transition:transform 0.2s" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform=''">
+            <div class="hero-stat-value orange">24/04</div>
+            <div class="hero-stat-label">Cliquez ici</div>
           </div>
         </div>
 
@@ -2926,25 +2926,31 @@ function sendHandiUrl() {
 <!-- ═══ POPUP ASTUCE SEO ═══ -->
 <!-- ═══ POPUP FOCUS SEO ═══ -->
 <div id="focusSeoPopup" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.7);z-index:10000;justify-content:center;align-items:center;backdrop-filter:blur(6px);transition:opacity 0.3s ease">
-  <div style="background:linear-gradient(135deg, #1a2a4a 0%, #1e2d4f 50%, #172040 100%);border-radius:20px;padding:40px 36px 32px;max-width:560px;width:90%;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.2);animation:popupSlideUp 0.5s cubic-bezier(0.25,0.46,0.45,0.94) forwards">
+  <div style="background:linear-gradient(135deg, #1a2a4a 0%, #1e2d4f 50%, #172040 100%);border-radius:20px;padding:40px 36px 32px;max-width:520px;width:90%;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.5), 0 0 40px rgba(251,146,60,0.08);border:1px solid rgba(251,146,60,0.2);animation:popupSlideUp 0.5s cubic-bezier(0.25,0.46,0.45,0.94) forwards">
     <button onclick="closeFocusSeoPopup()" style="position:absolute;top:16px;right:16px;background:rgba(255,255,255,0.08);border:none;color:var(--text-secondary,#8892A8);width:32px;height:32px;border-radius:50%;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.15)'" onmouseout="this.style.background='rgba(255,255,255,0.08)'">&times;</button>
-    <div style="text-align:center;margin-bottom:20px">
-      <div style="font-size:48px;margin-bottom:12px">🎯</div>
-      <h3 style="color:var(--accent-orange,#fb923c);font-size:1.2rem;margin:0;font-family:'Playfair Display',serif">Le focus SEO du moment</h3>
-      <p style="color:var(--text-secondary,#aaa);font-size:0.85rem;margin-top:8px">En complément de nos actions continues (netlinking et maintenance hebdomadaire).</p>
-    </div>
-    <div style="color:var(--text-secondary,#aaa);font-size:0.95rem;line-height:1.8;text-align:left;margin-bottom:24px">
-      <div style="background:rgba(251,146,60,0.08);border-left:3px solid var(--accent-orange,#fb923c);border-radius:0 10px 10px 0;padding:14px 18px;margin-bottom:18px">
-        <p style="margin:0;color:var(--text-primary,#E8ECF4);font-weight:600;font-size:0.95rem">L'action en cours : Nous optimisons actuellement la structure de vos <strong style="color:var(--accent-orange,#fb923c)">45 pages stratégiques</strong> (cocon sémantique) en utilisant un balisage spécifique (MD Markup).</p>
+
+    <!-- Formulaire -->
+    <div id="excelSuiviForm">
+      <div style="text-align:center;margin-bottom:22px">
+        <div style="font-size:48px;margin-bottom:12px">📊</div>
+        <h3 style="color:var(--accent-orange,#fb923c);font-size:1.3rem;margin:0;font-family:'Playfair Display',serif">Excel de suivi — 3 prochaines semaines</h3>
+        <p style="color:var(--text-secondary,#aaa);font-size:0.9rem;margin-top:10px;line-height:1.55">Recevez par email le planning détaillé des actions prévues sur votre site pendant les <strong style="color:var(--accent-orange,#fb923c)">3 prochaines semaines</strong>.</p>
       </div>
-      <p style="font-size:1.05rem;color:var(--text-primary,#E8ECF4);font-weight:600;margin-bottom:14px">Pourquoi c'est important pour votre site ?</p>
-      <ul style="list-style:none;padding:0;margin:0">
-        <li style="margin-bottom:12px;padding-left:24px;position:relative"><span style="position:absolute;left:0;color:var(--accent-green,#34d399)">✅</span><strong style="color:var(--accent-green,#34d399)">Être parfaitement compris par Google :</strong> Le balisage technique aide les robots des moteurs de recherche à lire et classer vos pages beaucoup plus rapidement.</li>
-        <li style="margin-bottom:12px;padding-left:24px;position:relative"><span style="position:absolute;left:0;color:var(--accent,#4F8CFF)">✅</span><strong style="color:var(--accent,#4F8CFF)">Prouver votre expertise :</strong> L'organisation en « cocon » relie vos pages entre elles de façon logique, montrant à Google que vous êtes LA référence sur ce sujet.</li>
-        <li style="margin-bottom:12px;padding-left:24px;position:relative"><span style="position:absolute;left:0;color:var(--accent-orange,#fb923c)">✅</span><strong style="color:var(--accent-orange,#fb923c)">Attirer un trafic plus ciblé :</strong> Une structure sémantique propre permet de se positionner sur des recherches très précises de vos futurs clients.</li>
-      </ul>
+      <div style="background:rgba(251,146,60,0.06);border-left:3px solid var(--accent-orange,#fb923c);border-radius:0 10px 10px 0;padding:12px 16px;margin-bottom:20px">
+        <p style="margin:0;color:var(--text-primary,#E8ECF4);font-size:0.88rem;line-height:1.55">📅 Semaine par semaine, toutes les optimisations SEO, contenus, backlinks et actions techniques planifiés pour votre projet.</p>
+      </div>
+      <label style="display:block;color:var(--text-secondary,#aaa);font-size:0.85rem;margin-bottom:8px;font-weight:500">Votre email de réception</label>
+      <input id="excelSuiviEmail" type="email" placeholder="votre@email.com" style="width:100%;padding:13px 16px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);background:var(--bg-primary,#13131f);color:var(--text-primary,#fff);font-size:1rem;box-sizing:border-box;outline:none;margin-bottom:16px;transition:border-color 0.2s" onfocus="this.style.borderColor='rgba(251,146,60,0.5)'" onblur="this.style.borderColor='rgba(255,255,255,0.1)'">
+      <button id="excelSuiviSubmit" onclick="sendExcelSuiviRequest()" style="width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent-orange,#fb923c),#e8780a);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 15px rgba(251,146,60,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">📨 Recevoir mon Excel de suivi</button>
     </div>
-    <button onclick="closeFocusSeoPopup()" style="width:100%;padding:14px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent-orange,#fb923c),#e8780a);color:#fff;font-size:1rem;font-weight:600;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s" onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 4px 15px rgba(251,146,60,0.4)'" onmouseout="this.style.transform='';this.style.boxShadow=''">Merci pour l'info ! 👍</button>
+
+    <!-- Succès -->
+    <div id="excelSuiviSuccess" style="display:none;text-align:center;padding:20px 0">
+      <div style="font-size:56px;margin-bottom:12px">✅</div>
+      <h3 style="color:var(--accent-green,#34d399);font-size:1.2rem;margin:0 0 10px;font-family:'Playfair Display',serif">Demande bien reçue !</h3>
+      <p style="color:var(--text-secondary,#aaa);font-size:0.92rem;line-height:1.6;margin-bottom:20px">Votre Excel de suivi vous sera envoyé sous peu sur l'email indiqué.</p>
+      <button onclick="closeFocusSeoPopup()" style="padding:12px 28px;border-radius:10px;border:none;background:linear-gradient(135deg,var(--accent-green,#34d399),#10b981);color:#fff;font-size:0.95rem;font-weight:600;cursor:pointer">Parfait, merci !</button>
+    </div>
   </div>
 </div>
 
@@ -3471,7 +3477,54 @@ document.getElementById('rdvPopup').addEventListener('click', function(e) {
 function closeFocusSeoPopup() {
   var popup = document.getElementById('focusSeoPopup');
   popup.style.opacity = '0';
-  setTimeout(function() { popup.style.display = 'none'; popup.style.opacity = '1'; }, 300);
+  setTimeout(function() {
+    popup.style.display = 'none';
+    popup.style.opacity = '1';
+    // Reset pour réouverture
+    var form = document.getElementById('excelSuiviForm');
+    var success = document.getElementById('excelSuiviSuccess');
+    if (form) form.style.display = '';
+    if (success) success.style.display = 'none';
+  }, 300);
+}
+
+function openExcelSuiviPopup() {
+  var popup = document.getElementById('focusSeoPopup');
+  popup.style.display = 'flex';
+  // Pré-remplissage avec l'email de connexion
+  var emailInput = document.getElementById('excelSuiviEmail');
+  if (emailInput && !emailInput.value) {
+    var loginEmail = localStorage.getItem('altiweb_login_email') || '';
+    if (loginEmail) emailInput.value = loginEmail;
+  }
+}
+
+function sendExcelSuiviRequest() {
+  var emailInput = document.getElementById('excelSuiviEmail');
+  var submitBtn = document.getElementById('excelSuiviSubmit');
+  var email = (emailInput.value || '').trim();
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    emailInput.style.borderColor = '#f87171';
+    emailInput.focus();
+    setTimeout(function() { emailInput.style.borderColor = 'rgba(255,255,255,0.1)'; }, 2000);
+    return;
+  }
+  submitBtn.disabled = true;
+  var originalLabel = submitBtn.textContent;
+  submitBtn.textContent = 'Envoi en cours...';
+  emailjs.send('service_12wtkng', 'template_tib1gk7', {
+    name: '📊 DEMANDE EXCEL DE SUIVI (3 semaines)\nEmail de réception : ' + email + '\nDate : ' + new Date().toLocaleString('fr-FR'),
+    email: email,
+    message: 'Demande Excel de suivi des 3 prochaines semaines — tableau de bord'
+  }).then(function() {
+    document.getElementById('excelSuiviForm').style.display = 'none';
+    document.getElementById('excelSuiviSuccess').style.display = 'block';
+  }, function() {
+    submitBtn.disabled = false;
+    submitBtn.textContent = originalLabel;
+    emailInput.style.borderColor = '#f87171';
+    alert('Erreur d\'envoi, veuillez réessayer.');
+  });
 }
 function closeAstuceSeoPopup() {
   var popup = document.getElementById('astuceSeoPopup');
