@@ -293,7 +293,7 @@
         }
         .pricing-card ul li::before { content: '✓ '; color: var(--green); font-weight: 700; }
 
-        /* ---- Pricing discovery (1€) ---- */
+        /* ---- Pricing discovery (1€) — case à cocher ---- */
         .pricing-discovery {
             position: relative;
             background: linear-gradient(135deg, rgba(251,146,60,0.12), rgba(79,140,255,0.06));
@@ -307,6 +307,7 @@
             cursor: pointer;
             transition: all 0.25s;
             overflow: hidden;
+            user-select: none;
         }
         .pricing-discovery::before {
             content: '';
@@ -319,15 +320,37 @@
             transform: translateY(-1px);
             box-shadow: 0 8px 30px rgba(251,146,60,0.15);
         }
-        .pricing-discovery.selected {
+        .pricing-discovery.checked {
             border-color: #FB923C;
-            background: linear-gradient(135deg, rgba(251,146,60,0.2), rgba(79,140,255,0.1));
-            box-shadow: 0 0 25px rgba(251,146,60,0.22);
+            background: linear-gradient(135deg, rgba(251,146,60,0.22), rgba(79,140,255,0.1));
+            box-shadow: 0 0 25px rgba(251,146,60,0.25);
         }
         .pricing-discovery-main {
             display: flex; align-items: center; gap: 14px;
             flex: 1; min-width: 260px;
             position: relative; z-index: 1;
+        }
+        .pricing-discovery-checkbox {
+            width: 24px; height: 24px;
+            border-radius: 6px;
+            border: 2px solid rgba(251,146,60,0.6);
+            background: rgba(251,146,60,0.06);
+            flex-shrink: 0;
+            display: inline-flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .pricing-discovery.checked .pricing-discovery-checkbox {
+            background: linear-gradient(135deg, #FB923C, #F97316);
+            border-color: #FB923C;
+            box-shadow: 0 2px 10px rgba(251,146,60,0.4);
+        }
+        .pricing-discovery.checked .pricing-discovery-checkbox::after {
+            content: '✓';
+            color: #fff;
+            font-size: 15px;
+            font-weight: 800;
+            line-height: 1;
         }
         .pricing-discovery-icon { font-size: 1.9rem; flex-shrink: 0; }
         .pricing-discovery-title { font-weight: 700; font-size: 1.05rem; line-height: 1.3; }
@@ -831,9 +854,10 @@
         <h3 style="margin-top:36px; margin-bottom:8px; font-size:1.15rem; text-align:center">Choisissez votre formule</h3>
         <p class="step-subtitle">La formule idéale dépend de votre situation</p>
 
-        <!-- Offre découverte 1€ -->
-        <div class="pricing-discovery" data-value="Découverte 1€" onclick="selectPricing(this)">
+        <!-- Offre découverte 1€ — case à cocher (combinable avec une formule) -->
+        <div class="pricing-discovery" id="discoveryToggle" onclick="toggleDecouverte()" role="checkbox" aria-checked="false" tabindex="0" onkeydown="if(event.key===' '||event.key==='Enter'){event.preventDefault();toggleDecouverte();}">
             <div class="pricing-discovery-main">
+                <span class="pricing-discovery-checkbox" aria-hidden="true"></span>
                 <span class="pricing-discovery-icon">🎁</span>
                 <div>
                     <div class="pricing-discovery-title">Démarrer tout de suite à <strong>1 €</strong></div>
@@ -1084,6 +1108,7 @@
         services: [],
         modeCollab: '',
         formule: 'Solidaire',
+        demarrageDecouverte: false,
         garantie: true,
         gmb: '',
         rdv: '',
@@ -1342,9 +1367,18 @@
 
     // ---- Pricing selection ----
     window.selectPricing = function(card) {
-        document.querySelectorAll('.pricing-card, .pricing-discovery').forEach(c => c.classList.remove('selected'));
+        document.querySelectorAll('.pricing-card').forEach(c => c.classList.remove('selected'));
         card.classList.add('selected');
         formData.formule = card.dataset.value;
+    };
+
+    window.toggleDecouverte = function() {
+        const el = document.getElementById('discoveryToggle');
+        if (!el) return;
+        const checked = !el.classList.contains('checked');
+        el.classList.toggle('checked', checked);
+        el.setAttribute('aria-checked', checked ? 'true' : 'false');
+        formData.demarrageDecouverte = checked;
     };
 
     // ---- Garantie toggle ----
@@ -1457,6 +1491,11 @@
         let lines = [];
         lines.push('=== NOUVEAU PROSPECT ===');
         lines.push('');
+        if (formData.demarrageDecouverte) {
+            lines.push('🎁🎁🎁 OFFRE DÉCOUVERTE 1€ COCHÉE — DÉMARRAGE IMMÉDIAT À 1€ 🎁🎁🎁');
+            lines.push('>>> Le prospect souhaite démarrer tout de suite à 1€ pour nous découvrir <<<');
+            lines.push('');
+        }
         lines.push('Prénom : ' + (formData.prenom || 'Non renseigné'));
         lines.push('Email : ' + (formData.email || 'Non renseigné'));
         lines.push('Profil : ' + formData.profil);
@@ -1479,6 +1518,7 @@
         lines.push('Services : ' + (formData.services.join(', ') || 'Aucun'));
         lines.push('Mode de collaboration : ' + (formData.modeCollab || 'Non choisi'));
         lines.push('Formule : ' + (formData.formule || 'Non choisie'));
+        lines.push('Démarrage découverte 1€ : ' + (formData.demarrageDecouverte ? '✅ OUI — démarrage immédiat à 1€' : 'Non'));
         lines.push('Garantie : ' + (formData.garantie ? 'Oui' : 'Non'));
         lines.push('');
         lines.push('--- CONTACT ---');
@@ -1515,6 +1555,7 @@
             { label: 'Services', value: formData.services.join(', ') || '—' },
             { label: 'Mode de collaboration', value: formData.modeCollab || '—' },
             { label: 'Formule', value: formData.formule || '—' },
+            { label: 'Démarrage 1€', value: formData.demarrageDecouverte ? '🎁 Oui (offre découverte)' : 'Non' },
             { label: 'Garantie', value: formData.garantie ? 'Activée' : 'Non' },
             { label: 'Google My Business', value: formData.gmb },
             { label: 'RDV', value: formData.rdv },
