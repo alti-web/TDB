@@ -437,11 +437,12 @@ function renderStats() {
   });
 
   document.getElementById('statActive').textContent = total;
+  // Ordre : actif · en retard · programmé · essai
   const parts = [];
   parts.push(active.length + ' actif' + (active.length > 1 ? 's' : ''));
-  if (trialing.length) parts.push(trialing.length + ' essai' + (trialing.length > 1 ? 's' : ''));
   if (pastDue.length) parts.push(pastDue.length + ' en retard');
   if (scheduled.length) parts.push(scheduled.length + ' programmé' + (scheduled.length > 1 ? 's' : ''));
+  if (trialing.length) parts.push(trialing.length + ' essai' + (trialing.length > 1 ? 's' : ''));
   const cancelProg = active.filter(c => c.cancelAtPeriodEnd).length;
   if (cancelProg) parts.push(cancelProg + ' rés. prog.');
   document.getElementById('statActiveSub').textContent = parts.join(' · ');
