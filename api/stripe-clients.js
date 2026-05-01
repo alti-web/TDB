@@ -50,7 +50,11 @@ module.exports = async (req, res) => {
       const params = {
         status: 'all',
         limit: 100,
-        expand: ['data.customer', 'data.default_payment_method'],
+        expand: [
+          'data.customer',
+          'data.default_payment_method',
+          'data.latest_invoice', // pour récupérer le total TTC réel
+        ],
       };
       if (startingAfter) params.starting_after = startingAfter;
       const resp = await stripe.subscriptions.list(params);
@@ -74,6 +78,26 @@ module.exports = async (req, res) => {
       const pm = sub.default_payment_method;
       const card = pm && pm.card ? pm.card : null;
 
+      // ─── Calcul TTC à partir de la dernière facture ───
+      // Stripe : invoice.total = montant TTC réellement facturé
+      //          invoice.subtotal = HT
+      //          invoice.tax     = TVA
+      const inv = sub.latest_invoice && typeof sub.latest_invoice === 'object'
+        ? sub.latest_invoice
+        : null;
+      let amountTTC = null;
+      let amountHT = null;
+      let taxAmount = null;
+      if (inv) {
+        if (inv.total != null) amountTTC = inv.total / 100;
+        else if (inv.amount_paid != null) amountTTC = inv.amount_paid / 100;
+        if (inv.subtotal != null) amountHT = inv.subtotal / 100;
+        if (inv.tax != null) taxAmount = inv.tax / 100;
+      }
+      // Fallback : si pas de facture, on suppose que le prix Stripe est déjà TTC
+      if (amountTTC == null) amountTTC = unitAmount / 100;
+      if (amountHT == null) amountHT = unitAmount / 100;
+
       return {
         customerId: c.id || sub.customer || null,
         name: c.name || null,
@@ -87,7 +111,10 @@ module.exports = async (req, res) => {
           (price.nickname && price.nickname) ||
           (typeof product === 'string' ? product : product && product.name) ||
           null,
-        amount: unitAmount / 100,
+        amount: amountTTC,         // TTC (par défaut on affiche TTC)
+        amountHT: amountHT,        // HT
+        taxAmount: taxAmount,      // TVA
+        unitAmount: unitAmount / 100, // tarif catalogue Stripe (peut être HT ou TTC selon config)
         currency: (price.currency || 'eur').toUpperCase(),
         interval: (price.recurring && price.recurring.interval) || 'month',
         intervalCount:

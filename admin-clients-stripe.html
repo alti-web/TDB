@@ -281,14 +281,14 @@
       <div class="stat-sub" id="statActiveSub"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">MRR estimé</div>
+      <div class="stat-label">MRR estimé (TTC)</div>
       <div class="stat-value" id="statMrr">—</div>
-      <div class="stat-sub">Revenu mensuel récurrent</div>
+      <div class="stat-sub">Revenu mensuel récurrent — TTC</div>
     </div>
     <div class="stat-card purple">
-      <div class="stat-label">ARR estimé</div>
+      <div class="stat-label">ARR estimé (TTC)</div>
       <div class="stat-value" id="statArr">—</div>
-      <div class="stat-sub">Revenu annuel récurrent</div>
+      <div class="stat-sub">Revenu annuel récurrent — TTC</div>
     </div>
     <div class="stat-card orange">
       <div class="stat-label">Past due / impayés</div>
@@ -322,7 +322,7 @@
         <tr>
           <th onclick="sortBy('name')">Client <span class="sort-arrow" data-key="name"></span></th>
           <th onclick="sortBy('productName')">Plan <span class="sort-arrow" data-key="productName"></span></th>
-          <th onclick="sortBy('amount')">Montant <span class="sort-arrow" data-key="amount"></span></th>
+          <th onclick="sortBy('amount')">Montant TTC <span class="sort-arrow" data-key="amount"></span></th>
           <th onclick="sortBy('status')">Statut <span class="sort-arrow" data-key="status"></span></th>
           <th onclick="sortBy('startedAt')">Démarré <span class="sort-arrow" data-key="startedAt">▼</span></th>
           <th onclick="sortBy('currentPeriodEnd')">Prochain cycle <span class="sort-arrow" data-key="currentPeriodEnd"></span></th>
@@ -516,10 +516,22 @@ function renderTable() {
     const name = escapeHtml(c.name || '—');
     const email = escapeHtml(c.email || '');
     const product = escapeHtml(c.productName || '—');
-    const amount = c.amount
-      ? '<span class="amount">' + formatMoney(c.amount) + ' ' + escapeHtml(c.currency) +
-        '</span><span class="interval">/' + intervalLabel(c.interval, c.intervalCount) + '</span>'
-      : '—';
+    // Affichage TTC (avec HT en sous-ligne si on a une TVA)
+    let amountHtml;
+    if (c.amount) {
+      const main = '<span class="amount">' + formatMoney(c.amount) + ' ' + escapeHtml(c.currency) +
+        '</span><span class="interval">TTC /' + intervalLabel(c.interval, c.intervalCount) + '</span>';
+      const showHt = c.taxAmount && c.amountHT && Math.abs(c.amount - c.amountHT) > 0.005;
+      const sub = showHt
+        ? '<div class="email" style="font-size:0.72rem;margin-top:2px">'
+            + formatMoney(c.amountHT) + ' HT + ' + formatMoney(c.taxAmount) + ' TVA'
+          + '</div>'
+        : '';
+      amountHtml = main + sub;
+    } else {
+      amountHtml = '—';
+    }
+    const amount = amountHtml;
     const status = '<span class="status-pill status-' + escapeHtml(c.status) + '">'
       + escapeHtml(statusLabel(c.status)) + '</span>'
       + (c.cancelAtPeriodEnd ? '<span class="cancel-flag">résil. prog.</span>' : '');
