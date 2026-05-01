@@ -213,6 +213,20 @@
     }
     .card-mini b { color: var(--text); font-weight:600; text-transform: uppercase; }
 
+    .btn-stripe {
+      display: inline-flex; align-items: center; gap: 5px;
+      padding: 6px 11px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff; font-size: 0.74rem; font-weight: 600;
+      text-decoration: none; white-space: nowrap;
+      transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+    }
+    .btn-stripe:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(79,140,255,0.35);
+      opacity: 0.95;
+    }
+
     .empty {
       text-align:center; padding: 60px 20px; color: var(--sub);
     }
@@ -309,10 +323,11 @@
           <th onclick="sortBy('startedAt')">Démarré <span class="sort-arrow" data-key="startedAt"></span></th>
           <th onclick="sortBy('currentPeriodEnd')">Prochain cycle <span class="sort-arrow" data-key="currentPeriodEnd"></span></th>
           <th>CB</th>
+          <th></th>
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr><td colspan="8" class="empty">Chargement…</td></tr>
+        <tr><td colspan="9" class="empty">Chargement…</td></tr>
       </tbody>
     </table>
   </div>
@@ -492,7 +507,7 @@ function renderTable() {
   });
 
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="8" class="empty">Aucun client ne correspond.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="9" class="empty">Aucun client ne correspond.</td></tr>';
     return;
   }
 
@@ -534,6 +549,17 @@ function renderTable() {
       ? '<span class="card-mini"><b>' + escapeHtml(c.cardBrand) + '</b> ••' + escapeHtml(c.cardLast4 || '') + '</span>'
       : '<span class="card-mini">—</span>';
 
+    // Lien direct vers la page Stripe Dashboard de l'abonnement
+    // (subscription_schedule pour les programmés, sinon subscription)
+    const isSched = c.status === 'scheduled' || (c.subscriptionId && c.subscriptionId.startsWith('sub_sched_'));
+    const stripePath = isSched ? 'subscription_schedules' : 'subscriptions';
+    const stripeUrl = c.subscriptionId
+      ? 'https://dashboard.stripe.com/' + stripePath + '/' + encodeURIComponent(c.subscriptionId)
+      : (c.customerId ? 'https://dashboard.stripe.com/customers/' + encodeURIComponent(c.customerId) : null);
+    const action = stripeUrl
+      ? '<a class="btn-stripe" href="' + stripeUrl + '" target="_blank" rel="noopener" title="Ouvrir dans Stripe Dashboard">Voir forfait ↗</a>'
+      : '';
+
     return '<tr>'
       + '<td><div class="name">' + name + '</div>'
         + (email ? '<div class="email">' + email + '</div>' : '')
@@ -545,6 +571,7 @@ function renderTable() {
       + '<td>' + started + '</td>'
       + '<td>' + next + '</td>'
       + '<td>' + card + '</td>'
+      + '<td>' + action + '</td>'
       + '</tr>';
   }).join('');
 }
