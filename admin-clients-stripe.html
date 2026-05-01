@@ -417,11 +417,16 @@ function applyData(data) {
 
 // ───── Rendu ─────
 function renderStats() {
-  // Distinguer les actifs réels des programmés (à venir)
+  // Décomposition par sous-statut
   const active = allClients.filter(c => c.status === 'active');
+  const trialing = allClients.filter(c => c.status === 'trialing');
   const scheduled = allClients.filter(c => c.status === 'scheduled');
 
-  // Gain par mois (MRR) en TTC — uniquement sur les actifs (les programmés ne paient pas encore)
+  // Total "Abonnements actifs" = actifs + essais + programmés
+  const total = active.length + trialing.length + scheduled.length;
+
+  // Gain par mois (MRR) en TTC — uniquement sur les actifs réels
+  // (les essais et programmés ne paient pas encore)
   let mrr = 0;
   active.forEach(c => {
     if (!c.amount) return;
@@ -429,12 +434,14 @@ function renderStats() {
     mrr += c.amount * mult;
   });
 
-  document.getElementById('statActive').textContent = active.length;
-  const subParts = [];
+  document.getElementById('statActive').textContent = total;
+  const parts = [];
+  parts.push(active.length + ' actif' + (active.length > 1 ? 's' : ''));
+  if (trialing.length) parts.push(trialing.length + ' essai' + (trialing.length > 1 ? 's' : ''));
+  if (scheduled.length) parts.push(scheduled.length + ' programmé' + (scheduled.length > 1 ? 's' : ''));
   const cancelProg = active.filter(c => c.cancelAtPeriodEnd).length;
-  if (cancelProg) subParts.push(cancelProg + ' avec résiliation programmée');
-  if (scheduled.length) subParts.push('+ ' + scheduled.length + ' programmé' + (scheduled.length > 1 ? 's' : '') + ' à venir');
-  document.getElementById('statActiveSub').textContent = subParts.join(' · ');
+  if (cancelProg) parts.push(cancelProg + ' rés. prog.');
+  document.getElementById('statActiveSub').textContent = parts.join(' · ');
   document.getElementById('statMrr').textContent = formatMoney(mrr) + ' € TTC';
 }
 

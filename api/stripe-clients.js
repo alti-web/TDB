@@ -39,10 +39,10 @@ module.exports = async (req, res) => {
   const stripe = new Stripe(secretKey, { apiVersion: '2024-06-20' });
 
   // ─── Statuts considérés comme "abonnement actif" ───
-  // Uniquement 'active' (paiement normal, abonnement en cours).
-  // trialing  : exclu sur demande (essai en cours, pas encore payant)
-  // past_due  : exclu sur demande (paiement en echec)
-  const ACTIVE_STATUSES = ['active'];
+  // - active     : paiement normal, abonnement en cours
+  // - trialing   : période d'essai en cours (compté comme actif)
+  // (past_due exclu : paiement en echec)
+  const ACTIVE_STATUSES = ['active', 'trialing'];
 
   async function fetchSubsForStatus(status) {
     const out = [];
