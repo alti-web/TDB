@@ -202,6 +202,7 @@
     .status-incomplete { background: rgba(167,139,250,0.12); color: var(--accent2); }
     .status-incomplete_expired { background: rgba(255,255,255,0.06); color: var(--sub); }
     .status-paused { background: rgba(255,255,255,0.06); color: var(--sub); }
+    .status-scheduled { background: rgba(251,191,36,0.14); color: var(--yellow); }
     .cancel-flag {
       display:inline-block; margin-left:6px;
       font-size: 0.66rem; padding: 2px 7px; border-radius: 10px;
@@ -416,10 +417,11 @@ function applyData(data) {
 
 // ───── Rendu ─────
 function renderStats() {
-  // L'API ne renvoie déjà que les abonnements actifs
-  const active = allClients;
+  // Distinguer les actifs réels des programmés (à venir)
+  const active = allClients.filter(c => c.status === 'active');
+  const scheduled = allClients.filter(c => c.status === 'scheduled');
 
-  // Gain par mois (MRR) en TTC
+  // Gain par mois (MRR) en TTC — uniquement sur les actifs (les programmés ne paient pas encore)
   let mrr = 0;
   active.forEach(c => {
     if (!c.amount) return;
@@ -428,9 +430,11 @@ function renderStats() {
   });
 
   document.getElementById('statActive').textContent = active.length;
-  const programmes = active.filter(c => c.cancelAtPeriodEnd).length;
-  document.getElementById('statActiveSub').textContent =
-    programmes ? programmes + ' avec résiliation programmée' : '';
+  const subParts = [];
+  const cancelProg = active.filter(c => c.cancelAtPeriodEnd).length;
+  if (cancelProg) subParts.push(cancelProg + ' avec résiliation programmée');
+  if (scheduled.length) subParts.push('+ ' + scheduled.length + ' programmé' + (scheduled.length > 1 ? 's' : '') + ' à venir');
+  document.getElementById('statActiveSub').textContent = subParts.join(' · ');
   document.getElementById('statMrr').textContent = formatMoney(mrr) + ' € TTC';
 }
 
@@ -504,7 +508,13 @@ function renderTable() {
     const status = '<span class="status-pill status-' + escapeHtml(c.status) + '">'
       + escapeHtml(statusLabel(c.status)) + '</span>'
       + (c.cancelAtPeriodEnd ? '<span class="cancel-flag">résil. prog.</span>' : '');
-    const started = c.startedAt ? new Date(c.startedAt).toLocaleDateString('fr-FR') : '—';
+    let started;
+    if (c.status === 'scheduled' && c.startedAt) {
+      started = '<span style="color:var(--yellow,#fbbf24);font-weight:600">Démarre le ' +
+        new Date(c.startedAt).toLocaleDateString('fr-FR') + '</span>';
+    } else {
+      started = c.startedAt ? new Date(c.startedAt).toLocaleDateString('fr-FR') : '—';
+    }
     const next = c.currentPeriodEnd ? new Date(c.currentPeriodEnd).toLocaleDateString('fr-FR') : '—';
     const card = c.cardBrand
       ? '<span class="card-mini"><b>' + escapeHtml(c.cardBrand) + '</b> ••' + escapeHtml(c.cardLast4 || '') + '</span>'
@@ -544,6 +554,7 @@ function statusLabel(s) {
     incomplete: 'Incomplet',
     incomplete_expired: 'Expiré',
     paused: 'En pause',
+    scheduled: 'Programmé',
   })[s] || s;
 }
 function intervalLabel(interval, count) {

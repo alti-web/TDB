@@ -73,12 +73,48 @@ module.exports = async (req, res) => {
     return out;
   }
 
+  // ─── Abonnements PROGRAMMÉS (Subscription Schedules en status not_started) ───
+  async function fetchScheduledSubs() {
+    const out = [];
+    let startingAfter = null;
+    let hasMore = true;
+    let safety = 0;
+    while (hasMore && safety < 20) {
+      safety++;
+      const params = {
+        limit: 100,
+        expand: [
+          'data.customer',
+          'data.phases.items.price',
+        ],
+      };
+      if (startingAfter) params.starting_after = startingAfter;
+      try {
+        const resp = await stripe.subscriptionSchedules.list(params);
+        for (const s of resp.data) {
+          if (s.status === 'not_started') out.push(s);
+        }
+        hasMore = resp.has_more;
+        if (hasMore && resp.data.length) {
+          startingAfter = resp.data[resp.data.length - 1].id;
+        } else {
+          hasMore = false;
+        }
+      } catch (err) {
+        console.error('subscriptionSchedules.list error:', err.message);
+        hasMore = false;
+      }
+    }
+    return out;
+  }
+
   try {
-    // 3 appels en parallèle, fusion ensuite
-    const arrays = await Promise.all(
-      ACTIVE_STATUSES.map((s) => fetchSubsForStatus(s))
-    );
-    const allSubs = arrays.flat();
+    // Appels parallèles : abonnements actifs + abonnements programmés
+    const [subsArrays, scheduledSchedules] = await Promise.all([
+      Promise.all(ACTIVE_STATUSES.map((s) => fetchSubsForStatus(s))),
+      fetchScheduledSubs(),
+    ]);
+    const allSubs = subsArrays.flat();
 
     // Map → format simplifié
     const clients = allSubs.map((sub) => {
@@ -149,13 +185,69 @@ module.exports = async (req, res) => {
       };
     });
 
-    // Tri par dernière création décroissante
-    clients.sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
+    // ─── Mapper les abonnements PROGRAMMÉS au même format ───
+    const scheduledClients = scheduledSchedules.map((sched) => {
+      const c = (typeof sched.customer === 'object' && sched.customer) || {};
+      const phase =
+        sched.phases && sched.phases.length ? sched.phases[0] : null;
+      const item =
+        phase && phase.items && phase.items.length ? phase.items[0] : null;
+      const price = item && typeof item.price === 'object' ? item.price : null;
+      const product = price && price.product;
+      const unit = price ? (price.unit_amount || 0) * (item.quantity || 1) : 0;
+      const startTs = phase && phase.start_date ? phase.start_date * 1000 : null;
+      const endTs = phase && phase.end_date ? phase.end_date * 1000 : null;
+
+      return {
+        customerId: c.id || (typeof sched.customer === 'string' ? sched.customer : null),
+        name: c.name || null,
+        email: c.email || null,
+        phone: c.phone || null,
+        created: c.created ? c.created * 1000 : null,
+
+        subscriptionId: sched.id,
+        status: 'scheduled', // statut custom pour différencier
+        productName:
+          (price && price.nickname) ||
+          (typeof product === 'string'
+            ? product
+            : product && product.name) ||
+          null,
+
+        amount: unit / 100,
+        amountHT: unit / 100,
+        taxAmount: null,
+        unitAmount: unit / 100,
+        currency: (price && price.currency
+          ? price.currency.toUpperCase()
+          : 'EUR'),
+        interval: (price && price.recurring && price.recurring.interval) || 'month',
+        intervalCount:
+          (price && price.recurring && price.recurring.interval_count) || 1,
+
+        currentPeriodStart: startTs,
+        currentPeriodEnd: endTs,
+        cancelAtPeriodEnd: false,
+        canceledAt: null,
+        trialEnd: null,
+        startedAt: startTs, // = date de démarrage prévue
+        scheduledStart: startTs,
+
+        cardBrand: null,
+        cardLast4: null,
+      };
+    });
+
+    // Fusion + tri (programmés en haut puisque dates futures)
+    const allClients = clients.concat(scheduledClients);
+    allClients.sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
 
     return res.status(200).json({
-      total: clients.length,
+      total: allClients.length,
+      activeCount: clients.length,
+      scheduledCount: scheduledClients.length,
       generatedAt: Date.now(),
-      clients,
+      clients: allClients,
     });
   } catch (err) {
     console.error('Stripe API error:', err);
