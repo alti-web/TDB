@@ -38,6 +38,36 @@ module.exports = async (req, res) => {
   }
   const stripe = new Stripe(secretKey, { apiVersion: '2024-06-20' });
 
+  // ─── Constante TVA pour conversion HT → TTC ───
+  // (utilisé uniquement pour les abonnements PROGRAMMÉS et les actifs
+  //  sans facture encore générée — pour les actifs avec facture, on utilise
+  //  invoice.total qui est toujours le vrai TTC encaissé)
+  const DEFAULT_VAT_RATE = 0.20; // 20% TVA française
+
+  function computeAmountFromPrice(price, qty) {
+    if (!price) return { ttc: 0, ht: 0, tax: 0 };
+    const base = (price.unit_amount || 0) * (qty || 1);
+    if (price.tax_behavior === 'inclusive') {
+      // Le prix Stripe inclut déjà la TVA
+      const ttc = base;
+      const ht = base / (1 + DEFAULT_VAT_RATE);
+      return {
+        ttc: ttc / 100,
+        ht: ht / 100,
+        tax: (ttc - ht) / 100,
+      };
+    }
+    // 'exclusive' ou 'unspecified' → on considère que le prix est HT
+    // et on applique la TVA standard
+    const ht = base;
+    const ttc = base * (1 + DEFAULT_VAT_RATE);
+    return {
+      ttc: ttc / 100,
+      ht: ht / 100,
+      tax: (ttc - ht) / 100,
+    };
+  }
+
   // ─── Statuts considérés comme "abonnement actif" ───
   // - active     : paiement normal, abonnement en cours
   // - trialing   : période d'essai en cours (compté comme actif)
@@ -143,8 +173,14 @@ module.exports = async (req, res) => {
         if (inv.subtotal != null) amountHT = inv.subtotal / 100;
         if (inv.tax != null) taxAmount = inv.tax / 100;
       }
-      // Fallback : si pas de facture, on suppose que le prix Stripe est déjà TTC
-      if (amountTTC == null) amountTTC = unitAmount / 100;
+      // Fallback : pas de facture encore → on calcule depuis le prix catalogue
+      // en appliquant la TVA si nécessaire (cohérent avec les programmés)
+      if (amountTTC == null) {
+        const computedFallback = computeAmountFromPrice(price, item.quantity || 1);
+        amountTTC = computedFallback.ttc;
+        if (amountHT == null) amountHT = computedFallback.ht;
+        if (taxAmount == null && computedFallback.tax > 0) taxAmount = computedFallback.tax;
+      }
       if (amountHT == null) amountHT = unitAmount / 100;
 
       return {
@@ -195,9 +231,11 @@ module.exports = async (req, res) => {
         phase && phase.items && phase.items.length ? phase.items[0] : null;
       const price = item && typeof item.price === 'object' ? item.price : null;
       const product = price && price.product;
-      const unit = price ? (price.unit_amount || 0) * (item.quantity || 1) : 0;
       const startTs = phase && phase.start_date ? phase.start_date * 1000 : null;
       const endTs = phase && phase.end_date ? phase.end_date * 1000 : null;
+
+      // Calcul TTC pour les programmés (pas de facture encore)
+      const computed = computeAmountFromPrice(price, item ? item.quantity : 1);
 
       return {
         customerId: c.id || (typeof sched.customer === 'string' ? sched.customer : null),
@@ -216,10 +254,10 @@ module.exports = async (req, res) => {
             : product && product.name) ||
           null,
 
-        amount: unit / 100,
-        amountHT: unit / 100,
-        taxAmount: null,
-        unitAmount: unit / 100,
+        amount: computed.ttc,
+        amountHT: computed.ht,
+        taxAmount: computed.tax,
+        unitAmount: price ? ((price.unit_amount || 0) * (item ? item.quantity || 1 : 1)) / 100 : 0,
         currency: (price && price.currency
           ? price.currency.toUpperCase()
           : 'EUR'),
