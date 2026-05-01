@@ -153,6 +153,7 @@ module.exports = async (req, res) => {
         email: c.email || null,
         phone: c.phone || null,
         created: c.created ? c.created * 1000 : null,
+        subscriptionCreated: sub.created ? sub.created * 1000 : null,
 
         subscriptionId: sub.id,
         status: sub.status, // active, past_due, canceled, trialing, unpaid, incomplete, etc.
@@ -204,6 +205,7 @@ module.exports = async (req, res) => {
         email: c.email || null,
         phone: c.phone || null,
         created: c.created ? c.created * 1000 : null,
+        subscriptionCreated: sched.created ? sched.created * 1000 : null,
 
         subscriptionId: sched.id,
         status: 'scheduled', // statut custom pour différencier
@@ -238,9 +240,12 @@ module.exports = async (req, res) => {
       };
     });
 
-    // Fusion + tri (programmés en haut puisque dates futures)
+    // Fusion + tri par date de création décroissante (le plus récent en tête)
     const allClients = clients.concat(scheduledClients);
-    allClients.sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
+    allClients.sort((a, b) =>
+      (b.subscriptionCreated || b.startedAt || 0) -
+      (a.subscriptionCreated || a.startedAt || 0)
+    );
 
     return res.status(200).json({
       total: allClients.length,

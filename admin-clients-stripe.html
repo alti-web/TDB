@@ -305,13 +305,14 @@
           <th onclick="sortBy('productName')">Plan <span class="sort-arrow" data-key="productName"></span></th>
           <th onclick="sortBy('amount')">Montant TTC <span class="sort-arrow" data-key="amount"></span></th>
           <th onclick="sortBy('status')">Statut <span class="sort-arrow" data-key="status"></span></th>
-          <th onclick="sortBy('startedAt')">Démarré <span class="sort-arrow" data-key="startedAt">▼</span></th>
+          <th onclick="sortBy('subscriptionCreated')">Créé <span class="sort-arrow" data-key="subscriptionCreated">▼</span></th>
+          <th onclick="sortBy('startedAt')">Démarré <span class="sort-arrow" data-key="startedAt"></span></th>
           <th onclick="sortBy('currentPeriodEnd')">Prochain cycle <span class="sort-arrow" data-key="currentPeriodEnd"></span></th>
           <th>CB</th>
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr><td colspan="7" class="empty">Chargement…</td></tr>
+        <tr><td colspan="8" class="empty">Chargement…</td></tr>
       </tbody>
     </table>
   </div>
@@ -327,7 +328,7 @@ function clearToken() { sessionStorage.removeItem(TOKEN_KEY); }
 // ───── État ─────
 let allClients = [];
 let lastUpdate = 0;
-let sortKey = 'startedAt';
+let sortKey = 'subscriptionCreated';
 let sortDir = 'desc';
 
 // ───── Login ─────
@@ -488,7 +489,7 @@ function renderTable() {
   });
 
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="7" class="empty">Aucun client ne correspond.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8" class="empty">Aucun client ne correspond.</td></tr>';
     return;
   }
 
@@ -515,6 +516,9 @@ function renderTable() {
     const status = '<span class="status-pill status-' + escapeHtml(c.status) + '">'
       + escapeHtml(statusLabel(c.status)) + '</span>'
       + (c.cancelAtPeriodEnd ? '<span class="cancel-flag">résil. prog.</span>' : '');
+    const createdAt = c.subscriptionCreated
+      ? new Date(c.subscriptionCreated).toLocaleDateString('fr-FR')
+      : '—';
     let started;
     if (c.status === 'scheduled' && c.startedAt) {
       started = '<span style="color:var(--yellow,#fbbf24);font-weight:600">Démarre le ' +
@@ -534,6 +538,7 @@ function renderTable() {
       + '<td>' + product + '</td>'
       + '<td>' + amount + '</td>'
       + '<td>' + status + '</td>'
+      + '<td>' + createdAt + '</td>'
       + '<td>' + started + '</td>'
       + '<td>' + next + '</td>'
       + '<td>' + card + '</td>'
