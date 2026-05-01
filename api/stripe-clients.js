@@ -70,9 +70,9 @@ module.exports = async (req, res) => {
 
   // ─── Statuts considérés comme "abonnement actif" ───
   // - active     : paiement normal, abonnement en cours
-  // - trialing   : période d'essai en cours (compté comme actif)
-  // (past_due exclu : paiement en echec)
-  const ACTIVE_STATUSES = ['active', 'trialing'];
+  // - trialing   : période d'essai en cours
+  // - past_due   : paiement en retard (relance Stripe / virement en cours)
+  const ACTIVE_STATUSES = ['active', 'trialing', 'past_due'];
 
   async function fetchSubsForStatus(status) {
     const out = [];
