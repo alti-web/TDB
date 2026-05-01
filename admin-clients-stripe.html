@@ -433,34 +433,21 @@ function applyData(data) {
 
 // ───── Rendu ─────
 function renderStats() {
-  // Décomposition par sous-statut
-  const active = allClients.filter(c => c.status === 'active');
-  const trialing = allClients.filter(c => c.status === 'trialing');
-  const pastDue = allClients.filter(c => c.status === 'past_due');
-  const scheduled = allClients.filter(c => c.status === 'scheduled');
+  // Total "Abonnements actifs" = tout ce qui est dans la liste
+  const total = allClients.length;
 
-  // Total "Abonnements actifs" = actifs + essais + en retard + programmés
-  const total = active.length + trialing.length + pastDue.length + scheduled.length;
-
-  // Gain par mois (MRR) en TTC — actifs + en retard (qui doivent payer aussi)
-  // (les essais et programmés ne paient pas encore)
+  // Gain par mois (MRR) en TTC — sur l'ENSEMBLE des abonnements
+  // (actifs + en retard + programmés + essais : revenu mensuel total attendu)
   let mrr = 0;
-  active.concat(pastDue).forEach(c => {
+  allClients.forEach(c => {
     if (!c.amount) return;
     const mult = monthlyMultiplier(c.interval, c.intervalCount || 1);
     mrr += c.amount * mult;
   });
 
   document.getElementById('statActive').textContent = total;
-  // Ordre : actif · en retard · programmé · essai
-  const parts = [];
-  parts.push(active.length + ' actif' + (active.length > 1 ? 's' : ''));
-  if (pastDue.length) parts.push(pastDue.length + ' en retard');
-  if (scheduled.length) parts.push(scheduled.length + ' programmé' + (scheduled.length > 1 ? 's' : ''));
-  if (trialing.length) parts.push(trialing.length + ' essai' + (trialing.length > 1 ? 's' : ''));
-  const cancelProg = active.filter(c => c.cancelAtPeriodEnd).length;
-  if (cancelProg) parts.push(cancelProg + ' rés. prog.');
-  document.getElementById('statActiveSub').textContent = parts.join(' · ');
+  // Sous-ligne décomposition supprimée à la demande
+  document.getElementById('statActiveSub').textContent = '';
   document.getElementById('statMrr').textContent = formatMoney(mrr) + ' € TTC';
 }
 
