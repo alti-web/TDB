@@ -281,34 +281,14 @@
       <div class="stat-sub" id="statActiveSub"></div>
     </div>
     <div class="stat-card">
-      <div class="stat-label">MRR estimé (TTC)</div>
+      <div class="stat-label">Gain par mois</div>
       <div class="stat-value" id="statMrr">—</div>
       <div class="stat-sub">Revenu mensuel récurrent — TTC</div>
-    </div>
-    <div class="stat-card purple">
-      <div class="stat-label">ARR estimé (TTC)</div>
-      <div class="stat-value" id="statArr">—</div>
-      <div class="stat-sub">Revenu annuel récurrent — TTC</div>
-    </div>
-    <div class="stat-card orange">
-      <div class="stat-label">Past due / impayés</div>
-      <div class="stat-value" id="statPastDue">—</div>
-      <div class="stat-sub" id="statPastDueSub"></div>
-    </div>
-    <div class="stat-card red">
-      <div class="stat-label">Résiliés / annulés</div>
-      <div class="stat-value" id="statCanceled">—</div>
-      <div class="stat-sub"></div>
     </div>
   </div>
 
   <div class="filters">
     <input type="search" id="searchBox" placeholder="🔍 Rechercher (nom, email, plan…)" oninput="renderTable()">
-    <span class="filter-chip on" data-filter="all" onclick="setFilter(this)">Tous</span>
-    <span class="filter-chip" data-filter="active" onclick="setFilter(this)">Actifs</span>
-    <span class="filter-chip" data-filter="past_due" onclick="setFilter(this)">Past due</span>
-    <span class="filter-chip" data-filter="canceled" onclick="setFilter(this)">Annulés</span>
-    <span class="filter-chip" data-filter="trialing" onclick="setFilter(this)">Essai</span>
   </div>
 
   <div class="meta-row">
@@ -346,7 +326,6 @@ function clearToken() { sessionStorage.removeItem(TOKEN_KEY); }
 // ───── État ─────
 let allClients = [];
 let lastUpdate = 0;
-let filterStatus = 'all';
 let sortKey = 'startedAt';
 let sortDir = 'desc';
 
@@ -437,11 +416,10 @@ function applyData(data) {
 
 // ───── Rendu ─────
 function renderStats() {
-  const active = allClients.filter(c => c.status === 'active' || c.status === 'trialing');
-  const pastDue = allClients.filter(c => c.status === 'past_due' || c.status === 'unpaid');
-  const canceled = allClients.filter(c => c.status === 'canceled');
+  // L'API ne renvoie déjà que les abonnements actifs
+  const active = allClients;
 
-  // MRR : montant mensuel équivalent pour les actifs
+  // Gain par mois (MRR) en TTC
   let mrr = 0;
   active.forEach(c => {
     if (!c.amount) return;
@@ -450,14 +428,10 @@ function renderStats() {
   });
 
   document.getElementById('statActive').textContent = active.length;
+  const programmes = active.filter(c => c.cancelAtPeriodEnd).length;
   document.getElementById('statActiveSub').textContent =
-    active.filter(c => c.cancelAtPeriodEnd).length + ' avec résiliation programmée';
-  document.getElementById('statMrr').textContent = formatMoney(mrr) + ' €';
-  document.getElementById('statArr').textContent = formatMoney(mrr * 12) + ' €';
-  document.getElementById('statPastDue').textContent = pastDue.length;
-  document.getElementById('statPastDueSub').textContent =
-    'dont ' + allClients.filter(c => c.status === 'unpaid').length + ' impayés';
-  document.getElementById('statCanceled').textContent = canceled.length;
+    programmes ? programmes + ' avec résiliation programmée' : '';
+  document.getElementById('statMrr').textContent = formatMoney(mrr) + ' € TTC';
 }
 
 function monthlyMultiplier(interval, count) {
@@ -474,11 +448,6 @@ function renderTable() {
   const search = (document.getElementById('searchBox').value || '').trim().toLowerCase();
 
   let list = allClients.filter(c => {
-    if (filterStatus !== 'all') {
-      if (filterStatus === 'past_due') {
-        if (c.status !== 'past_due' && c.status !== 'unpaid') return false;
-      } else if (c.status !== filterStatus) return false;
-    }
     if (search) {
       const hay = [
         c.name || '', c.email || '', c.productName || '',
@@ -553,13 +522,6 @@ function renderTable() {
       + '<td>' + card + '</td>'
       + '</tr>';
   }).join('');
-}
-
-function setFilter(el) {
-  document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('on'));
-  el.classList.add('on');
-  filterStatus = el.dataset.filter;
-  renderTable();
 }
 
 function sortBy(key) {

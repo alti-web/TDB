@@ -48,7 +48,7 @@ module.exports = async (req, res) => {
     while (hasMore && safetyCounter < 50) {
       safetyCounter++;
       const params = {
-        status: 'all',
+        status: 'active', // ─── Uniquement les abonnements actifs (allège la charge) ───
         limit: 100,
         expand: [
           'data.customer',
