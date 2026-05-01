@@ -1,0 +1,9 @@
+{
+  "name": "tdb-altiweb",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tableau de bord client Alti-Web — fonctions serverless Vercel",
+  "dependencies": {
+    "stripe": "^17.0.0"
+  }
+}

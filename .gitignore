@@ -1,5 +1,7 @@
 .claude/
 .env
+.env.local
+node_modules/
 sites_traites.json
 prospection_*.txt
 rapport_*.txt

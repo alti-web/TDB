@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clients Stripe — Alti-Web</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0d1a;
+      --bg2: #13131f;
+      --bg3: #1a1a2e;
+      --card: #16162a;
+      --accent: #4F8CFF;
+      --accent2: #A78BFA;
+      --accent-orange: #fb923c;
+      --green: #34d399;
+      --yellow: #fbbf24;
+      --red: #f87171;
+      --text: #E8ECF4;
+      --sub: #8892A8;
+      --border: rgba(255,255,255,0.08);
+    }
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; }
+    a { color: var(--accent); text-decoration:none; }
+    ::-webkit-scrollbar { width:8px; height:8px; }
+    ::-webkit-scrollbar-thumb { background:rgba(255,255,255,0.12); border-radius:4px; }
+
+    /* Header */
+    .topbar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 16px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(8px);
+    }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .brand-logo {
+      width:36px; height:36px; border-radius:10px;
+      background: linear-gradient(135deg,var(--accent),var(--accent2));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:14px; color:#fff;
+    }
+    .brand-title { font-family:'Playfair Display',serif; font-size:1.05rem; }
+    .brand-title span { color: var(--accent); }
+    .topbar-actions { display:flex; align-items:center; gap:10px; }
+    .top-btn {
+      padding: 8px 14px; border-radius: 10px; border: 1px solid var(--border);
+      background: transparent; color: var(--text); font-size: 13px; font-weight: 500;
+      cursor: pointer; transition: all 0.2s; display:inline-flex; align-items:center; gap:6px;
+      font-family: inherit;
+    }
+    .top-btn:hover { background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.15); }
+    .top-btn.primary { background: linear-gradient(135deg,var(--accent),var(--accent2)); border:none; color:#fff; }
+    .top-btn.primary:hover { transform: translateY(-1px); box-shadow:0 4px 18px rgba(79,140,255,0.35); }
+
+    .live-badge {
+      display:inline-flex; align-items:center; gap:7px;
+      padding: 5px 12px; border-radius: 20px;
+      background: rgba(52,211,153,0.1);
+      border: 1px solid rgba(52,211,153,0.25);
+      color: var(--green); font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--green); box-shadow: 0 0 8px var(--green);
+      animation: blink 1.6s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity:1 } 50% { opacity:0.35 } }
+
+    /* Login */
+    .login-overlay {
+      position: fixed; inset: 0; z-index: 200;
+      background: rgba(8,8,18,0.94);
+      display: flex; align-items: center; justify-content: center;
+      backdrop-filter: blur(10px);
+    }
+    .login-overlay.hidden { display: none; }
+    .login-box {
+      background: var(--card);
+      border: 1px solid rgba(79,140,255,0.18);
+      border-radius: 18px; padding: 36px 30px;
+      width: 92%; max-width: 380px;
+      box-shadow: 0 20px 80px rgba(0,0,0,0.5);
+      text-align: center;
+    }
+    .login-box h2 {
+      font-family:'Playfair Display',serif; font-size:1.4rem; margin-bottom:6px;
+    }
+    .login-box p { color: var(--sub); font-size: 0.9rem; margin-bottom: 22px; }
+    .login-box input {
+      width:100%; padding: 13px 16px; border-radius: 10px;
+      border: 1px solid var(--border); background: var(--bg);
+      color: var(--text); font-size: 1rem; font-family: inherit;
+      outline: none; margin-bottom: 14px; box-sizing:border-box;
+      transition: border-color 0.2s;
+    }
+    .login-box input:focus { border-color: var(--accent); }
+    .login-box button {
+      width: 100%; padding: 13px; border-radius: 10px; border: none;
+      background: linear-gradient(135deg,var(--accent),var(--accent2));
+      color: #fff; font-weight: 700; font-size: 1rem; cursor: pointer;
+      font-family: inherit; transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .login-box button:hover { transform: translateY(-1px); box-shadow: 0 6px 22px rgba(79,140,255,0.4); }
+    .login-error { color: var(--red); font-size: 0.82rem; margin-top: 10px; min-height:18px; }
+
+    /* Main */
+    .container { max-width: 1500px; margin: 0 auto; padding: 28px; }
+
+    /* Stats grid */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 14px; margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 14px; padding: 18px 20px;
+      position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; top:0; left:0; right:0; height:3px;
+      background: var(--accent);
+    }
+    .stat-card.green::before { background: var(--green); }
+    .stat-card.orange::before { background: var(--accent-orange); }
+    .stat-card.red::before { background: var(--red); }
+    .stat-card.purple::before { background: var(--accent2); }
+    .stat-label {
+      font-size: 0.75rem; color: var(--sub);
+      text-transform: uppercase; letter-spacing: 0.6px; font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .stat-value { font-size: 1.7rem; font-weight: 700; line-height:1.1; }
+    .stat-sub { font-size: 0.78rem; color: var(--sub); margin-top: 4px; }
+
+    /* Filters */
+    .filters {
+      display: flex; gap: 10px; flex-wrap: wrap;
+      margin-bottom: 18px; align-items: center;
+    }
+    .filters input[type=search] {
+      flex: 1; min-width: 240px; padding: 11px 16px;
+      border-radius: 10px; border: 1px solid var(--border);
+      background: var(--bg2); color: var(--text); font-family: inherit;
+      font-size: 0.92rem; outline: none;
+    }
+    .filters input[type=search]:focus { border-color: var(--accent); }
+    .filter-chip {
+      padding: 8px 14px; border-radius: 20px;
+      border: 1px solid var(--border); background: var(--bg2);
+      color: var(--sub); font-size: 0.82rem; font-weight: 600;
+      cursor: pointer; transition: all 0.15s; user-select:none;
+    }
+    .filter-chip:hover { color: var(--text); border-color: rgba(255,255,255,0.18); }
+    .filter-chip.on {
+      background: rgba(79,140,255,0.12);
+      border-color: var(--accent); color: var(--accent);
+    }
+
+    /* Table */
+    .table-wrap {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px; overflow: hidden;
+    }
+    table {
+      width: 100%; border-collapse: collapse; font-size: 0.88rem;
+    }
+    thead th {
+      background: var(--bg3);
+      color: var(--sub); font-weight: 600;
+      text-align: left; padding: 12px 14px;
+      font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.5px;
+      white-space: nowrap;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    thead th:hover { color: var(--text); }
+    thead th .sort-arrow { color: var(--accent); margin-left: 4px; opacity: 0.7; }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.12s; }
+    tbody tr:hover { background: rgba(255,255,255,0.02); }
+    tbody td { padding: 12px 14px; vertical-align: middle; }
+    tbody .name { font-weight: 600; }
+    tbody .email { color: var(--sub); font-size: 0.82rem; }
+    tbody .amount { font-weight: 700; color: var(--text); }
+    tbody .interval { font-size: 0.76rem; color: var(--sub); margin-left:4px; }
+    .status-pill {
+      display:inline-block; padding: 3px 10px; border-radius: 14px;
+      font-size: 0.72rem; font-weight: 700; letter-spacing: 0.3px;
+      text-transform: uppercase; white-space: nowrap;
+    }
+    .status-active { background: rgba(52,211,153,0.12); color: var(--green); }
+    .status-trialing { background: rgba(79,140,255,0.12); color: var(--accent); }
+    .status-past_due { background: rgba(251,146,60,0.14); color: var(--accent-orange); }
+    .status-canceled { background: rgba(248,113,113,0.12); color: var(--red); }
+    .status-unpaid { background: rgba(248,113,113,0.12); color: var(--red); }
+    .status-incomplete { background: rgba(167,139,250,0.12); color: var(--accent2); }
+    .status-incomplete_expired { background: rgba(255,255,255,0.06); color: var(--sub); }
+    .status-paused { background: rgba(255,255,255,0.06); color: var(--sub); }
+    .cancel-flag {
+      display:inline-block; margin-left:6px;
+      font-size: 0.66rem; padding: 2px 7px; border-radius: 10px;
+      background: rgba(251,191,36,0.14); color: var(--yellow);
+    }
+    .card-mini {
+      font-size: 0.74rem; color: var(--sub); white-space:nowrap;
+    }
+    .card-mini b { color: var(--text); font-weight:600; text-transform: uppercase; }
+
+    .empty {
+      text-align:center; padding: 60px 20px; color: var(--sub);
+    }
+
+    .meta-row {
+      display:flex; align-items:center; justify-content: space-between;
+      flex-wrap: wrap; gap: 10px; margin-bottom: 14px;
+      color: var(--sub); font-size: 0.82rem;
+    }
+    .err-banner {
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.3);
+      border-radius: 12px; padding: 14px 18px; margin-bottom: 18px;
+      color: var(--red); font-size: 0.9rem;
+    }
+    .err-banner b { display:block; margin-bottom: 4px; }
+    .err-banner code {
+      display:inline-block; background:rgba(255,255,255,0.06); padding:1px 6px;
+      border-radius:4px; font-size:0.84rem; color:var(--text);
+    }
+
+    @media (max-width: 720px) {
+      .container { padding: 18px; }
+      table { font-size: 0.82rem; }
+      thead th, tbody td { padding: 10px 9px; }
+      .topbar { padding: 12px 14px; }
+      .topbar-actions .top-btn { padding: 7px 10px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ───── LOGIN GATE ───── -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h2>🔐 Accès admin</h2>
+    <p>Saisissez votre jeton admin pour consulter la liste des clients Stripe.</p>
+    <input type="password" id="adminTokenInput" placeholder="Jeton admin">
+    <button onclick="loginAdmin()">Se connecter</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ───── HEADER ───── -->
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">AW</div>
+    <div class="brand-title">Alti-Web <span>· Clients Stripe</span></div>
+  </div>
+  <div class="topbar-actions">
+    <span class="live-badge" id="liveBadge"><span class="live-dot"></span> En direct</span>
+    <button class="top-btn" onclick="loadData(true)">🔄 Rafraîchir</button>
+    <a href="dashboard-altiweb.html" class="top-btn">← Dashboard</a>
+    <button class="top-btn" onclick="logoutAdmin()">🔓 Déconnexion</button>
+  </div>
+</header>
+
+<!-- ───── MAIN ───── -->
+<div class="container" id="mainContent" style="display:none">
+
+  <div id="errBox"></div>
+
+  <div class="stats">
+    <div class="stat-card green">
+      <div class="stat-label">Abonnements actifs</div>
+      <div class="stat-value" id="statActive">—</div>
+      <div class="stat-sub" id="statActiveSub"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">MRR estimé</div>
+      <div class="stat-value" id="statMrr">—</div>
+      <div class="stat-sub">Revenu mensuel récurrent</div>
+    </div>
+    <div class="stat-card purple">
+      <div class="stat-label">ARR estimé</div>
+      <div class="stat-value" id="statArr">—</div>
+      <div class="stat-sub">Revenu annuel récurrent</div>
+    </div>
+    <div class="stat-card orange">
+      <div class="stat-label">Past due / impayés</div>
+      <div class="stat-value" id="statPastDue">—</div>
+      <div class="stat-sub" id="statPastDueSub"></div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Résiliés / annulés</div>
+      <div class="stat-value" id="statCanceled">—</div>
+      <div class="stat-sub"></div>
+    </div>
+  </div>
+
+  <div class="filters">
+    <input type="search" id="searchBox" placeholder="🔍 Rechercher (nom, email, plan…)" oninput="renderTable()">
+    <span class="filter-chip on" data-filter="all" onclick="setFilter(this)">Tous</span>
+    <span class="filter-chip" data-filter="active" onclick="setFilter(this)">Actifs</span>
+    <span class="filter-chip" data-filter="past_due" onclick="setFilter(this)">Past due</span>
+    <span class="filter-chip" data-filter="canceled" onclick="setFilter(this)">Annulés</span>
+    <span class="filter-chip" data-filter="trialing" onclick="setFilter(this)">Essai</span>
+  </div>
+
+  <div class="meta-row">
+    <span id="metaCount">—</span>
+    <span id="metaUpdated">—</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')">Client <span class="sort-arrow" data-key="name"></span></th>
+          <th onclick="sortBy('productName')">Plan <span class="sort-arrow" data-key="productName"></span></th>
+          <th onclick="sortBy('amount')">Montant <span class="sort-arrow" data-key="amount"></span></th>
+          <th onclick="sortBy('status')">Statut <span class="sort-arrow" data-key="status"></span></th>
+          <th onclick="sortBy('startedAt')">Démarré <span class="sort-arrow" data-key="startedAt">▼</span></th>
+          <th onclick="sortBy('currentPeriodEnd')">Prochain cycle <span class="sort-arrow" data-key="currentPeriodEnd"></span></th>
+          <th>CB</th>
+        </tr>
+      </thead>
+      <tbody id="tbody">
+        <tr><td colspan="7" class="empty">Chargement…</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+// ───── Token admin ─────
+const TOKEN_KEY = 'altiweb_admin_token';
+function getToken() { return sessionStorage.getItem(TOKEN_KEY) || ''; }
+function setToken(t) { sessionStorage.setItem(TOKEN_KEY, t); }
+function clearToken() { sessionStorage.removeItem(TOKEN_KEY); }
+
+// ───── État ─────
+let allClients = [];
+let lastUpdate = 0;
+let filterStatus = 'all';
+let sortKey = 'startedAt';
+let sortDir = 'desc';
+
+// ───── Login ─────
+async function loginAdmin() {
+  const input = document.getElementById('adminTokenInput');
+  const errBox = document.getElementById('loginError');
+  const token = (input.value || '').trim();
+  errBox.textContent = '';
+  if (!token) { errBox.textContent = 'Jeton requis'; input.focus(); return; }
+  setToken(token);
+  // Tester
+  const r = await fetchClients();
+  if (r.ok) {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainContent').style.display = '';
+    applyData(r.data);
+    startAutoRefresh();
+  } else {
+    clearToken();
+    errBox.textContent = r.message || 'Authentification échouée';
+  }
+}
+function logoutAdmin() {
+  clearToken();
+  stopAutoRefresh();
+  document.getElementById('mainContent').style.display = 'none';
+  document.getElementById('loginOverlay').classList.remove('hidden');
+  document.getElementById('adminTokenInput').value = '';
+  document.getElementById('loginError').textContent = '';
+}
+
+// ───── Fetch ─────
+async function fetchClients() {
+  const token = getToken();
+  if (!token) return { ok: false, message: 'Non authentifié' };
+  try {
+    const resp = await fetch('/api/stripe-clients', {
+      headers: { 'X-Admin-Token': token, 'Cache-Control': 'no-cache' },
+      cache: 'no-store',
+    });
+    if (resp.status === 401) return { ok: false, message: 'Jeton admin invalide' };
+    if (!resp.ok) {
+      let msg = 'Erreur serveur (' + resp.status + ')';
+      try { const j = await resp.json(); if (j.error) msg = j.error; } catch (_) {}
+      return { ok: false, message: msg };
+    }
+    const data = await resp.json();
+    return { ok: true, data };
+  } catch (err) {
+    return { ok: false, message: 'Réseau : ' + err.message };
+  }
+}
+
+async function loadData(manual) {
+  const r = await fetchClients();
+  const errBox = document.getElementById('errBox');
+  if (!r.ok) {
+    errBox.innerHTML = '<div class="err-banner"><b>⚠️ Impossible de charger les données</b>' +
+      escapeHtml(r.message) +
+      '<br><br>Vérifiez que <code>STRIPE_SECRET_KEY</code> et <code>ADMIN_API_TOKEN</code> sont bien configurées sur Vercel.</div>';
+    if (r.message && r.message.toLowerCase().includes('jeton')) {
+      // Forcer relog
+      logoutAdmin();
+    }
+    return;
+  }
+  errBox.innerHTML = '';
+  applyData(r.data);
+  if (manual) flashRefresh();
+}
+function flashRefresh() {
+  const b = document.getElementById('liveBadge');
+  b.style.transform = 'scale(1.08)';
+  setTimeout(() => { b.style.transform = ''; }, 250);
+}
+
+function applyData(data) {
+  allClients = data.clients || [];
+  lastUpdate = data.generatedAt || Date.now();
+  renderStats();
+  renderTable();
+  document.getElementById('metaCount').textContent =
+    allClients.length + ' enregistrements Stripe';
+  document.getElementById('metaUpdated').textContent =
+    'Dernière mise à jour : ' + new Date(lastUpdate).toLocaleTimeString('fr-FR');
+}
+
+// ───── Rendu ─────
+function renderStats() {
+  const active = allClients.filter(c => c.status === 'active' || c.status === 'trialing');
+  const pastDue = allClients.filter(c => c.status === 'past_due' || c.status === 'unpaid');
+  const canceled = allClients.filter(c => c.status === 'canceled');
+
+  // MRR : montant mensuel équivalent pour les actifs
+  let mrr = 0;
+  active.forEach(c => {
+    if (!c.amount) return;
+    const mult = monthlyMultiplier(c.interval, c.intervalCount || 1);
+    mrr += c.amount * mult;
+  });
+
+  document.getElementById('statActive').textContent = active.length;
+  document.getElementById('statActiveSub').textContent =
+    active.filter(c => c.cancelAtPeriodEnd).length + ' avec résiliation programmée';
+  document.getElementById('statMrr').textContent = formatMoney(mrr) + ' €';
+  document.getElementById('statArr').textContent = formatMoney(mrr * 12) + ' €';
+  document.getElementById('statPastDue').textContent = pastDue.length;
+  document.getElementById('statPastDueSub').textContent =
+    'dont ' + allClients.filter(c => c.status === 'unpaid').length + ' impayés';
+  document.getElementById('statCanceled').textContent = canceled.length;
+}
+
+function monthlyMultiplier(interval, count) {
+  count = count || 1;
+  if (interval === 'month') return 1 / count;
+  if (interval === 'year') return 1 / (12 * count);
+  if (interval === 'week') return 4.345 / count;
+  if (interval === 'day') return 30.4375 / count;
+  return 1;
+}
+
+function renderTable() {
+  const tbody = document.getElementById('tbody');
+  const search = (document.getElementById('searchBox').value || '').trim().toLowerCase();
+
+  let list = allClients.filter(c => {
+    if (filterStatus !== 'all') {
+      if (filterStatus === 'past_due') {
+        if (c.status !== 'past_due' && c.status !== 'unpaid') return false;
+      } else if (c.status !== filterStatus) return false;
+    }
+    if (search) {
+      const hay = [
+        c.name || '', c.email || '', c.productName || '',
+        c.cardLast4 || '', c.subscriptionId || ''
+      ].join(' ').toLowerCase();
+      if (!hay.includes(search)) return false;
+    }
+    return true;
+  });
+
+  // Tri
+  list.sort((a, b) => {
+    const va = a[sortKey] == null ? '' : a[sortKey];
+    const vb = b[sortKey] == null ? '' : b[sortKey];
+    let cmp;
+    if (typeof va === 'number' || typeof vb === 'number') {
+      cmp = (va || 0) - (vb || 0);
+    } else {
+      cmp = String(va).localeCompare(String(vb), 'fr');
+    }
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+
+  // Update arrow indicators
+  document.querySelectorAll('.sort-arrow').forEach(s => {
+    s.textContent = (s.dataset.key === sortKey) ? (sortDir === 'asc' ? '▲' : '▼') : '';
+  });
+
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty">Aucun client ne correspond.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = list.map(c => {
+    const name = escapeHtml(c.name || '—');
+    const email = escapeHtml(c.email || '');
+    const product = escapeHtml(c.productName || '—');
+    const amount = c.amount
+      ? '<span class="amount">' + formatMoney(c.amount) + ' ' + escapeHtml(c.currency) +
+        '</span><span class="interval">/' + intervalLabel(c.interval, c.intervalCount) + '</span>'
+      : '—';
+    const status = '<span class="status-pill status-' + escapeHtml(c.status) + '">'
+      + escapeHtml(statusLabel(c.status)) + '</span>'
+      + (c.cancelAtPeriodEnd ? '<span class="cancel-flag">résil. prog.</span>' : '');
+    const started = c.startedAt ? new Date(c.startedAt).toLocaleDateString('fr-FR') : '—';
+    const next = c.currentPeriodEnd ? new Date(c.currentPeriodEnd).toLocaleDateString('fr-FR') : '—';
+    const card = c.cardBrand
+      ? '<span class="card-mini"><b>' + escapeHtml(c.cardBrand) + '</b> ••' + escapeHtml(c.cardLast4 || '') + '</span>'
+      : '<span class="card-mini">—</span>';
+
+    return '<tr>'
+      + '<td><div class="name">' + name + '</div>'
+        + (email ? '<div class="email">' + email + '</div>' : '')
+        + '</td>'
+      + '<td>' + product + '</td>'
+      + '<td>' + amount + '</td>'
+      + '<td>' + status + '</td>'
+      + '<td>' + started + '</td>'
+      + '<td>' + next + '</td>'
+      + '<td>' + card + '</td>'
+      + '</tr>';
+  }).join('');
+}
+
+function setFilter(el) {
+  document.querySelectorAll('.filter-chip').forEach(x => x.classList.remove('on'));
+  el.classList.add('on');
+  filterStatus = el.dataset.filter;
+  renderTable();
+}
+
+function sortBy(key) {
+  if (sortKey === key) {
+    sortDir = (sortDir === 'asc') ? 'desc' : 'asc';
+  } else {
+    sortKey = key;
+    sortDir = 'desc';
+  }
+  renderTable();
+}
+
+function statusLabel(s) {
+  return ({
+    active: 'Actif',
+    trialing: 'Essai',
+    past_due: 'Past due',
+    canceled: 'Annulé',
+    unpaid: 'Impayé',
+    incomplete: 'Incomplet',
+    incomplete_expired: 'Expiré',
+    paused: 'En pause',
+  })[s] || s;
+}
+function intervalLabel(interval, count) {
+  count = count || 1;
+  const base = ({ day:'jour', week:'semaine', month:'mois', year:'an' })[interval] || interval;
+  return count > 1 ? count + ' ' + base + 's' : base;
+}
+function formatMoney(n) {
+  return (Math.round((n || 0) * 100) / 100)
+    .toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+function escapeHtml(s) {
+  if (s == null) return '';
+  return String(s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ───── Auto-refresh ─────
+let refreshTimer = null;
+function startAutoRefresh() {
+  stopAutoRefresh();
+  refreshTimer = setInterval(() => loadData(false), 30000); // 30s
+}
+function stopAutoRefresh() {
+  if (refreshTimer) { clearInterval(refreshTimer); refreshTimer = null; }
+}
+
+// ───── Init ─────
+(function() {
+  // Si déjà un token en session, tenter de charger
+  if (getToken()) {
+    document.getElementById('loginOverlay').classList.add('hidden');
+    document.getElementById('mainContent').style.display = '';
+    loadData(false);
+    startAutoRefresh();
+  } else {
+    setTimeout(() => document.getElementById('adminTokenInput').focus(), 200);
+  }
+  // Submit avec Entrée
+  document.getElementById('adminTokenInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') loginAdmin();
+  });
+})();
+</script>
+
+</body>
+</html>
