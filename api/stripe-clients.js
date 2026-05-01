@@ -38,27 +38,31 @@ module.exports = async (req, res) => {
   }
   const stripe = new Stripe(secretKey, { apiVersion: '2024-06-20' });
 
-  try {
-    // Récupérer toutes les souscriptions (pagination 100/page jusqu'à 5000)
-    const allSubs = [];
+  // ─── Statuts considérés comme "abonnement actif" ───
+  // - active     : paiement normal, abonnement en cours
+  // - trialing   : période d'essai en cours
+  // - past_due   : paiement raté mais Stripe relance encore (toujours client)
+  const ACTIVE_STATUSES = ['active', 'trialing', 'past_due'];
+
+  async function fetchSubsForStatus(status) {
+    const out = [];
     let startingAfter = null;
     let hasMore = true;
-    let safetyCounter = 0;
-
-    while (hasMore && safetyCounter < 50) {
-      safetyCounter++;
+    let safety = 0;
+    while (hasMore && safety < 50) {
+      safety++;
       const params = {
-        status: 'active', // ─── Uniquement les abonnements actifs (allège la charge) ───
+        status,
         limit: 100,
         expand: [
           'data.customer',
           'data.default_payment_method',
-          'data.latest_invoice', // pour récupérer le total TTC réel
+          'data.latest_invoice', // total TTC réel
         ],
       };
       if (startingAfter) params.starting_after = startingAfter;
       const resp = await stripe.subscriptions.list(params);
-      allSubs.push(...resp.data);
+      out.push(...resp.data);
       hasMore = resp.has_more;
       if (hasMore && resp.data.length) {
         startingAfter = resp.data[resp.data.length - 1].id;
@@ -66,6 +70,15 @@ module.exports = async (req, res) => {
         hasMore = false;
       }
     }
+    return out;
+  }
+
+  try {
+    // 3 appels en parallèle, fusion ensuite
+    const arrays = await Promise.all(
+      ACTIVE_STATUSES.map((s) => fetchSubsForStatus(s))
+    );
+    const allSubs = arrays.flat();
 
     // Map → format simplifié
     const clients = allSubs.map((sub) => {
