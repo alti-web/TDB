@@ -55,22 +55,47 @@ module.exports = async (req, res) => {
   const stripe = new Stripe(secretKey, { apiVersion: '2024-06-20' });
 
   try {
-    // Chercher le customer par email
-    const search = await stripe.customers.list({ email, limit: 1 });
-    const customer = search.data && search.data.length ? search.data[0] : null;
+    // Chercher TOUS les customers correspondant à l'email (peut y en avoir plusieurs)
+    const search = await stripe.customers.list({ email, limit: 100 });
+    let customers = (search && search.data) || [];
+    // Filtrer les supprimés
+    customers = customers.filter((c) => !c.deleted);
 
-    // Pas de customer Stripe : on autorise (cas: client sans abonnement Stripe)
-    // mais on ne peut pas suivre dans la BDD
-    if (!customer) {
-      return res
-        .status(200)
-        .json({ ok: true, tracked: false, note: 'Aucun customer Stripe — pas de suivi BDD' });
+    // Aucun customer trouvé → on REFUSE (sinon pas de rate limit possible)
+    if (!customers.length) {
+      return res.status(404).json({
+        ok: false,
+        error: 'Aucun compte Stripe trouvé pour cet email. Contactez le support.',
+        emailChecked: email,
+      });
     }
 
-    const lastTs = parseInt(
+    // Si plusieurs, trouver le plus récent qui a déjà la metadata
+    // (évite que le compteur soit "perdu" sur un autre customer en doublon)
+    let customer = customers[0];
+    let lastTs = parseInt(
       (customer.metadata && customer.metadata.actions_semaine_last) || '0',
       10
     );
+    for (let i = 1; i < customers.length; i++) {
+      const ts = parseInt(
+        (customers[i].metadata && customers[i].metadata.actions_semaine_last) || '0',
+        10
+      );
+      // On garde celui qui a la metadata la plus récente
+      if (ts > lastTs) {
+        customer = customers[i];
+        lastTs = ts;
+      }
+    }
+    // Si aucun n'a de metadata, on utilise le plus récemment créé
+    if (!lastTs) {
+      customer = customers.reduce(
+        (a, b) => ((b.created || 0) > (a.created || 0) ? b : a),
+        customers[0]
+      );
+    }
+
     const now = Date.now();
     const daysSince = lastTs
       ? Math.floor((now - lastTs) / MS_PER_DAY)
@@ -81,10 +106,12 @@ module.exports = async (req, res) => {
         ok: false,
         daysAgo: daysSince,
         cooldownDays: COOLDOWN_DAYS,
+        lastIso: new Date(lastTs).toISOString(),
+        customerId: customer.id,
         message:
-          "Votre demande a été envoyée il y a moins de " +
-          COOLDOWN_DAYS +
-          ' jours. Google n\'est pas encore passé sur votre site !',
+          "Votre demande a été envoyée il y a " +
+          (daysSince === 0 ? "moins d'un jour" : daysSince + ' jour' + (daysSince > 1 ? 's' : '')) +
+          ". Google n'est pas encore passé sur votre site !",
       });
     }
 
@@ -96,9 +123,12 @@ module.exports = async (req, res) => {
       },
     });
 
-    return res
-      .status(200)
-      .json({ ok: true, tracked: true, customerId: customer.id });
+    return res.status(200).json({
+      ok: true,
+      tracked: true,
+      customerId: customer.id,
+      duplicates: customers.length > 1 ? customers.length : undefined,
+    });
   } catch (err) {
     console.error('actions-semaine error:', err);
     return res.status(500).json({ ok: false, error: err.message || 'Erreur' });

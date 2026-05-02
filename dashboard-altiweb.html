@@ -3260,10 +3260,27 @@ async function requestActionsSemaine() {
   if (window._actionsSemaineSending) return;
   window._actionsSemaineSending = true;
 
+  // ─── Pré-vérification localStorage (defense in depth) ───
+  // Si la dernière demande est < 12 jours selon le navigateur, on refuse direct
+  // sans même appeler l'API. Le serveur reste la source de vérité.
+  var lsKey = 'actions_semaine_last_' + email;
+  var lsLast = parseInt(localStorage.getItem(lsKey) || '0', 10);
+  var nowMs = Date.now();
+  var COOLDOWN_DAYS = 12;
+  var msPerDay = 1000 * 60 * 60 * 24;
+  if (lsLast) {
+    var localDays = Math.floor((nowMs - lsLast) / msPerDay);
+    if (localDays < COOLDOWN_DAYS) {
+      window._actionsSemaineSending = false;
+      showActionsSemainePopup({ tooRecent: true, daysAgo: localDays });
+      return;
+    }
+  }
+
   // Affichage popup en mode "envoi en cours"
   showActionsSemainePopup({ loading: true });
 
-  // 1. Vérification + enregistrement côté serveur
+  // 1. Vérification + enregistrement côté serveur (Stripe metadata = source de vérité)
   var apiResp;
   try {
     apiResp = await fetch('/api/actions-semaine', {
@@ -3284,6 +3301,9 @@ async function requestActionsSemaine() {
   if (!data.ok) {
     window._actionsSemaineSending = false;
     if (data.daysAgo !== undefined) {
+      // Synchroniser localStorage avec le serveur
+      var srvLast = nowMs - (data.daysAgo * msPerDay);
+      localStorage.setItem(lsKey, String(srvLast));
       showActionsSemainePopup({ tooRecent: true, daysAgo: data.daysAgo, message: data.message });
     } else {
       showActionsSemainePopup({ error: true, message: data.error || 'Erreur inconnue' });
@@ -3293,15 +3313,20 @@ async function requestActionsSemaine() {
 
   // 2. Envoi du mail via EmailJS (déjà initialisé plus haut)
   emailjs.send('service_12wtkng', 'template_tib1gk7', {
-    name: '📅 DEMANDE ACTIONS DE LA SEMAINE\nClient : ' + email + '\nDate : ' + new Date().toLocaleString('fr-FR') + '\nTracking BDD : ' + (data.tracked ? 'oui (Stripe metadata)' : 'non (pas de customer Stripe)'),
+    name: '📅 DEMANDE ACTIONS DE LA SEMAINE\nClient : ' + email + '\nDate : ' + new Date().toLocaleString('fr-FR') + '\nCustomer Stripe : ' + (data.customerId || '—'),
     email: email,
     message: 'Demande des actions de la semaine — depuis tableau de bord'
   }).then(function() {
     window._actionsSemaineSending = false;
+    // Enregistrer dans localStorage aussi (cohérence avec serveur)
+    localStorage.setItem(lsKey, String(nowMs));
     showActionsSemainePopup({ success: true });
   }, function() {
     window._actionsSemaineSending = false;
-    showActionsSemainePopup({ error: true, message: 'Email non envoyé. Réessayez ou contactez le support.' });
+    // L'envoi mail a échoué mais la metadata Stripe a déjà été MAJ.
+    // On note quand même côté client pour cohérence.
+    localStorage.setItem(lsKey, String(nowMs));
+    showActionsSemainePopup({ error: true, message: 'Email non envoyé. Le support a été notifié.' });
   });
 }
 
