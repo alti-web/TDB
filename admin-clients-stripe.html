@@ -227,6 +227,19 @@
       opacity: 0.95;
     }
 
+    .cus-link {
+      font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--accent);
+      text-decoration: none;
+      border-bottom: 1px dashed transparent;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .cus-link:hover {
+      color: #7BB3FF;
+      border-bottom-color: rgba(79,140,255,0.5);
+    }
+
     .empty {
       text-align:center; padding: 60px 20px; color: var(--sub);
     }
@@ -316,7 +329,7 @@
       <thead>
         <tr>
           <th onclick="sortBy('name')">Client <span class="sort-arrow" data-key="name"></span></th>
-          <th onclick="sortBy('productName')">Plan <span class="sort-arrow" data-key="productName"></span></th>
+          <th onclick="sortBy('customerId')">ID client <span class="sort-arrow" data-key="customerId"></span></th>
           <th onclick="sortBy('amount')">Montant TTC <span class="sort-arrow" data-key="amount"></span></th>
           <th onclick="sortBy('status')">Statut <span class="sort-arrow" data-key="status"></span></th>
           <th onclick="sortBy('subscriptionCreated')">Créé <span class="sort-arrow" data-key="subscriptionCreated">▼</span></th>
@@ -501,7 +514,11 @@ function renderTable() {
   tbody.innerHTML = list.map(c => {
     const name = escapeHtml(c.name || '—');
     const email = escapeHtml(c.email || '');
-    const product = escapeHtml(c.productName || '—');
+    const cusId = c.customerId
+      ? '<a class="cus-link" href="https://dashboard.stripe.com/customers/'
+        + encodeURIComponent(c.customerId) + '" target="_blank" rel="noopener">'
+        + escapeHtml(c.customerId) + '</a>'
+      : '<span class="card-mini">—</span>';
     // Affichage TTC (avec HT en sous-ligne si on a une TVA)
     let amountHtml;
     if (c.amount) {
@@ -551,7 +568,7 @@ function renderTable() {
       + '<td><div class="name">' + name + '</div>'
         + (email ? '<div class="email">' + email + '</div>' : '')
         + '</td>'
-      + '<td>' + product + '</td>'
+      + '<td>' + cusId + '</td>'
       + '<td>' + amount + '</td>'
       + '<td>' + status + '</td>'
       + '<td>' + createdAt + '</td>'

@@ -157,25 +157,26 @@ module.exports = async (req, res) => {
       const pm = sub.default_payment_method;
       const card = pm && pm.card ? pm.card : null;
 
-      // ─── Calcul TTC à partir de la dernière facture ───
-      // Stripe : invoice.total = montant TTC réellement facturé
-      //          invoice.subtotal = HT
-      //          invoice.tax     = TVA
+      // ─── Calcul TTC ───
+      // Pour les abonnements en ESSAI (trialing), la facture est à 0€
+      //  → on utilise le prix catalogue + TVA pour afficher le forfait réel.
+      // Pour les autres (active / past_due) on utilise invoice.total (vrai TTC payé).
       const inv = sub.latest_invoice && typeof sub.latest_invoice === 'object'
         ? sub.latest_invoice
         : null;
+      const isTrialing = sub.status === 'trialing';
       let amountTTC = null;
       let amountHT = null;
       let taxAmount = null;
-      if (inv) {
+      if (!isTrialing && inv) {
         if (inv.total != null) amountTTC = inv.total / 100;
         else if (inv.amount_paid != null) amountTTC = inv.amount_paid / 100;
         if (inv.subtotal != null) amountHT = inv.subtotal / 100;
         if (inv.tax != null) taxAmount = inv.tax / 100;
       }
-      // Fallback : pas de facture encore → on calcule depuis le prix catalogue
-      // en appliquant la TVA si nécessaire (cohérent avec les programmés)
-      if (amountTTC == null) {
+      // Fallback : essai, pas de facture, ou facture à 0
+      // → on calcule depuis le prix catalogue (avec TVA si HT)
+      if (amountTTC == null || amountTTC === 0) {
         const computedFallback = computeAmountFromPrice(price, item.quantity || 1);
         amountTTC = computedFallback.ttc;
         if (amountHT == null) amountHT = computedFallback.ht;
