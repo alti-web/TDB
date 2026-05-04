@@ -1,22 +1,15 @@
 // Vercel Cron — Vérifie chaque jour quels clients ont atteint 3 semaines
 // (21 jours) d'ancienneté dans newEmailDates et déclenche le webhook
-// Make.com pour chacun (record_id = email). Envoie un email de récap
-// à benoit@lecourtier.net si au moins un déclenchement a eu lieu.
+// Make.com pour chacun (record_id = email).
+//
+// AUCUN email n'est envoyé depuis Vercel — Make.com gère l'envoi de mails.
 //
 // Programmé via vercel.json -> crons.
 
 const NEW_EMAIL_DATES = require('../client-dates');
 
 const MAKE_WEBHOOK = 'https://hook.eu2.make.com/89lkz8vkwie4un9wy2ff9l451tonwpcf';
-const NOTIFY_EMAIL = 'benoit@lecourtier.net';
 const COOLDOWN_DAYS = 21; // 3 semaines
-
-// EmailJS REST endpoint pour la notification de récap
-const EMAILJS_ENDPOINT = 'https://api.emailjs.com/api/v1.0/email/send';
-const EMAILJS_SERVICE_ID = 'service_12wtkng';
-const EMAILJS_TEMPLATE_ID = 'template_tib1gk7';
-const EMAILJS_USER_ID = 'nf_vsJRJn_ucqKgbR';
-
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
 
 function dayUTC(d) {
@@ -52,7 +45,7 @@ module.exports = async (req, res) => {
   const errors = [];
 
   // Si un email est forcé en query string, on déclenche uniquement pour lui
-  // (ignore la liste newEmailDates et la vérification des 28 jours)
+  // (ignore la liste newEmailDates et la vérification de la date)
   const emailsToCheck = forceEmail
     ? [forceEmail]
     : Object.keys(NEW_EMAIL_DATES);
@@ -78,8 +71,7 @@ module.exports = async (req, res) => {
     }
 
     // Match → déclencher le webhook Make.com
-    const url =
-      MAKE_WEBHOOK + '?record_id=' + encodeURIComponent(email);
+    const url = MAKE_WEBHOOK + '?record_id=' + encodeURIComponent(email);
     try {
       const resp = await fetch(url);
       const text = await resp.text().catch(() => '');
@@ -95,51 +87,6 @@ module.exports = async (req, res) => {
     }
   }
 
-  // Notification Benoit si au moins 1 déclenchement (jamais en dryRun)
-  let notification = null;
-  if (triggered.length > 0 && !dryRun) {
-    const summaryLines = [
-      '🔔 CRON 3 SEMAINES — Webhook Make.com déclenché',
-      '',
-      'Date : ' + new Date().toLocaleString('fr-FR'),
-      'Nombre de clients à 3 semaines pile : ' + triggered.length,
-      '',
-      '--- Détail ---',
-      ...triggered.map((t) =>
-        '• ' + t.email + ' (ajouté le ' + t.addedAt + ') — HTTP ' + t.status
-      ),
-    ];
-    if (errors.length) {
-      summaryLines.push('', '--- Erreurs ---');
-      errors.forEach((e) => summaryLines.push('• ' + e.email + ' : ' + e.error));
-    }
-
-    try {
-      const emailResp = await fetch(EMAILJS_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'origin': 'https://alti-board.fr' },
-        body: JSON.stringify({
-          service_id: EMAILJS_SERVICE_ID,
-          template_id: EMAILJS_TEMPLATE_ID,
-          user_id: EMAILJS_USER_ID,
-          accessToken: process.env.EMAILJS_PRIVATE_KEY || undefined,
-          template_params: {
-            name: summaryLines.join('\n'),
-            email: NOTIFY_EMAIL,
-            message: 'Récap cron 3 semaines — ' + triggered.length + ' déclenchement(s)',
-          },
-        }),
-      });
-      notification = {
-        sent: emailResp.ok,
-        status: emailResp.status,
-        body: (await emailResp.text().catch(() => '')).slice(0, 200),
-      };
-    } catch (err) {
-      notification = { sent: false, error: err.message };
-    }
-  }
-
   return res.status(200).json({
     ok: true,
     dryRun: dryRun,
@@ -147,7 +94,6 @@ module.exports = async (req, res) => {
     targetDay: new Date(targetDay).toISOString().slice(0, 10),
     triggered,
     errors,
-    notification,
     triggeredCount: triggered.length,
   });
 };
