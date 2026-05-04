@@ -317,6 +317,7 @@
 
   <div class="filters">
     <input type="search" id="searchBox" placeholder="🔍 Rechercher (nom, email, plan…)" oninput="renderTable()">
+    <span class="filter-chip" id="filterNewChip" onclick="toggleNewFilter()" title="Clients créés sur Stripe il y a moins de 4 semaines">🆕 Nouveaux (&lt; 4 sem.)</span>
   </div>
 
   <div class="meta-row">
@@ -357,6 +358,7 @@ let allClients = [];
 let lastUpdate = 0;
 let sortKey = 'subscriptionCreated';
 let sortDir = 'desc';
+let onlyNew4w = false; // filtre "clients créés < 4 semaines"
 
 // ───── Login ─────
 async function loginAdmin() {
@@ -476,7 +478,11 @@ function renderTable() {
   const tbody = document.getElementById('tbody');
   const search = (document.getElementById('searchBox').value || '').trim().toLowerCase();
 
+  const cutoff4w = Date.now() - (28 * 24 * 60 * 60 * 1000);
   let list = allClients.filter(c => {
+    if (onlyNew4w) {
+      if (!c.created || c.created < cutoff4w) return false;
+    }
     if (search) {
       const hay = [
         c.name || '', c.email || '', c.productName || '',
@@ -575,6 +581,12 @@ function renderTable() {
       + '<td>' + action + '</td>'
       + '</tr>';
   }).join('');
+}
+
+function toggleNewFilter() {
+  onlyNew4w = !onlyNew4w;
+  document.getElementById('filterNewChip').classList.toggle('on', onlyNew4w);
+  renderTable();
 }
 
 function sortBy(key) {
