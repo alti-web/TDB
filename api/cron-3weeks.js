@@ -1,7 +1,7 @@
-// Vercel Cron — Vérifie chaque jour quels clients ont atteint 4 semaines
-// (28 jours) d'ancienneté dans newEmailDates et déclenche le webhook
-// Make.com pour chacun. Envoie un email de récap à benoit@lecourtier.net
-// si au moins un déclenchement a eu lieu.
+// Vercel Cron — Vérifie chaque jour quels clients ont atteint 3 semaines
+// (21 jours) d'ancienneté dans newEmailDates et déclenche le webhook
+// Make.com pour chacun (record_id = email). Envoie un email de récap
+// à benoit@lecourtier.net si au moins un déclenchement a eu lieu.
 //
 // Programmé via vercel.json -> crons.
 
@@ -9,7 +9,7 @@ const NEW_EMAIL_DATES = require('../client-dates');
 
 const MAKE_WEBHOOK = 'https://hook.eu2.make.com/89lkz8vkwie4un9wy2ff9l451tonwpcf';
 const NOTIFY_EMAIL = 'benoit@lecourtier.net';
-const COOLDOWN_DAYS = 28; // 4 semaines
+const COOLDOWN_DAYS = 21; // 3 semaines
 
 // EmailJS REST endpoint pour la notification de récap
 const EMAILJS_ENDPOINT = 'https://api.emailjs.com/api/v1.0/email/send';
@@ -99,10 +99,10 @@ module.exports = async (req, res) => {
   let notification = null;
   if (triggered.length > 0 && !dryRun) {
     const summaryLines = [
-      '🔔 CRON 4 SEMAINES — Webhook Make.com déclenché',
+      '🔔 CRON 3 SEMAINES — Webhook Make.com déclenché',
       '',
       'Date : ' + new Date().toLocaleString('fr-FR'),
-      'Nombre de clients à 4 semaines pile : ' + triggered.length,
+      'Nombre de clients à 3 semaines pile : ' + triggered.length,
       '',
       '--- Détail ---',
       ...triggered.map((t) =>
@@ -126,7 +126,7 @@ module.exports = async (req, res) => {
           template_params: {
             name: summaryLines.join('\n'),
             email: NOTIFY_EMAIL,
-            message: 'Récap cron 4 semaines — ' + triggered.length + ' déclenchement(s)',
+            message: 'Récap cron 3 semaines — ' + triggered.length + ' déclenchement(s)',
           },
         }),
       });
