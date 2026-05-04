@@ -244,7 +244,7 @@
 <section class="hero">
   <div class="hero-badge">🎯 100% Gratuit · Sans inscription</div>
   <h1>Quels mots-clés pour <span>votre site</span> ?</h1>
-  <p>Indiquez l'URL de votre site et recevez par email les <strong>60 mots-clés les plus importants</strong> sur lesquels vous êtes positionné, ainsi que <strong>20 mots-clés longue traîne</strong>, avec géolocalisation.</p>
+  <p>Indiquez l'URL de votre site et recevez par email <strong>60 mots-clés principaux</strong> + <strong>30 mots-clés longue traîne</strong> sélectionnés par notre <strong>IA Claude 4.7</strong>, avec leur positionnement actuel sur Google et leur volume de recherche.</p>
 </section>
 
 <div class="card">
@@ -285,14 +285,14 @@
 
 <div class="features">
   <div class="feat">
-    <div class="feat-icon">🎯</div>
-    <div class="feat-title">60 mots-clés</div>
-    <div class="feat-desc">Les plus importants par trafic estimé</div>
+    <div class="feat-icon">🤖</div>
+    <div class="feat-title">Analyse IA</div>
+    <div class="feat-desc">Le contenu de votre site est analysé par Claude 4.7</div>
   </div>
   <div class="feat">
-    <div class="feat-icon">🪶</div>
-    <div class="feat-title">20 longue traîne</div>
-    <div class="feat-desc">Mots-clés de 4 mots ou plus</div>
+    <div class="feat-icon">🎯</div>
+    <div class="feat-title">60 + 30 mots-clés</div>
+    <div class="feat-desc">Principaux + longue traîne, avec positionnement</div>
   </div>
   <div class="feat">
     <div class="feat-icon">🌍</div>
@@ -327,7 +327,7 @@ async function submitAnalyze() {
   status.className = 'status show loading';
   status.innerHTML =
     '<div class="title"><span class="spinner-mini"></span> Analyse en cours…</div>' +
-    "<div>Interrogation de la base de données SEO. Cela peut prendre 15 à 30 secondes.</div>";
+    "<div>Notre IA Claude 4.7 lit le contenu de votre site et sélectionne les mots-clés les plus pertinents. Cela peut prendre 30 à 60 secondes.</div>";
 
   try {
     const resp = await fetch('/api/seo-keywords', {
