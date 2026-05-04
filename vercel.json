@@ -8,6 +8,10 @@
       "schedule": "0 8 * * *"
     },
     {
+      "path": "/api/cron-6weeks",
+      "schedule": "0 8 * * *"
+    },
+    {
       "path": "/api/cron-new-clients",
       "schedule": "0 8 * * *"
     }
