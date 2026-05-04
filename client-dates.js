@@ -1,10 +1,10 @@
 // ─── Dates d'ajout des nouveaux clients dans le dashboard ───
-// Ce fichier est partagé entre dashboard-altiweb.html et admin-clients-stripe.html
-// pour qu'une seule source de vérité existe (à mettre à jour à chaque nouveau client).
+// Ce fichier est partagé entre dashboard-altiweb.html, admin-clients-stripe.html
+// et le cron Vercel api/cron-4weeks.js. Source unique de vérité.
 //
 // Format : { 'email@domaine.fr': 'YYYY-MM-DD' }
 
-window.NEW_EMAIL_DATES = {
+var NEW_EMAIL_DATES = {
   'auxptitsbonheursdecri@gmail.com': '2026-03-18',
   'veroniquedenis965@gmail.com': '2026-03-18',
   'contact@veronique-lambis-tarologue.com': '2026-03-18',
@@ -28,3 +28,12 @@ window.NEW_EMAIL_DATES = {
   'info@essenterra.fr': '2026-05-02',
   'severinemoulliere@gmail.com': '2026-05-02'
 };
+
+// Compatibilité navigateur (admin-clients-stripe.html, dashboard-altiweb.html)
+if (typeof window !== 'undefined') {
+  window.NEW_EMAIL_DATES = NEW_EMAIL_DATES;
+}
+// Compatibilité Node.js / Vercel functions (api/cron-4weeks.js)
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = NEW_EMAIL_DATES;
+}

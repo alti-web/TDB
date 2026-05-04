@@ -1,5 +1,11 @@
 {
   "rewrites": [
     { "source": "/", "destination": "/dashboard-altiweb.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron-4weeks",
+      "schedule": "0 8 * * *"
+    }
   ]
 }
