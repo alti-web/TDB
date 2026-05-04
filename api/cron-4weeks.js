@@ -36,7 +36,15 @@ module.exports = async (req, res) => {
     }
   }
 
-  const todayMidnight = dayUTC(new Date());
+  // ─── Paramètres de test optionnels ───
+  const q = req.query || {};
+  const dryRun = q.dryRun === '1' || q.dryRun === 'true';
+  const testDateStr = q.testDate; // format YYYY-MM-DD, simule "aujourd'hui"
+
+  const referenceDate = testDateStr
+    ? new Date(testDateStr + 'T00:00:00Z')
+    : new Date();
+  const todayMidnight = dayUTC(referenceDate);
   const targetDay = todayMidnight - COOLDOWN_DAYS * MS_PER_DAY;
 
   const triggered = [];
@@ -47,6 +55,18 @@ module.exports = async (req, res) => {
     if (!dateStr) continue;
     const addedDay = dayUTC(new Date(dateStr + 'T00:00:00Z'));
     if (addedDay !== targetDay) continue;
+
+    if (dryRun) {
+      // Mode test : on n'appelle pas Make.com
+      triggered.push({
+        email,
+        addedAt: dateStr,
+        status: 'DRY_RUN',
+        ok: true,
+        body: 'Aucun appel webhook effectué (test mode)',
+      });
+      continue;
+    }
 
     // Match → déclencher le webhook Make.com
     const url =
@@ -66,9 +86,9 @@ module.exports = async (req, res) => {
     }
   }
 
-  // Notification Benoit si au moins 1 déclenchement
+  // Notification Benoit si au moins 1 déclenchement (jamais en dryRun)
   let notification = null;
-  if (triggered.length > 0) {
+  if (triggered.length > 0 && !dryRun) {
     const summaryLines = [
       '🔔 CRON 4 SEMAINES — Webhook Make.com déclenché',
       '',
@@ -113,6 +133,7 @@ module.exports = async (req, res) => {
 
   return res.status(200).json({
     ok: true,
+    dryRun: dryRun,
     today: new Date(todayMidnight).toISOString().slice(0, 10),
     targetDay: new Date(targetDay).toISOString().slice(0, 10),
     triggered,
