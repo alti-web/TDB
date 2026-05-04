@@ -39,7 +39,8 @@ module.exports = async (req, res) => {
   // ─── Paramètres de test optionnels ───
   const q = req.query || {};
   const dryRun = q.dryRun === '1' || q.dryRun === 'true';
-  const testDateStr = q.testDate; // format YYYY-MM-DD, simule "aujourd'hui"
+  const testDateStr = q.testDate;   // format YYYY-MM-DD, simule "aujourd'hui"
+  const forceEmail = q.email;       // déclenche le webhook pour cet email (ignore la date)
 
   const referenceDate = testDateStr
     ? new Date(testDateStr + 'T00:00:00Z')
@@ -50,11 +51,19 @@ module.exports = async (req, res) => {
   const triggered = [];
   const errors = [];
 
-  for (const email of Object.keys(NEW_EMAIL_DATES)) {
-    const dateStr = NEW_EMAIL_DATES[email];
-    if (!dateStr) continue;
-    const addedDay = dayUTC(new Date(dateStr + 'T00:00:00Z'));
-    if (addedDay !== targetDay) continue;
+  // Si un email est forcé en query string, on déclenche uniquement pour lui
+  // (ignore la liste newEmailDates et la vérification des 28 jours)
+  const emailsToCheck = forceEmail
+    ? [forceEmail]
+    : Object.keys(NEW_EMAIL_DATES);
+
+  for (const email of emailsToCheck) {
+    const dateStr = NEW_EMAIL_DATES[email] || (forceEmail ? '(forcé via ?email=)' : null);
+    if (!forceEmail && !dateStr) continue;
+    if (!forceEmail) {
+      const addedDay = dayUTC(new Date(dateStr + 'T00:00:00Z'));
+      if (addedDay !== targetDay) continue;
+    }
 
     if (dryRun) {
       // Mode test : on n'appelle pas Make.com
