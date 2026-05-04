@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clients Stripe — Alti-Web</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <script src="client-dates.js"></script>
   <style>
     :root {
       --bg: #0d0d1a;
@@ -335,7 +336,7 @@
           <th onclick="sortBy('status')">Statut <span class="sort-arrow" data-key="status"></span></th>
           <th onclick="sortBy('subscriptionCreated')">Forfait créé <span class="sort-arrow" data-key="subscriptionCreated">▼</span></th>
           <th onclick="sortBy('startedAt')">Démarré <span class="sort-arrow" data-key="startedAt"></span></th>
-          <th onclick="sortBy('created')">Client créé <span class="sort-arrow" data-key="created"></span></th>
+          <th onclick="sortBy('dashAddedAt')">Client créé <span class="sort-arrow" data-key="dashAddedAt"></span></th>
           <th></th>
         </tr>
       </thead>
@@ -437,6 +438,13 @@ function flashRefresh() {
 function applyData(data) {
   allClients = data.clients || [];
   lastUpdate = data.generatedAt || Date.now();
+  // Enrichir chaque client avec la date d'ajout du dashboard (newEmailDates)
+  const dashDates = window.NEW_EMAIL_DATES || {};
+  allClients.forEach(c => {
+    if (!c.email) { c.dashAddedAt = null; return; }
+    const d = dashDates[c.email.toLowerCase().trim()];
+    c.dashAddedAt = d ? new Date(d + 'T00:00:00').getTime() : null;
+  });
   renderStats();
   renderTable();
   document.getElementById('metaCount').textContent =
@@ -481,7 +489,7 @@ function renderTable() {
   const cutoff4w = Date.now() - (28 * 24 * 60 * 60 * 1000);
   let list = allClients.filter(c => {
     if (onlyNew4w) {
-      if (!c.created || c.created < cutoff4w) return false;
+      if (!c.dashAddedAt || c.dashAddedAt < cutoff4w) return false;
     }
     if (search) {
       const hay = [
@@ -546,8 +554,9 @@ function renderTable() {
     const subCreatedAt = c.subscriptionCreated
       ? new Date(c.subscriptionCreated).toLocaleDateString('fr-FR')
       : '—';
-    const customerCreatedAt = c.created
-      ? new Date(c.created).toLocaleDateString('fr-FR')
+    // "Client créé" : date d'ajout du dashboard (newEmailDates)
+    const customerCreatedAt = c.dashAddedAt
+      ? new Date(c.dashAddedAt).toLocaleDateString('fr-FR')
       : '—';
     let started;
     if (c.status === 'scheduled' && c.startedAt) {
