@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyse SEO gratuite — Alti-Web</title>
+  <meta name="description" content="Analyse SEO gratuite : recevez par email les 60 mots-clés les plus importants de votre site + 20 mots-clés longue traîne, avec géolocalisation.">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg: #0B0F1A;
+      --bg2: #131825;
+      --bg3: #1A2035;
+      --accent: #4F8CFF;
+      --accent2: #A78BFA;
+      --green: #34D399;
+      --orange: #FB923C;
+      --red: #F87171;
+      --text: #E8ECF4;
+      --sub: #8892A8;
+      --border: rgba(255,255,255,0.08);
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.55;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* Header */
+    .topbar {
+      padding: 18px 28px;
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      background: var(--bg2);
+      position: sticky; top: 0; z-index: 30;
+      backdrop-filter: blur(8px);
+    }
+    .brand { display:flex; align-items:center; gap:12px; }
+    .brand-logo {
+      width:36px; height:36px; border-radius:10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display:flex; align-items:center; justify-content:center;
+      font-weight:700; font-size:14px; color:#fff;
+    }
+    .brand-title { font-family:'Playfair Display',serif; font-size:1.05rem; }
+    .brand-title span { color: var(--accent); }
+    .top-link {
+      padding: 8px 14px; border-radius: 10px;
+      border: 1px solid var(--border);
+      color: var(--sub); font-size: 13px; font-weight: 500;
+    }
+    .top-link:hover { color: var(--text); border-color: rgba(255,255,255,0.18); text-decoration: none; }
+
+    /* Hero */
+    .hero {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 60px 24px 28px;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(79,140,255,0.1);
+      border: 1px solid rgba(79,140,255,0.25);
+      color: var(--accent);
+      font-size: 12px; font-weight: 700;
+      padding: 5px 14px; border-radius: 20px;
+      letter-spacing: 0.5px; text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 2.4rem;
+      line-height: 1.15; margin-bottom: 14px;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero p {
+      color: var(--sub);
+      font-size: 1.05rem;
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* Form card */
+    .card {
+      max-width: 560px;
+      margin: 28px auto 24px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 30px 28px;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .form-group { margin-bottom: 16px; }
+    .form-label {
+      display: block; font-size: 0.85rem; color: var(--sub);
+      margin-bottom: 7px; font-weight: 500;
+    }
+    .form-input, .form-select {
+      width: 100%; padding: 13px 16px;
+      border-radius: 11px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-family: inherit; font-size: 0.98rem;
+      outline: none; box-sizing: border-box;
+      transition: border-color 0.15s;
+    }
+    .form-input:focus, .form-select:focus { border-color: var(--accent); }
+    .form-input::placeholder { color: var(--sub); opacity: 0.6; }
+
+    .submit-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.15s, opacity 0.15s;
+      margin-top: 6px;
+    }
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 28px rgba(79,140,255,0.35);
+    }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .info-row {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px;
+      background: rgba(79,140,255,0.06);
+      border: 1px solid rgba(79,140,255,0.15);
+      border-radius: 10px;
+      color: var(--sub);
+      font-size: 0.84rem;
+      margin-top: 18px;
+    }
+    .info-row .icon { font-size: 1.1rem; flex-shrink: 0; }
+
+    /* Status */
+    .status {
+      margin-top: 20px;
+      padding: 16px 18px;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      display: none;
+    }
+    .status.show { display: block; }
+    .status.loading {
+      background: rgba(79,140,255,0.07);
+      border: 1px solid rgba(79,140,255,0.2);
+      color: var(--text);
+    }
+    .status.success {
+      background: rgba(52,211,153,0.07);
+      border: 1px solid rgba(52,211,153,0.25);
+      color: var(--text);
+    }
+    .status.error {
+      background: rgba(248,113,113,0.07);
+      border: 1px solid rgba(248,113,113,0.3);
+      color: var(--text);
+    }
+    .status .title {
+      font-weight: 700; font-size: 1.02rem;
+      margin-bottom: 6px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .spinner-mini {
+      width: 16px; height: 16px;
+      border: 2px solid rgba(79,140,255,0.2);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px; margin-top: 12px;
+    }
+    .stat {
+      background: rgba(255,255,255,0.04);
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+    .stat-value { font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+    .stat-label { font-size: 0.72rem; color: var(--sub); text-transform: uppercase; letter-spacing: 0.4px; margin-top: 3px; }
+
+    /* Footer */
+    .features {
+      max-width: 720px;
+      margin: 16px auto 60px;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 14px;
+    }
+    .feat {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px 20px;
+      text-align: center;
+    }
+    .feat-icon { font-size: 1.6rem; margin-bottom: 7px; }
+    .feat-title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+    .feat-desc { color: var(--sub); font-size: 0.82rem; line-height: 1.45; }
+
+    @media (max-width: 600px) {
+      .hero { padding: 40px 18px 22px; }
+      .hero h1 { font-size: 1.8rem; }
+      .card { padding: 22px 18px; }
+      .topbar { padding: 14px 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-logo">AW</div>
+    <div class="brand-title">Alti-Web <span>· Analyse SEO</span></div>
+  </div>
+  <a href="https://alti-web.fr" class="top-link" target="_blank">alti-web.fr →</a>
+</header>
+
+<section class="hero">
+  <div class="hero-badge">🎯 100% Gratuit · Sans inscription</div>
+  <h1>Quels mots-clés pour <span>votre site</span> ?</h1>
+  <p>Indiquez l'URL de votre site et recevez par email les <strong>60 mots-clés les plus importants</strong> sur lesquels vous êtes positionné, ainsi que <strong>20 mots-clés longue traîne</strong>, avec géolocalisation.</p>
+</section>
+
+<div class="card">
+  <form id="analyzeForm" onsubmit="event.preventDefault(); submitAnalyze();">
+    <div class="form-group">
+      <label class="form-label" for="urlInput">URL de votre site</label>
+      <input type="text" id="urlInput" class="form-input" placeholder="exemple.fr ou https://exemple.fr" autocomplete="url" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="emailInput">Votre email (réception du rapport)</label>
+      <input type="email" id="emailInput" class="form-input" placeholder="vous@example.com" autocomplete="email" required>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="locationSelect">Géolocalisation (zone de recherche)</label>
+      <select id="locationSelect" class="form-select">
+        <option value="2250">🇫🇷 France</option>
+        <option value="2056">🇧🇪 Belgique</option>
+        <option value="2756">🇨🇭 Suisse</option>
+        <option value="2124">🇨🇦 Canada</option>
+        <option value="2492">🇲🇨 Monaco</option>
+        <option value="2840">🇺🇸 États-Unis</option>
+        <option value="2826">🇬🇧 Royaume-Uni</option>
+      </select>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">📊 Analyser mon site</button>
+
+    <div class="info-row">
+      <span class="icon">📨</span>
+      <span>Le rapport arrive par email en moins d'une minute. Vérifiez aussi votre dossier spam.</span>
+    </div>
+  </form>
+
+  <div id="status" class="status"></div>
+</div>
+
+<div class="features">
+  <div class="feat">
+    <div class="feat-icon">🎯</div>
+    <div class="feat-title">60 mots-clés</div>
+    <div class="feat-desc">Les plus importants par trafic estimé</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🪶</div>
+    <div class="feat-title">20 longue traîne</div>
+    <div class="feat-desc">Mots-clés de 4 mots ou plus</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">🌍</div>
+    <div class="feat-title">Géolocalisé</div>
+    <div class="feat-desc">Données par zone géographique</div>
+  </div>
+  <div class="feat">
+    <div class="feat-icon">⚡</div>
+    <div class="feat-title">Gratuit & rapide</div>
+    <div class="feat-desc">Aucune inscription, aucun compte</div>
+  </div>
+</div>
+
+<script>
+async function submitAnalyze() {
+  const urlInput = document.getElementById('urlInput');
+  const emailInput = document.getElementById('emailInput');
+  const locationSelect = document.getElementById('locationSelect');
+  const submitBtn = document.getElementById('submitBtn');
+  const status = document.getElementById('status');
+
+  const url = urlInput.value.trim();
+  const email = emailInput.value.trim();
+  const locationCode = locationSelect.value;
+
+  if (!url) { urlInput.focus(); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { emailInput.focus(); return; }
+
+  // UI : loading
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Analyse en cours…';
+  status.className = 'status show loading';
+  status.innerHTML =
+    '<div class="title"><span class="spinner-mini"></span> Analyse en cours…</div>' +
+    "<div>Interrogation de la base de données SEO. Cela peut prendre 15 à 30 secondes.</div>";
+
+  try {
+    const resp = await fetch('/api/seo-keywords', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        url: url,
+        email: email,
+        location_code: parseInt(locationCode, 10),
+      }),
+    });
+    const data = await resp.json();
+
+    if (!resp.ok || !data.ok) {
+      throw new Error(data.error || 'Erreur (HTTP ' + resp.status + ')');
+    }
+
+    if (!data.total) {
+      status.className = 'status show error';
+      status.innerHTML =
+        '<div class="title">⚠️ Aucun mot-clé trouvé</div>' +
+        '<div>Le domaine <strong>' + escapeHtml(data.domain) + '</strong> ne semble pas se positionner sur cette zone géographique. Essayez une autre zone ou un autre domaine.</div>';
+      return;
+    }
+
+    // Succès
+    status.className = 'status show success';
+    status.innerHTML =
+      '<div class="title">✅ Analyse terminée !</div>' +
+      '<div>Le rapport a été envoyé à <strong>' + escapeHtml(email) + '</strong>. Vérifiez votre boîte de réception (et votre dossier spam).</div>' +
+      '<div class="stats-grid">' +
+        '<div class="stat"><div class="stat-value">' + data.total + '</div><div class="stat-label">Mots-clés total</div></div>' +
+        '<div class="stat"><div class="stat-value">' + (data.top60Count || 0) + '</div><div class="stat-label">Top 60</div></div>' +
+        '<div class="stat"><div class="stat-value">' + (data.longTailCount || 0) + '</div><div class="stat-label">Longue traîne</div></div>' +
+        '<div class="stat"><div class="stat-value">' + (data.top20RankedCount || 0) + '</div><div class="stat-label">En TOP 20 Google</div></div>' +
+      '</div>';
+  } catch (err) {
+    status.className = 'status show error';
+    status.innerHTML =
+      '<div class="title">⚠️ Erreur</div>' +
+      '<div>' + escapeHtml(err.message) + '</div>' +
+      '<div style="margin-top:8px;color:var(--sub);font-size:0.86rem">Réessayez ou contactez-nous via <a href="https://alti-web.fr">alti-web.fr</a>.</div>';
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = '📊 Analyser mon site';
+  }
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+</script>
+
+</body>
+</html>
