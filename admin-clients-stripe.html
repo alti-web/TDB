@@ -649,7 +649,22 @@ function stopAutoRefresh() {
 
 // ───── Init ─────
 (function() {
-  // Si déjà un token en session, tenter de charger
+  // 1. Token dans l'URL (?token=XXX) ? -> bypass login form
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    if (urlToken) {
+      setToken(urlToken.trim());
+      // On laisse le token dans l'URL pour que le bookmark fonctionne.
+      // Si tu veux le supprimer après lecture, décommente :
+      // params.delete('token');
+      // const newUrl = window.location.pathname +
+      //   (params.toString() ? '?' + params.toString() : '') + window.location.hash;
+      // window.history.replaceState(null, '', newUrl);
+    }
+  } catch (_) {}
+
+  // 2. Si token présent (URL ou session), tenter de charger
   if (getToken()) {
     document.getElementById('loginOverlay').classList.add('hidden');
     document.getElementById('mainContent').style.display = '';
@@ -658,7 +673,7 @@ function stopAutoRefresh() {
   } else {
     setTimeout(() => document.getElementById('adminTokenInput').focus(), 200);
   }
-  // Submit avec Entrée
+  // Submit avec Entrée sur le formulaire de login (fallback)
   document.getElementById('adminTokenInput').addEventListener('keydown', e => {
     if (e.key === 'Enter') loginAdmin();
   });
