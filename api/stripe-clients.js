@@ -191,6 +191,8 @@ module.exports = async (req, res) => {
         phone: c.phone || null,
         created: c.created ? c.created * 1000 : null,
         subscriptionCreated: sub.created ? sub.created * 1000 : null,
+        siteUrl: (c.metadata && c.metadata.site_url) || null,
+        secondaryEmail: (c.metadata && c.metadata.secondary_email) || null,
 
         subscriptionId: sub.id,
         status: sub.status, // active, past_due, canceled, trialing, unpaid, incomplete, etc.
@@ -245,6 +247,8 @@ module.exports = async (req, res) => {
         phone: c.phone || null,
         created: c.created ? c.created * 1000 : null,
         subscriptionCreated: sched.created ? sched.created * 1000 : null,
+        siteUrl: (c.metadata && c.metadata.site_url) || null,
+        secondaryEmail: (c.metadata && c.metadata.secondary_email) || null,
 
         subscriptionId: sched.id,
         status: 'scheduled', // statut custom pour différencier

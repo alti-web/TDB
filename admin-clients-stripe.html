@@ -241,6 +241,25 @@
       border-bottom-color: rgba(79,140,255,0.5);
     }
 
+    .cell-input {
+      width: 100%;
+      min-width: 130px;
+      padding: 5px 7px;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--text);
+      font-family: inherit;
+      font-size: 0.82rem;
+      outline: none;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .cell-input:hover { border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
+    .cell-input:focus { border-color: var(--accent); background: rgba(79,140,255,0.05); }
+    .cell-input.saving { border-color: var(--yellow); }
+    .cell-input.saved  { border-color: var(--green); }
+    .cell-input.err    { border-color: var(--red); }
+
     .empty {
       text-align:center; padding: 60px 20px; color: var(--sub);
     }
@@ -332,6 +351,8 @@
         <tr>
           <th onclick="sortBy('name')">Client <span class="sort-arrow" data-key="name"></span></th>
           <th onclick="sortBy('customerId')">ID client <span class="sort-arrow" data-key="customerId"></span></th>
+          <th onclick="sortBy('siteUrl')">URL du site <span class="sort-arrow" data-key="siteUrl"></span></th>
+          <th onclick="sortBy('secondaryEmail')">Email secondaire <span class="sort-arrow" data-key="secondaryEmail"></span></th>
           <th onclick="sortBy('amount')">Montant TTC <span class="sort-arrow" data-key="amount"></span></th>
           <th onclick="sortBy('status')">Statut <span class="sort-arrow" data-key="status"></span></th>
           <th onclick="sortBy('subscriptionCreated')">Forfait créé <span class="sort-arrow" data-key="subscriptionCreated">▼</span></th>
@@ -341,7 +362,7 @@
         </tr>
       </thead>
       <tbody id="tbody">
-        <tr><td colspan="9" class="empty">Chargement…</td></tr>
+        <tr><td colspan="11" class="empty">Chargement…</td></tr>
       </tbody>
     </table>
   </div>
@@ -520,7 +541,7 @@ function renderTable() {
   });
 
   if (!list.length) {
-    tbody.innerHTML = '<tr><td colspan="9" class="empty">Aucun client ne correspond.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="11" class="empty">Aucun client ne correspond.</td></tr>';
     return;
   }
 
@@ -582,6 +603,8 @@ function renderTable() {
         + (email ? '<div class="email">' + email + '</div>' : '')
         + '</td>'
       + '<td>' + cusId + '</td>'
+      + '<td>' + buildEditableCell(c.customerId, 'siteUrl', c.siteUrl, 'https://exemple.fr') + '</td>'
+      + '<td>' + buildEditableCell(c.customerId, 'secondaryEmail', c.secondaryEmail, 'autre@email.com') + '</td>'
       + '<td>' + amount + '</td>'
       + '<td>' + status + '</td>'
       + '<td>' + subCreatedAt + '</td>'
@@ -635,6 +658,63 @@ function escapeHtml(s) {
   return String(s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
+// ───── Cellules éditables (URL du site, email secondaire) ─────
+function buildEditableCell(customerId, field, value, placeholder) {
+  if (!customerId) return '<span class="card-mini">—</span>';
+  return '<input class="cell-input"'
+    + ' type="text"'
+    + ' data-cust="' + escapeHtml(customerId) + '"'
+    + ' data-field="' + escapeHtml(field) + '"'
+    + ' value="' + escapeHtml(value || '') + '"'
+    + ' data-original="' + escapeHtml(value || '') + '"'
+    + ' placeholder="' + escapeHtml(placeholder || '') + '"'
+    + ' onblur="saveCell(this)"'
+    + ' onkeydown="if(event.key===\'Enter\'){event.preventDefault();this.blur();}else if(event.key===\'Escape\'){this.value=this.dataset.original;this.blur();}"'
+    + '>';
+}
+
+async function saveCell(input) {
+  const customerId = input.dataset.cust;
+  const field = input.dataset.field; // siteUrl | secondaryEmail
+  const original = input.dataset.original || '';
+  const value = (input.value || '').trim();
+  if (value === original) {
+    input.classList.remove('saving','saved','err');
+    return;
+  }
+  input.classList.remove('saved','err');
+  input.classList.add('saving');
+  try {
+    const resp = await fetch('/api/stripe-customer-meta', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Admin-Token': getToken(),
+      },
+      body: JSON.stringify({
+        customerId: customerId,
+        [field]: value,
+      }),
+    });
+    const data = await resp.json().catch(() => ({}));
+    if (!resp.ok || !data.ok) {
+      throw new Error(data.error || ('HTTP ' + resp.status));
+    }
+    // Maj cache local
+    const c = allClients.find(x => x.customerId === customerId);
+    if (c) c[field] = value;
+    input.dataset.original = value;
+    input.classList.remove('saving');
+    input.classList.add('saved');
+    setTimeout(() => input.classList.remove('saved'), 1200);
+  } catch (err) {
+    input.classList.remove('saving');
+    input.classList.add('err');
+    input.title = err.message;
+    setTimeout(() => { input.classList.remove('err'); input.title = ''; }, 3000);
+  }
 }
 
 // ───── Auto-refresh ─────
