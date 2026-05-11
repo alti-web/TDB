@@ -1026,36 +1026,7 @@
         <div class="nav-buttons">
             <button class="btn btn-secondary" onclick="goTo(11)">← Retour</button>
             <div class="spacer"></div>
-            <button class="btn btn-primary" onclick="goTo(13)" id="nav12next" disabled>Suivant →</button>
-        </div>
-    </div>
-
-    <!-- ====== STEP 13 — RDV ====== -->
-    <div class="step" data-step="13">
-        <h2 class="step-title">Votre RDV</h2>
-        <p class="step-subtitle">Comment souhaitez-vous échanger ?</p>
-        <div class="cards-grid cols-3" data-field="rdv" data-single>
-            <div class="card-option" data-value="OK avec le créneau envoyé">
-                <span class="check-mark">✓</span>
-                <span class="card-icon">📅</span>
-                <div class="card-label">OK avec le créneau envoyé</div>
-            </div>
-            <div class="card-option" data-value="Pas reçu de créneau">
-                <span class="check-mark">✓</span>
-                <span class="card-icon">📧</span>
-                <div class="card-label">Je n'ai pas reçu de créneau</div>
-            </div>
-            <div class="card-option" data-value="Préfère par écrit">
-                <span class="check-mark">✓</span>
-                <span class="card-icon">✍️</span>
-                <div class="card-label">Je préfère par écrit</div>
-                <div class="card-desc">Email / WhatsApp</div>
-            </div>
-        </div>
-        <div class="nav-buttons">
-            <button class="btn btn-secondary" onclick="goTo(12)">← Retour</button>
-            <div class="spacer"></div>
-            <button class="btn btn-primary" onclick="goTo(14)" id="nav13next" disabled>Suivant →</button>
+            <button class="btn btn-primary" onclick="goTo(14)" id="nav12next" disabled>Suivant →</button>
         </div>
     </div>
 
@@ -1091,27 +1062,9 @@
             </div>
         </div>
         <div class="nav-buttons">
-            <button class="btn btn-secondary" onclick="goTo(13)">← Retour</button>
+            <button class="btn btn-secondary" onclick="goTo(12)">← Retour</button>
             <div class="spacer"></div>
-            <button class="btn btn-primary" onclick="goTo(15)">Suivant →</button>
-        </div>
-    </div>
-
-    <!-- ====== STEP 15 — Téléphone ====== -->
-    <div class="step" data-step="15">
-        <h2 class="step-title">Votre numéro de téléphone</h2>
-        <p class="step-subtitle">Pour que nous puissions vous joindre si besoin</p>
-        <div class="infobox">
-            <strong>📞 Le mien est le 06.79.96.75.02</strong><br><br>
-            Avoir votre numéro nous permet de vous contacter rapidement en cas de besoin urgent ou pour un échange rapide par WhatsApp.
-        </div>
-        <div class="input-group">
-            <input class="text-input" type="tel" id="prospectPhone" placeholder="06 12 34 56 78" required style="text-align:center;font-size:1.2rem;letter-spacing:1px">
-        </div>
-        <div class="nav-buttons">
-            <button class="btn btn-secondary" onclick="goTo(14)">← Retour</button>
-            <div class="spacer"></div>
-            <button class="btn btn-primary" id="nav15next" onclick="savePhone(); goTo(16)" disabled>Suivant →</button>
+            <button class="btn btn-primary" onclick="goTo(16)">Suivant →</button>
         </div>
     </div>
 
@@ -1132,7 +1085,7 @@
             </div>
         </div>
         <div class="nav-buttons">
-            <button class="btn btn-secondary" onclick="goTo(15)">← Retour</button>
+            <button class="btn btn-secondary" onclick="goTo(14)">← Retour</button>
             <div class="spacer"></div>
             <button class="btn btn-primary" onclick="submitForm()">Envoyer ✨</button>
         </div>
@@ -1195,9 +1148,7 @@
         envoyerPoint: false, // consentement obligatoire avant l'étape Garantie
         garantie: true,
         gmb: '',
-        rdv: '',
         communication: [],
-        telephone: '',
         dernierMot: '',
         secteurLibre: '',
         audioMessage: false
@@ -1409,22 +1360,6 @@
         formData.siteUrl = document.getElementById('siteUrl').value.trim();
     };
 
-    // ---- Phone validation ----
-    (function() {
-        const phoneInput = document.getElementById('prospectPhone');
-        const nav15 = document.getElementById('nav15next');
-        if (phoneInput && nav15) {
-            phoneInput.addEventListener('input', function() {
-                const val = this.value.replace(/\s/g, '');
-                nav15.disabled = val.length < 10;
-            });
-        }
-    })();
-
-    window.savePhone = function() {
-        formData.telephone = document.getElementById('prospectPhone').value.trim();
-    };
-
     // ---- Competitor previews ----
     window.previewCompetitors = function() {
         const container = document.getElementById('competitorPreviews');
@@ -1634,9 +1569,7 @@
         lines.push('Garantie : ' + (formData.garantie ? 'Oui' : 'Non'));
         lines.push('');
         lines.push('--- CONTACT ---');
-        lines.push('Téléphone : ' + (formData.telephone || 'Non renseigné'));
         lines.push('Google My Business : ' + formData.gmb);
-        lines.push('RDV : ' + formData.rdv);
         lines.push('Communication : ' + (Array.isArray(formData.communication) ? (formData.communication.join(', ') || 'Non renseigné') : formData.communication));
         lines.push('');
         if (formData.dernierMot) {
@@ -1671,9 +1604,7 @@
             { label: 'Point de suivi', value: formData.envoyerPoint ? '✅ Accepté' : 'Refusé' },
             { label: 'Garantie', value: formData.garantie ? 'Activée' : 'Non' },
             { label: 'Google My Business', value: formData.gmb },
-            { label: 'RDV', value: formData.rdv },
             { label: 'Communication', value: Array.isArray(formData.communication) ? (formData.communication.join(', ') || '—') : formData.communication },
-            { label: 'Téléphone', value: formData.telephone || '—' },
         ];
         container.innerHTML = items.map(i =>
             '<div class="recap-card"><div class="recap-label">' + i.label + '</div><div class="recap-value">' + i.value + '</div></div>'
