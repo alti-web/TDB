@@ -27,7 +27,8 @@ var NEW_EMAIL_DATES = {
   'votreinstanttherapie@gmail.com': '2026-04-20',
   'info@essenterra.fr': '2026-05-02',
   'severinemoulliere@gmail.com': '2026-05-02',
-  'letiecaudrey@hotmail.fr': '2026-05-06'
+  'letiecaudrey@hotmail.fr': '2026-05-06',
+  'capcutalsace@gmail.com': '2026-05-06'
 };
 
 // Compatibilité navigateur (admin-clients-stripe.html, dashboard-altiweb.html)
