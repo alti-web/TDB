@@ -2489,10 +2489,10 @@ if (window.location.hostname === 'alti-web.github.io') {
     </div>
   </section>
 
-  <div class="sep"></div>
+  <div class="sep" id="creationSep" style="display:none"></div>
 
-  <!-- ═══ CRÉATION DE SITE INTERNET ═══ -->
-  <section class="section" style="padding-top:40px">
+  <!-- ═══ CRÉATION DE SITE INTERNET (visible UNIQUEMENT pour e2mwdconsulting@gmail.com) ═══ -->
+  <section class="section" id="creationSection" style="padding-top:40px;display:none">
     <div class="section-header">
       <div class="section-title">
         <span class="icon" style="background:rgba(167,139,250,0.12)">🎨</span>
@@ -4172,6 +4172,13 @@ function showDownloadBanner(email) {
   if (bannerAdc) {
     bannerAdc.style.display = downloadBannerAdcoaching.indexOf(e) !== -1 ? 'flex' : 'none';
   }
+  // Section "Création de site internet" : visible UNIQUEMENT pour e2mwdconsulting@gmail.com
+  var creationEmails = ['e2mwdconsulting@gmail.com'];
+  var creationSection = document.getElementById('creationSection');
+  var creationSep = document.getElementById('creationSep');
+  var showCreation = creationEmails.indexOf(e) !== -1;
+  if (creationSection) creationSection.style.display = showCreation ? '' : 'none';
+  if (creationSep) creationSep.style.display = showCreation ? '' : 'none';
 }
 
 // Sauvegarde du HTML original pour pouvoir restaurer entre connexions
