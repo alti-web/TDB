@@ -1954,6 +1954,25 @@ if (window.location.hostname === 'alti-web.github.io') {
   </div>
 </div>
 
+<!-- ═══ POPUP FERMETURE D'ACTIVITÉ ═══ -->
+<div id="closurePopup" style="display:flex;position:fixed;inset:0;z-index:2147483000;background:rgba(8,10,16,0.9);backdrop-filter:blur(9px);justify-content:center;align-items:center;padding:20px">
+  <div style="background:linear-gradient(135deg,#1a1420 0%,#241a24 50%,#1d1418 100%);border:1px solid rgba(248,113,113,0.35);border-radius:20px;max-width:560px;width:100%;padding:40px 36px 30px;position:relative;box-shadow:0 24px 80px rgba(0,0,0,0.6),0 0 60px rgba(248,113,113,0.08)">
+    <div style="text-align:center;margin-bottom:22px">
+      <div style="font-size:52px;margin-bottom:12px;filter:drop-shadow(0 0 18px rgba(248,113,113,0.35))">🕊️</div>
+      <h2 style="color:#f87171;font-size:1.5rem;margin:0;font-family:'Playfair Display',serif">Fermeture de l'activité</h2>
+    </div>
+    <div style="color:#E8ECF4;font-size:1rem;line-height:1.75">
+      <p style="margin:0 0 14px">Suite à un accident neurologique, <strong>Benoît Lecourtier</strong> est actuellement hospitalisé dans un service de neurologie.</p>
+      <p style="margin:0 0 14px">Par décision du <strong>Tribunal de Toulon</strong>, l'activité de l'agence <strong>Alti-Web</strong> a été fermée.</p>
+      <p style="margin:0 0 14px">En conséquence, l'accès aux espaces clients est <strong>suspendu</strong>. Conformément à nos conditions générales de vente, il appartient à chaque client de récupérer la sauvegarde de son site et d'en assurer le transfert vers un nouvel hébergeur.</p>
+      <p style="margin:0;color:#9aa4b8">Nous vous remercions sincèrement de votre confiance et de votre compréhension.</p>
+    </div>
+    <div style="text-align:center;margin-top:24px">
+      <a href="Charte_Handicap_RSE.pdf" target="_blank" style="display:inline-block;padding:11px 22px;border-radius:10px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.35);color:#f87171;font-weight:600;text-decoration:none;font-size:0.9rem">📄 Consulter les CGV &amp; la Charte</a>
+    </div>
+  </div>
+</div>
+
 <div class="page-wrapper">
 
   <!-- ═══ TOP BAR ═══ -->
@@ -4767,9 +4786,11 @@ function hideTasksIfNewEmail(email) {
   var loginTime = parseInt(localStorage.getItem('altiweb_login_time') || '0', 10);
   var sessionDuration = 20 * 60 * 1000; // 20 minutes
   var isAdmin = savedEmail === 'admin@alti-web.fr';
-  if (savedEmail && (isAdmin || isEmailAuthorized(savedEmail)) && (Date.now() - loginTime) < sessionDuration) {
+  // Activité fermée (décision du Tribunal de Toulon) : seul l'accès admin reste possible
+  if (savedEmail && isAdmin && (Date.now() - loginTime) < sessionDuration) {
     var overlay = document.getElementById('loginOverlay');
     if (overlay) overlay.classList.add('hidden');
+    closeClosurePopup();
     resetDashboardState();
     initTasksAnimation();
     hideTasksIfNewEmail(savedEmail);
@@ -4780,43 +4801,31 @@ function hideTasksIfNewEmail(email) {
   } else {
     localStorage.removeItem('altiweb_login_email');
     localStorage.removeItem('altiweb_login_time');
+    applyClosureState();
   }
 })();
 
+// ─── FERMETURE D'ACTIVITÉ : blocage des connexions ───
+function openClosurePopup() {
+  var p = document.getElementById('closurePopup');
+  if (p) p.style.display = 'flex';
+}
+function closeClosurePopup() {
+  var p = document.getElementById('closurePopup');
+  if (p) p.style.display = 'none';
+}
+function applyClosureState() {
+  openClosurePopup();
+  var input = document.getElementById('loginEmail');
+  if (input) { input.disabled = true; input.value = ''; input.placeholder = 'Connexions suspendues'; }
+  var btn = document.querySelector('#loginForm .login-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Accès suspendu'; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
+}
+
 function handleLogin(e) {
   e.preventDefault();
-  var email = document.getElementById('loginEmail').value.toLowerCase().trim();
-  var errorEl = document.getElementById('loginError');
-
-  if (isEmailAuthorized(email)) {
-    localStorage.setItem('altiweb_login_email', email);
-    localStorage.setItem('altiweb_login_time', Date.now().toString());
-    errorEl.classList.remove('visible');
-    resetDashboardState();
-    initTasksAnimation();
-    hideTasksIfNewEmail(email);
-    applyFinishedStatus(email);
-    showDownloadBanner(email);
-    showNewClientPopup(email);
-    showAdminBtn(email);
-    var overlay = document.getElementById('loginOverlay');
-    overlay.classList.add('hiding');
-    setTimeout(function() {
-      overlay.classList.add('hidden');
-      // Afficher la popup Google Update après connexion
-      var googlePopup = document.getElementById('popupGoogleUpdate');
-      if (googlePopup) googlePopup.style.display = 'flex';
-    }, 700);
-  } else {
-    errorEl.classList.add('visible');
-    var input = document.getElementById('loginEmail');
-    input.style.borderColor = 'var(--accent-red)';
-    input.style.boxShadow = '0 0 0 3px rgba(248, 113, 113, 0.15)';
-    setTimeout(function() {
-      input.style.borderColor = '';
-      input.style.boxShadow = '';
-    }, 2000);
-  }
+  // Activité fermée par décision du Tribunal de Toulon — connexions suspendues
+  applyClosureState();
   return false;
 }
 
