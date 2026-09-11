@@ -527,10 +527,11 @@ story.append(Paragraph(
     "du client, les responsabilités en matière de sauvegarde et de continuité sont "
     "réparties comme suit :", style_body))
 story.append(bullets([
-    "<b>Sauvegarde du site :</b> il appartient au client de <b>constituer et de "
-    "conserver ses propres sauvegardes</b> du site (contenus, données, code), ou "
-    "d'en faire la <b>demande expresse au prestataire</b>. La sauvegarde régulière "
-    "du site relève de la responsabilité du client.",
+    "<b>Sauvegarde hebdomadaire :</b> il relève de la <b>responsabilité du client</b> "
+    "de réaliser une <b>sauvegarde de son site au moins une fois par semaine</b> "
+    "(contenus, données, code) et de la conserver en lieu sûr. À défaut de pouvoir "
+    "l'effectuer lui-même, il lui appartient d'en faire la <b>demande expresse au "
+    "prestataire</b>, qui la lui transmettra dans la mesure de ses disponibilités.",
     "<b>Transfert en cas de cessation :</b> en cas de <b>clôture de l'activité</b> "
     "du prestataire, ou en cas d'<b>empêchement durable lié à son état de santé</b> "
     "(cf. articles 07 et 08), il appartient au client de <b>récupérer la sauvegarde "
@@ -605,7 +606,7 @@ story.append(Spacer(1, 6))
 story.append(Paragraph(
     "Cette charte Handicap &amp; RSE est un document d'engagement professionnel. "
     "Elle complète les conditions générales de vente et le contrat de prestation. "
-    "<b>Version 2.4 — 2026.</b>",
+    "<b>Version 2.5 — 2026.</b>",
     style_footer))
 
 
