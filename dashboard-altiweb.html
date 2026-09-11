@@ -1969,7 +1969,8 @@ if (window.location.hostname === 'alti-web.github.io') {
       <p style="margin:0 0 14px">En conséquence, l'accès aux espaces clients est <strong>suspendu</strong>. Conformément à nos conditions générales de vente, il appartient à chaque client de récupérer la sauvegarde de son site et d'en assurer le transfert vers un nouvel hébergeur.</p>
       <p style="margin:0;color:#9aa4b8">Nous vous remercions sincèrement de votre confiance et de votre compréhension.</p>
     </div>
-    <div style="text-align:center;margin-top:24px">
+    <div style="text-align:center;margin-top:24px;display:flex;flex-direction:column;gap:12px;align-items:center">
+      <button id="archiveReqBtn" onclick="requestSiteArchive(this)" style="display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:11px;border:none;background:linear-gradient(135deg,#34d399,#22b07d);color:#08120d;font-weight:700;font-size:0.98rem;cursor:pointer;box-shadow:0 6px 22px rgba(52,211,153,0.25)">📦 Récupérer l'archive de mon site web</button>
       <a href="Charte_Handicap_RSE.pdf" target="_blank" style="display:inline-block;padding:11px 22px;border-radius:10px;background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.35);color:#f87171;font-weight:600;text-decoration:none;font-size:0.9rem">📄 Consulter les CGV &amp; la Charte</a>
     </div>
   </div>
@@ -4823,6 +4824,34 @@ function applyClosureState() {
   if (input) { input.disabled = true; input.value = ''; input.placeholder = 'Connexions suspendues'; }
   var btn = document.querySelector('#loginForm .login-btn');
   if (btn) { btn.disabled = true; btn.textContent = 'Accès suspendu'; btn.style.opacity = '0.5'; btn.style.cursor = 'not-allowed'; }
+}
+// Demande de récupération de l'archive du site → email à benoit@lecourtier.net
+function requestSiteArchive(btn) {
+  var url = prompt("Pour recevoir l'archive de votre site, indiquez l'URL de votre site web :", "https://");
+  if (url === null) return; // annulé
+  url = url.trim();
+  if (!url || url === 'https://') { alert("Merci d'indiquer l'URL de votre site web."); return; }
+  var clientEmail = '';
+  try { clientEmail = (localStorage.getItem('altiweb_login_email') || '').trim(); } catch (e) {}
+  var original = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳ Envoi…';
+  emailjs.send('service_12wtkng', 'template_tib1gk7', {
+    name: '📦 DEMANDE ARCHIVE SITE WEB\nURL du site : ' + url +
+          '\nEmail client : ' + (clientEmail || '(non connecté)') +
+          '\nDate : ' + new Date().toLocaleString('fr-FR'),
+    email: clientEmail || 'benoit@lecourtier.net',
+    message: "Demande de récupération de l'archive du site : " + url
+  }).then(function() {
+    btn.disabled = false;
+    btn.innerHTML = '✅ Demande envoyée';
+    btn.style.background = 'rgba(52,211,153,0.2)';
+    btn.style.color = '#34d399';
+  }).catch(function() {
+    btn.disabled = false;
+    btn.innerHTML = original;
+    alert("L'envoi a échoué. Merci d'écrire directement à benoit@lecourtier.net en indiquant l'URL de votre site.");
+  });
 }
 
 function handleLogin(e) {
